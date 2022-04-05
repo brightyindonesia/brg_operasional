@@ -1,0 +1,506 @@
+<?php $this->load->view('back/template/meta'); ?>
+<div class="wrapper">
+
+  <?php $this->load->view('back/template/navbar'); ?>
+  <?php $this->load->view('back/template/sidebar'); ?>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1><?php echo $page_title ?>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="<?php echo base_url('dashboard') ?>"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><?php echo $module ?></li>
+        <li class="active"><?php echo $page_title ?></li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <?php if($this->session->flashdata('message')){echo $this->session->flashdata('message');} ?>
+      <?php echo validation_errors() ?>
+      <div class="box box-primary">
+          <div class="box-header">
+            <a href="<?php echo base_url('admin/surat/surat_packing_detail_hapus_all/'.base64_encode($cek_surat->no_surat_packing)) ?> " onClick="return confirm('Are you sure?');" class="btn btn-md btn-danger"><i class="fa fa-trash" style="margin-right: 5px;"></i> Hapus Semua Data Detail Surat Packing</a>
+
+            <a href="<?php echo base_url('admin/surat/surat_packing_print/'.base64_encode($cek_surat->no_surat_packing)) ?>" class="btn btn-md btn-success"><i class="fa fa-print" style="margin-right: 5px;"></i> Print Surat Packing List</a>
+
+            <a href="<?php echo base_url('admin/surat/surat_packing_print_alamat/'.base64_encode($cek_surat->no_surat_packing)) ?>" class="btn btn-md btn-info"><i class="fa fa-id-card-o" style="margin-right: 5px;"></i> Cetak Alamat Penerima</a>
+
+            <a href="<?php echo base_url('admin/surat/surat_packing_ekspor/'.base64_encode($cek_surat->no_surat_packing)) ?>" class="btn btn-primary"><i class="fa fa-file-excel-o"></i> Export Data Surat Packing List</a> 
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-6">
+                  <div class="form-group"><label>Nomor Surat Packing (*)</label>
+                    <?php echo form_input($nomor_surat_packing) ?>
+                  </div>
+
+                  <div class="form-group"><label>Nama Surat Packing (*)</label>
+                    <?php echo form_input($nama_surat_packing, $cek_surat->nama_surat_packing) ?>
+                  </div>
+
+                  <div class="form-group"><label>Keterangan Surat Packing</label>
+                    <?php echo form_textarea($keterangan, $cek_surat->keterangan_surat_packing) ?>
+                  </div>
+              </div>
+
+              <div class="col-sm-6">
+                  <div class="form-group"><label>Tanggal Surat Packing (*)</label>
+                    <input type="text" name="periodik" class="form-control float-right" value="<?php echo date('Y/m/d', strtotime($cek_surat->tgl_surat_packing)) ?>" id="date">
+                  </div>
+
+                  <div class="form-group"><label>Kepada Penerima (*)</label>
+                    <?php echo form_input($kepada_surat_packing, $cek_surat->kepada_surat_packing) ?>
+                  </div>
+
+                  <div class="form-group"><label>Pilih Nama Penerima (*)</label>
+                    <?php echo form_dropdown('penerima', $get_all_penerima, $cek_surat->id_penerima, $penerima) ?>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="nav-tabs-custom bg-success">
+                  <ul class="nav nav-tabs">
+                    <li class="active"><a href="#manual" data-toggle="tab">Manual Data Detail</a></li>
+                    <li><a href="#import" data-toggle="tab">Import Data Detail</a></li>
+                  </ul>
+                  <div class="tab-content">
+                    <div class="active manual tab-pane" id="manual">
+                      <?php include('tab_content/content_manual_pl.php'); ?>                
+                    </div>
+                    <div class="import tab-pane" id="import"> 
+                      <?php include('tab_content/content_import_pl.php'); ?>                
+                    </div>               
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label>Daftar Barang</label>
+                      <table id="example3" class="table table-bordered table-striped">
+                      <thead>
+                        <tr align="center">
+                          <th width="15%">Kode Barang</th>
+                          <th>Nama Barang</th>
+                          <th>Jumlah</th>
+                          <th>Satuan Barang</th>
+                          <th>Keterangan</th>
+                          <th width="1%">Aksi</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <?php 
+                          foreach ($barang as $val_bar) {
+                        ?>
+                        <tr>
+                            <td> <input type="hidden" id="dt_kode[]" name="dt_kode[]" value="<?php echo $val_bar->kode_barang_surat_packing ?>"><?php echo $val_bar->kode_barang_surat_packing ?></td>
+                            <td> <input type="hidden" id="dt_nama[]" name="dt_nama[]" value="<?php echo $val_bar->nama_barang_surat_packing ?>"><?php echo $val_bar->nama_barang_surat_packing ?></td> 
+                            <td> <input type="hidden" id="dt_qty[]" name="dt_qty[]" value="<?php echo $val_bar->jumlah_barang_surat_packing ?>"><?php echo $val_bar->jumlah_barang_surat_packing ?></td>
+                            <td> <input type="hidden" id="dt_satuan[]" name="dt_satuan[]" value="<?php echo $val_bar->satuan_barang_surat_packing ?>"><?php echo $val_bar->satuan_barang_surat_packing ?></td>
+                            <td> <input type="hidden" id="dt_keterangan[]" name="dt_keterangan[]" value="<?php echo $val_bar->keterangan_barang_surat_packing ?>"><?php echo $val_bar->keterangan_barang_surat_packing ?></td>
+                            <td> 
+                              <button  onclick="edit_detail_packing(<?php echo $val_bar->id_detail_surat_packing ?>)" class="btn btn-warning btn-sm" >Ubah</button> 
+                            </td> 
+                        </tr>
+                        <?php
+                          }
+                        ?>
+                      </tbody>
+
+                      <tfoot>
+                        <tr align="center">
+                          <th>Kode Barang</th>
+                          <th>Nama Barang</th>
+                          <th>Jumlah</th>
+                          <th>Satuan Barang</th>
+                          <th>Keterangan</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="box-footer">
+            <button type="submit" id="surat_packing_add" name="button" class="btn btn-success"><i class="fa fa-save"></i> <?php echo $btn_submit ?></button>
+            <button type="reset" name="button" class="btn btn-danger"><i class="fa fa-refresh"></i> <?php echo $btn_reset ?></button>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <?php 
+    include('modal/modal_ubah_detail_packing.php');
+  ?>
+
+  <?php $this->load->view('back/template/footer'); ?>.
+  <!-- date-range-picker -->
+  <script src="<?php echo base_url('assets/plugins/') ?>moment/min/moment.min.js"></script>
+  <script src="<?php echo base_url('assets/plugins/') ?>bootstrap-daterangepicker/daterangepicker.js"></script>
+  <!-- bootstrap datepicker -->
+  <script src="<?php echo base_url('assets/plugins/') ?>bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+  <script type="text/javascript">
+
+    $('#surat_packing_add').click(function(e){
+      const Toast = Swal.mixin({
+        toast: false,
+        position: 'center',
+        showConfirmButton: false,
+        // confirmButtonColor: '#86ccca',
+        timer: 3000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+      e.preventDefault();
+
+      var nomor_surat = document.getElementById('nomor-surat-packing').value;
+      var nama_surat = document.getElementById('nama-surat-packing').value;
+      var date = document.getElementById('date').value;
+      var kepada_surat = document.getElementById('kepada-surat-packing').value;
+      var keterangan = document.getElementById('keterangan').value;
+      var penerima = document.getElementById('penerima').value;
+      var dt_kode =  $("input[name='dt_kode[]']")
+            .map(function(){return $(this).val();}).get();
+      var dt_nama =  $("input[name='dt_nama[]']")
+            .map(function(){return $(this).val();}).get();
+      var dt_qty =  $("input[name='dt_qty[]']")
+            .map(function(){return $(this).val();}).get();
+      var dt_satuan =  $("input[name='dt_satuan[]']")
+            .map(function(){return $(this).val();}).get(); 
+      var dt_keterangan =  $("input[name='dt_keterangan[]']")
+            .map(function(){return $(this).val();}).get();            
+      var JS_kode = JSON.stringify(dt_kode);
+      var JS_nama = JSON.stringify(dt_nama);
+      var JS_qty = JSON.stringify(dt_qty);
+      var JS_satuan = JSON.stringify(dt_satuan);
+      var JS_keterangan = JSON.stringify(dt_keterangan);
+      var panjangArray = dt_kode.length;
+      var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+      csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+      // alert(panjangArray);
+      if (nomor_surat == '' && nama_surat == '' && kepada_surat == '' && keterangan == '' && penerima == '' && dt_kode == '' && dt_nama == '' && dt_qty == '' && dt_satuan == '' && dt_keterangan == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Harap diisi!'
+        });
+      }else if(nomor_surat == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Nomor Surat harap diisi!'
+        });
+      }else if(nama_surat == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Nama Surat harap diisi!'
+        });
+      }else if(kepada_surat == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Kepada Surat harap diisi!'
+        });
+      }else if(penerima == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Nama Penerima harap dipilih!'
+        });
+      }else if(dt_kode == '' || dt_nama == '' || dt_qty == '' || dt_satuan == ''){
+        Toast.fire({
+          icon: 'error',
+          title: 'Daftar Barang tidak berisi data!'
+        });
+      }else{
+        $.ajax({ 
+          url:"<?php echo base_url()?>admin/surat/proses_surat_packing_ubah",
+          method:"post",
+          dataType: 'JSON', 
+          data:{nomor_surat: nomor_surat, nama_surat: nama_surat, kepada_surat: kepada_surat, keterangan: keterangan, penerima: penerima, date:date, dt_kode: JS_kode, dt_nama: JS_nama, dt_qty: JS_qty, dt_satuan: JS_satuan, dt_keterangan: JS_keterangan, length: panjangArray, [csrfName]: csrfHash},
+          success:function(data)  {  
+            // alert(data);
+            if (data.validasi) {
+              Toast.fire({
+                icon: 'error',
+                title: 'Perhatian!',
+                text: data.validasi
+              })
+            }
+
+            if (data.sukses) {
+              Toast.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: data.sukses,
+              }).then(function(){
+                window.location.replace("<?php echo base_url()?>admin/surat/surat_packing_ubah/"+data.nomor);
+              });
+            }
+            
+          },
+          error: function(data){
+            console.log(data.responseText);
+            // Toast.fire({
+            //   type: 'warning',
+            //   title: 'Perhatian!',
+            //   text: data.responseText
+            // });
+
+          } 
+        });
+      }
+    });
+
+    function edit_detail_packing(id) {
+      $.getJSON('<?php echo base_url('admin/surat/get_by_id_packing/') ?>'+id+'', function(data){
+          if(data){
+              $('#edit-id').val(data.id);
+              $('#edit-kode').val(data.kode);
+              $('#edit-nama').val(data.nama);
+              $('#edit-jumlah').val(data.jumlah);
+              $('#edit-satuan').val(data.satuan);
+              $('#edit-keterangan').val(data.keterangan);
+              
+              $("#modal-edit").modal("show");
+          }
+      });
+    }
+
+    $('#edit-simpan').click(function(){
+        $('#edit-pilihan').val('simpan');
+        $('#form-edit').submit();
+    });
+
+    $('#edit-hapus').click(function(){
+        var result = confirm("Are you sure?");
+        if (result) {
+            $('#edit-pilihan').val('hapus');
+            $('#form-edit').submit();
+        }
+    });
+
+    $('#form-edit').submit(function(e){
+        const Toast = Swal.mixin({
+          toast: false,
+          position: 'center',
+          showConfirmButton: false,
+          // confirmButtonColor: '#86ccca',
+          timer: 3000,
+          timerProgressBar: false,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+        e.preventDefault();
+
+        var id = document.getElementById('edit-id').value;
+        var pilihan = document.getElementById('edit-pilihan').value;
+        var kode = document.getElementById('edit-kode').value;
+        var nama = document.getElementById('edit-nama').value;
+        var jumlah = document.getElementById('edit-jumlah').value;
+        var satuan = document.getElementById('edit-satuan').value;
+        var keterangan = document.getElementById('edit-keterangan').value;
+        var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+        csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+        $.ajax({
+            url:"<?php echo base_url()?>admin/surat/detail_surat_packing_ubah",
+            method:"POST",
+            dataType: 'JSON',
+            data:{ id: id, pilihan: pilihan, kode: kode, nama: nama, jumlah: jumlah, satuan: satuan, keterangan: keterangan, [csrfName]: csrfHash },
+            success:function(data)  {  
+            // console.log(data);
+            if (data.validasi) {
+              Toast.fire({
+                icon: 'error',
+                title: 'Perhatian!',
+                text: data.validasi
+              })
+            }
+
+            if (data.sukses) {
+              Toast.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: data.sukses,
+              }).then(function(){
+                window.location.replace("<?php echo base_url()?>admin/surat/surat_packing_ubah/"+data.nomor);
+              });
+            }
+            
+            },
+            error: function(data){
+              console.log(data.responseText);
+              // Toast.fire({
+              //   type: 'warning',
+              //   title: 'Perhatian!',
+              //   text: data.responseText
+              // });
+
+            } 
+        });
+    });
+
+    // barang masuk row
+    $('#add_produk').click(function(){
+      const Toast = Swal.mixin({
+        toast: false,
+        position: 'center',
+        showConfirmButton: false,
+        // confirmButtonColor: '#86ccca',
+        timer: 3000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+      var kode = $('#in_kode').val();
+      var nama = $('#in_nama').val();
+      var qty  = $('#in_qty').val();
+      var satuan = $('#in_satuan').val();
+      var keterangan = $('#in_keterangan').val();
+
+      if (kode == '' || nama == '' || qty == '' || satuan == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Perhatian!',
+          text: 'Barang masih kosong!. Silahkan diisi!'
+        })
+      }else if(qty == 0){
+        Toast.fire({
+          icon: 'error',
+          title: 'Perhatian!',
+          text: 'Qty Produk masih kosong!. Silahkan diisi!'
+        })
+      }else{
+        var html = '<tr>';
+        html += '<td> <input type="hidden" id="dt_kode[]" name="dt_kode[]" value="'+kode+'">'+kode+'</td>'; 
+        html += '<td> <input type="hidden" id="dt_nama[]" name="dt_nama[]" value="'+nama+'"> '+nama+' </td>'; 
+        html += '<td> <input type="hidden" id="dt_qty[]" name="dt_qty[]" value="'+qty+'">'+qty+'</td>';
+        html += '<td> <input type="hidden" id="dt_satuan[]" name="dt_satuan[]" value="'+satuan+'">'+satuan+'</td>';
+        html += ' <td> <input type="hidden" id="dt_keterangan[]" name="dt_keterangan[]" value="'+keterangan+'">'+keterangan+'</td>';
+        html +=  '<td> <button type="hidden" class="btn btn-danger btn-sm" id="hps_row">Hapus</button> </td> </tr>';
+        
+        $('tbody').append(html);
+
+        // clear input data
+        $('#in_kode').val('');
+        $('#in_nama').val('');
+        $('#in_satuan').val('');
+        $('#in_keterangan').val('');
+        $('#in_qty').val('');
+      }
+    });
+
+    $('#importdata').click(function(e){
+      const Toast = Swal.mixin({
+        toast: false,
+        position: 'center',
+        showConfirmButton: true,
+        // confirmButtonColor: '#86ccca',
+        // timer: 3000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+      e.preventDefault();
+
+      var import_data = document.getElementById('import_data');
+      var nomor_pl = document.getElementById('nomor-surat-packing');
+      var JS_import = JSON.stringify(import_data.files[0]);
+      var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+      csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+      // alert(panjangArray);
+      
+      if(import_data.files['length'] == 0){
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. File Import Data harus diisi!'
+        });
+      }else{
+        var formData = new FormData();
+        formData.append('import_data', $('#import_data')[0].files[0]);      
+        formData.append('nomor', $('#nomor-surat-packing').val());      
+        formData.append([csrfName], csrfHash); 
+
+        $("#modal-proses").modal('show');
+        $.ajax({ 
+          url:"<?php echo base_url()?>admin/surat/proses_impor_pl",
+          method:"post",
+          dataType: 'JSON', 
+          // data:{img: JS_image,vendor:vendor, penerima:penerima, sku: sku, kategori: kategori, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash},
+          data: formData,
+          contentType: false,
+          processData: false,
+          success:function(data)  {  
+            // alert(data);
+            if (data.validasi) {
+              $("#modal-proses").modal('hide');
+              Toast.fire({
+                icon: 'error',
+                title: 'Perhatian!',
+                text: data.validasi
+              })
+            }
+
+            if (data.sukses) {
+              $("#modal-proses").modal('hide');
+              Toast.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: data.sukses,
+              }).then(function(){
+                window.location.replace("<?php echo base_url()?>admin/surat/surat_packing_ubah/"+data.nomor);
+              });
+            }
+            
+          },
+          error: function(data){
+            console.log(data.responseText);
+            // Toast.fire({
+            //   type: 'warning',
+            //   title: 'Perhatian!',
+            //   text: data.responseText
+            // });
+
+          } 
+        });
+      }
+    });
+
+    $(document).on('click', '#hps_row', function(){
+        $(this).closest('tr').remove();
+    });
+
+    //Initialize Select2 Elements
+    $(document).ready( function () {
+      $("#date").datepicker({
+        format: "yyyy/mm/dd"
+      });
+    });
+
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+  </script>
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>
