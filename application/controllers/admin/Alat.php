@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+// PDF to Image
+use Spatie\PdfToImage\Pdf;
+use Org_Heigl\Ghostscript\Ghostscript;
+
+// OCR Image to Text
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
 // Include librari PhpSpreadsheet
@@ -450,16 +455,17 @@ class Alat extends CI_Controller {
 				$sheet->setCellValue('D1', 'kurir');
 				$sheet->setCellValue('E1', 'ongkir');
 				$sheet->setCellValue('F1', 'nama_penerima');
-				$sheet->setCellValue('G1', 'provinsi');
-				$sheet->setCellValue('H1', 'kota');
-				$sheet->setCellValue('I1', 'hp_penerima');
-				$sheet->setCellValue('J1', 'nama_produk');
-				$sheet->setCellValue('K1', 'jumlah');
-				$sheet->setCellValue('L1', 'total_harga');
-				$sheet->setCellValue('M1', 'metode_pembayaran');
-				$sheet->setCellValue('N1', 'status');
-				$sheet->setCellValue('O1', 'total_jual');
-				$sheet->setCellValue('P1', 'sku');
+				$sheet->setCellValue('G1', 'alamat');
+				$sheet->setCellValue('H1', 'provinsi');
+				$sheet->setCellValue('I1', 'kota');
+				$sheet->setCellValue('J1', 'hp_penerima');
+				$sheet->setCellValue('K1', 'nama_produk');
+				$sheet->setCellValue('L1', 'jumlah');
+				$sheet->setCellValue('M1', 'total_harga');
+				$sheet->setCellValue('N1', 'metode_pembayaran');
+				$sheet->setCellValue('O1', 'status');
+				$sheet->setCellValue('P1', 'total_jual');
+				$sheet->setCellValue('Q1', 'sku');
 
 		        // set Row
 		        $rowCount = 2;
@@ -467,6 +473,15 @@ class Alat extends CI_Controller {
 					$data['export'] = $this->Keluar_model->get_all_detail_by_resi($val_store['nomor_resi']);
 			       	
 					foreach ($data['export'] as $list) {
+						// Ubah Data Pesanan apabila Pesanan ditemukan berdasarkan Nomor Resi
+						$ubahData = array(	'nama_penerima' => $val_store['nama_penerima'],
+											'hp_penerima'	=> $val_store['hp_penerima'],
+						);
+
+						$this->Keluar_model->update($list->nomor_pesanan, $ubahData);
+
+						write_log();
+
 			        	// Nomor Pesanan
 				        if (is_numeric($list->nomor_pesanan)) {
 
@@ -512,35 +527,36 @@ class Alat extends CI_Controller {
 			            $sheet->SetCellValue('D' . $rowCount, $list->nama_kurir);
 			            $sheet->SetCellValue('E' . $rowCount, $list->ongkir);
 			            $sheet->SetCellValue('F' . $rowCount, $val_store['nama_penerima']);
-			            $sheet->SetCellValue('G' . $rowCount, $list->provinsi);
-			            $sheet->SetCellValue('H' . $rowCount, $list->kabupaten);
+			            $sheet->SetCellValue('G' . $rowCount, $list->alamat_penerima);
+			            $sheet->SetCellValue('H' . $rowCount, $list->provinsi);
+			            $sheet->SetCellValue('I' . $rowCount, $list->kabupaten);
 			            // Nomor HP
 			            if (is_numeric($val_store['hp_penerima'])) {
 
 				          // See http://excelunplugged.com/2014/05/19/15-digit-limit-in-excel/
 				          if (strlen($val_store['hp_penerima']) < 15) {
-				            $sheet->getStyle('I' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
-				            $sheet->SetCellValue('I' . $rowCount, $val_store['hp_penerima']);
+				            $sheet->getStyle('J' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+				            $sheet->SetCellValue('J' . $rowCount, $val_store['hp_penerima']);
 				          }else{
-				            $sheet->getStyle('I' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+				            $sheet->getStyle('J' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 				            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 				            // enough.
 				            // $formatted_value .= ' ';
 				            // $sheet->SetCellValue('I' . $rowCount, "'".$formatted_value);
-				            $sheet->setCellValueExplicit('I' . $rowCount, $val_store['hp_penerima'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				            $sheet->setCellValueExplicit('J' . $rowCount, $val_store['hp_penerima'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				          }
 				        }else{
-				          $sheet->getStyle('I' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-				          $sheet->SetCellValue('I' . $rowCount, $val_store['hp_penerima']);
+				          $sheet->getStyle('J' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+				          $sheet->SetCellValue('J' . $rowCount, $val_store['hp_penerima']);
 				        }
 
-			            $sheet->SetCellValue('J' . $rowCount, $list->nama_produk);
-			            $sheet->SetCellValue('K' . $rowCount, $list->qty);
-			            $sheet->SetCellValue('L' . $rowCount, $list->harga);
-			            $sheet->SetCellValue('M' . $rowCount, 'Transfer');
-			            $sheet->SetCellValue('N' . $rowCount, 'Terkirim');
-			            $sheet->SetCellValue('O' . $rowCount, $list->total_harga);
-			            $sheet->SetCellValue('P' . $rowCount, $list->sub_sku);
+			            $sheet->SetCellValue('K' . $rowCount, $list->nama_produk);
+			            $sheet->SetCellValue('L' . $rowCount, $list->qty);
+			            $sheet->SetCellValue('M' . $rowCount, $list->harga);
+			            $sheet->SetCellValue('N' . $rowCount, 'Transfer');
+			            $sheet->SetCellValue('O' . $rowCount, 'Terkirim');
+			            $sheet->SetCellValue('P' . $rowCount, $list->total_harga);
+			            $sheet->SetCellValue('Q' . $rowCount, $list->sub_sku);
 			            $rowCount++;
 			        }
 		        }
@@ -581,6 +597,17 @@ class Alat extends CI_Controller {
 		$config['max_size']             = 2000;
 
 	    return $config;
+	}
+
+	// Convert PDF to Image
+
+	public function convertpdf()
+	{
+		is_create();
+
+		$this->data['page_title'] = $this->data['module'].' Convert PDF to Image';
+
+	    $this->load->view('back/alat/convertpdf', $this->data);
 	}
 }
 
