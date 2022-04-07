@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   function write_log()
   {
-    $CI =& get_instance();
+    $CI =& get_instance(); 
 
     $data = array(
       'content'    => str_replace(';', '', $CI->db->last_query()),

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Surat Jalan</title>
+  <title>Surat Packing List Alamat</title>
   <style type="text/css">
     table {
       border-collapse: collapse;

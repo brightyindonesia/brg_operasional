@@ -314,13 +314,13 @@ class Alat extends CI_Controller {
             	if (count($store_nama_hp[$i]) > 0) {
 					if ($i == count($validasiOCR) - 1) {
 						if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL && $validasiOCR[$i]['resi'] != NULL) {
-							$nama .= $store_nama_hp[$i][0];
+							$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
 							$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]);
 							$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi']));	
 						}
 					}else{
 						if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL && $validasiOCR[$i]['resi'] != NULL) {
-							$nama .= $store_nama_hp[$i][0].",";
+							$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
 							$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]).",";
 							$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi'])).",";	
 						}
@@ -608,6 +608,106 @@ class Alat extends CI_Controller {
 		$this->data['page_title'] = $this->data['module'].' Convert PDF to Image';
 
 	    $this->load->view('back/alat/convertpdf', $this->data);
+	}
+
+	public function proses_convertpdf()
+	{
+		// Ambil Data
+		$i = $this->input;
+
+		$config['upload_path']          = './uploads/pdf/';
+		$config['allowed_types']        = 'pdf';
+		$config['file_name']			= 'Convert_PDF_To_Image_'.date('Y_m_d_').time();
+		$config['max_size']             = 10000;
+		$this->load->library('upload', $config);
+		if (!$this->upload->do_upload('pdf'))
+		{
+				$pesan = strip_tags($this->upload->display_errors());
+				$msg = array(	'validasi'	=> $pesan
+		    			);
+		    	echo json_encode($msg);
+		}else{
+			// Upload Gambar
+			date_default_timezone_set("Asia/Jakarta");
+			$now = date('Y-m-d H:i:s');
+			$pdf_data = $this->upload->data();
+
+			$pdf = new Spatie\PdfToImage\Pdf($pdf_data['full_path']);
+			$jumlah_page = $pdf->getNumberOfPages();
+			$pdf->setOutputFormat('jpg')
+			->setResolution(1080)
+			->saveAllPagesAsImages("./uploads/hasil_convertpdf/", "Hasil_".$pdf_data['raw_name']."_");
+
+			// Simpan ke Array nama file PDF dan JPG
+			$val_jpg = '';
+
+			for ($i = 1; $i <= $jumlah_page; $i++) {
+				if ($i == $jumlah_page) {
+					$val_jpg .= "Hasil_".$pdf_data['raw_name']."_".$i.".jpg";
+				}else{
+					$val_jpg .= "Hasil_".$pdf_data['raw_name']."_".$i.".jpg,";
+				}
+			}
+
+			// Hapus Gambar Apabila sudah di CONVERT ke TEXT
+			$dir        = "./uploads/pdf/".$pdf_data['orig_name'];
+
+	        if(is_file($dir))
+	        {
+	          unlink($dir);
+	        }
+
+			$msg  = array( 	'sukses'	=> 'PDF berhasil di Convert ke JPG!',
+							'pdf'		=> $pdf_data['raw_name'],
+    	    				'jpg'		=> $val_jpg,
+    		);
+    
+        	echo json_encode($msg);  
+
+			// echo print_r($store_convert);
+
+			// HASILNYA
+			// Array
+			// (
+			//     [file_name] => Convert_PDF_To_Image_2022_04_06_1649207760.pdf
+			//     [file_type] => application/pdf
+			//     [file_path] => C:/xampp74/htdocs/hadi/uploads/pdf/
+			//     [full_path] => C:/xampp74/htdocs/hadi/uploads/pdf/Convert_PDF_To_Image_2022_04_06_1649207760.pdf
+			//     [raw_name] => Convert_PDF_To_Image_2022_04_06_1649207760
+			//     [orig_name] => Convert_PDF_To_Image_2022_04_06_1649207760.pdf
+			//     [client_name] => BR TIKTOK 1.pdf
+			//     [file_ext] => .pdf
+			//     [file_size] => 6453.58
+			//     [is_image] => 
+			//     [image_width] => 
+			//     [image_height] => 
+			//     [image_type] => 
+			//     [image_size_str] => 
+			// )
+		}
+	}
+
+	public function compress_convertpdf($pdf, $jpg)
+	{
+		$ex_jpg = explode(",", $jpg);
+
+		$zip = new ZipArchive();
+			$zip_name = "Kompres_".$pdf.".zip"; // Zip name
+			$zip->open($zip_name,  ZipArchive::CREATE);
+			foreach ($ex_jpg as $val_jpg) {
+				$path = "./uploads/hasil_convertpdf/".$val_jpg;
+				if(file_exists($path)){
+					$zip->addFromString(basename($path), file_get_contents($path));
+					unlink($path);
+				}
+				else{
+					echo"File does not exist";
+				}	
+			}
+			$zip->close();
+	        header('Content-disposition: attachment; filename="'.$zip_name.'"');
+	        header('Content-type: application/zip');
+	        readfile($zip_name);
 	}
 }
 

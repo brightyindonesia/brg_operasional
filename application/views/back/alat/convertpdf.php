@@ -19,26 +19,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-sm-2">
-          <div class="box box-primary">
-            <div class="box-header with-border">
-              <h3 class="box-title">Jenis Gambar</h3>
-            </div>
-
-            <div class="box-body">
-              <div class="form-group">
-                <label>Pilih Jenis Gambar</label>
-                <select name="jenis"  id="jenis" class="form-control">
-                  <option value="png">PNG</option>
-                  <option value="jpg">JPG</option>
-                  <option value="jpeg">JPEG</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-10">
+        <div class="col-sm-12">
           <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title">Convert PDF to Image</h3>
@@ -95,7 +76,7 @@
       e.preventDefault();
       $("#modal-proses").modal('show');
       var pdf = document.getElementById('file_pdf');
-      var jenis = $('select[name=jenis] option').filter(':selected').val();
+      // var jenis = $('select[name=jenis] option').filter(':selected').val();
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
       csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       if(pdf.files['length'] == 0){
@@ -104,10 +85,12 @@
           title: 'Terjadi Kesalahan!. File PDF harus diisi!'
         });
       }else{
+        var formData = new FormData();
+
         // console.log(dataGambar);     
         formData.append([csrfName], csrfHash);
         formData.append('pdf', $('#file_pdf')[0].files[0]);   
-        formData.append('jenis', jenis);   
+        // formData.append('jenis', jenis);   
         $.ajax({ 
           url:"<?php echo base_url()?>admin/alat/proses_convertpdf",
           method:"post",
@@ -117,25 +100,25 @@
           processData: false,
           success:function(data)  {  
             // alert(data);
-            // if (data.validasi) {
-            //   $("#modal-proses").modal('hide');
-            //   Toast.fire({
-            //     icon: 'error',
-            //     title: 'Perhatian!',
-            //     text: data.validasi
-            //   })
-            // }
+            if (data.validasi) {
+              $("#modal-proses").modal('hide');
+              Toast.fire({
+                icon: 'error',
+                title: 'Perhatian!',
+                text: data.validasi
+              })
+            }
 
-            // if (data.sukses) {
-            //   $("#modal-proses").modal('hide');
-            //   Toast.fire({
-            //     icon: 'success',
-            //     title: 'Sukses!',
-            //     text: data.sukses,
-            //   }).then(function(){
-            //       window.open("<?php echo base_url() ?>admin/alat/export_data_ocr/"+data.filter+"/"+data.nama+"/"+data.hp+"/"+data.resi+"");
-            //   });
-            // }
+            if (data.sukses) {
+              $("#modal-proses").modal('hide');
+              Toast.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: data.sukses,
+              }).then(function(){
+                  window.open("<?php echo base_url() ?>admin/alat/compress_convertpdf/"+data.pdf+"/"+data.jpg+"");
+              });
+            }
             
           },
           error: function(data){
