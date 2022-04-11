@@ -734,7 +734,7 @@ class Keluar_model extends CI_Model {
     if ($toko != 'semua') {
       $this->db->where('penjualan.id_toko', $toko); 
     }
-    if ($resi == '' || $resi == NULL) {
+    if ($resi == '' || $resi == NULL || $resi == 'null') {
       $this->db->where('nomor_resi', ''); 
     }
     if ($status != 'semua') {

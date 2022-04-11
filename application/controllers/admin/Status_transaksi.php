@@ -298,6 +298,15 @@ public function __construct()
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID Status Transaksi' || $row->getCellAtIndex(1) != 'Nama Status Transaksi') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/status_transaksi');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_status_transaksi'			=> $row->getCellAtIndex(0),
 												'nama_status_transaksi'			=> $row->getCellAtIndex(1)

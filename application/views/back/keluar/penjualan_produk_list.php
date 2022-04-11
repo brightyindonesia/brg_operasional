@@ -480,6 +480,10 @@
     var status = document.getElementById("status").value;
     var periodik = document.getElementById("range-date").value;
 
+    if (resi == '') {
+      resi = 'null';
+    }
+
     window.open("<?php echo base_url() ?>admin/keluar/export_keluar_penjualan/"+trigger+"/"+kurir+"/"+toko+"/"+resi+"/"+status+"/"+periodik,+"_self");
   }
 

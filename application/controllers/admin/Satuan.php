@@ -304,6 +304,15 @@ class Satuan extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID Satuan' || $row->getCellAtIndex(1) != 'Nama Satuan') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/satuan');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_satuan'		=> $row->getCellAtIndex(0),
 												'nama_satuan'	=> $row->getCellAtIndex(1)

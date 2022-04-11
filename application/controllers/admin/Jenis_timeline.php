@@ -342,6 +342,15 @@ class Jenis_timeline extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID Jenis Timeline' || $row->getCellAtIndex(1) != 'Kode Jenis Timeline' || $row->getCellAtIndex(2) != 'Nama Jenis Timeline') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/jenis_timeline');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_jenis_timeline'			=> $row->getCellAtIndex(0),
 												'kode_jenis_timeline'		=> $row->getCellAtIndex(1),

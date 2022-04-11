@@ -189,166 +189,183 @@ class Alat extends CI_Controller {
 	    $resi = '';
 	    $indeks = 0;
 	    if(!empty($_FILES)){
-    	    foreach($_FILES['photo']['name'] as $value){
-    	        $_FILES['photo']['name']= $files['photo']['name'][$indeks];
-    	        $_FILES['photo']['type']= $files['photo']['type'][$indeks];
-    	        $_FILES['photo']['tmp_name']= $files['photo']['tmp_name'][$indeks];
-    	        $_FILES['photo']['error']= $files['photo']['error'][$indeks];
-    	        $_FILES['photo']['size']= $files['photo']['size'][$indeks]; 
-    	        
-        	    $config['upload_path']          = './uploads/ocr/';
-        		$config['allowed_types']        = 'jpg|png|jpeg';
-        		$config['file_name']			= 'Gambar_OCR_'.date('Y_m_d_').time();
-        		$config['max_size']             = 2000;
-        		
-    	        $this->upload->initialize($config);
-                $this->upload->do_upload('photo');
-                $dataInfo[] = $this->upload->data();
-                
-                $indeks++;
-    	    }
-    	    
-    	    foreach($dataInfo as $val_dataInfo){
-    	        // Mendeteksi OS yang digunakan
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        		    $ocr = new TesseractOCR(base_url('uploads/ocr/'.$val_dataInfo['file_name']));
-        	        $ocr->executable('C:\Program Files\Tesseract-OCR\tesseract.exe');
-        	        $ocr->lang('eng');
-        			$content = $ocr->run();
-        			$dataOCR[] = $content;
-        		} else {
-        		    $ocr = new TesseractOCR('/home/brighty/public_html/uploads/ocr/'.$val_dataInfo['file_name']);
-        	        $ocr->lang('eng');
-        			$content = $ocr->run();
-        			$dataOCR[] = $content;
-        		}
-        
-        		// Hapus Gambar Apabila sudah di CONVERT ke TEXT
-        		$dir        = "./uploads/ocr/".$val_dataInfo['file_name'];
-        
-                if(is_file($dir))
-                {
-                  unlink($dir);
-                }
-    	    }
-    		
-    		$i = 0;
-    	    foreach ($dataOCR as $valOCR) {
+	    	if (count($_FILES['photo']['name']) <= 50) {
+	    		foreach($_FILES['photo']['name'] as $value){
+	    	        $_FILES['photo']['name']= $files['photo']['name'][$indeks];
+	    	        $_FILES['photo']['type']= $files['photo']['type'][$indeks];
+	    	        $_FILES['photo']['tmp_name']= $files['photo']['tmp_name'][$indeks];
+	    	        $_FILES['photo']['error']= $files['photo']['error'][$indeks];
+	    	        $_FILES['photo']['size']= $files['photo']['size'][$indeks]; 
+	    	        
+	        	    $config['upload_path']          = './uploads/ocr/';
+	        		$config['allowed_types']        = 'jpg|png|jpeg';
+	        		$config['file_name']			= 'Gambar_OCR_'.date('Y_m_d_').time();
+	        		$config['max_size']             = 2000;
+	        		
+	    	        $this->upload->initialize($config);
+	                $this->upload->do_upload('photo');
+	                $dataInfo[] = $this->upload->data();
+	                
+	                $indeks++;
+	    	    }
+	    	    
+	    	    foreach($dataInfo as $val_dataInfo){
+	    	        // Mendeteksi OS yang digunakan
+	                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+	        		    $ocr = new TesseractOCR(base_url('uploads/ocr/'.$val_dataInfo['file_name']));
+	        	        $ocr->executable('C:\Program Files\Tesseract-OCR\tesseract.exe');
+	        	        $ocr->lang('eng');
+	        			$content = $ocr->run();
+	        			$dataOCR[] = $content;
+	        		} else {
+	        		    $ocr = new TesseractOCR('/home/brighty/public_html/uploads/ocr/'.$val_dataInfo['file_name']);
+	        	        $ocr->lang('eng');
+	        			$content = $ocr->run();
+	        			$dataOCR[] = $content;
+	        		}
+	        
+	        		// Hapus Gambar Apabila sudah di CONVERT ke TEXT
+	        		$dir        = "./uploads/ocr/".$val_dataInfo['file_name'];
+	        
+	                if(is_file($dir))
+	                {
+	                  unlink($dir);
+	                }
+	    	    }
+	    		
+	    		$i = 0;
+	    	    foreach ($dataOCR as $valOCR) {
 
-    	    	$pecahanOCR[] = preg_split('/\r\n|\r|\n/', $valOCR);
+	    	    	$pecahanOCR[] = preg_split('/\r\n|\r|\n/', $valOCR);
 
-            	foreach ($pecahanOCR as $key => $valPecahan) {
-            		foreach ($valPecahan as $keyVal => $val) {
-            			if (substr($valPecahan[$keyVal], 0, 8) === "Penerima") {
-            				$validasiOCR[$i]['penerima'] = $val;
-            			}
+	            	foreach ($pecahanOCR as $key => $valPecahan) {
+	            		foreach ($valPecahan as $keyVal => $val) {
+	            			if (substr($valPecahan[$keyVal], 0, 8) === "Penerima") {
+	            				$validasiOCR[$i]['penerima'] = $val;
+	            			}
 
-            			if (substr($valPecahan[$keyVal], 0, 2) === "JX" || substr($valPecahan[$keyVal], 0, 2) === "Jx" || substr($valPecahan[$keyVal], 0, 2) === "jX" || substr($valPecahan[$keyVal], 0, 2) === "jx") {
-            				$validasiOCR[$i]['resi'] = $val;
-            			}
-            		}
-            	}
+	            			if (substr($valPecahan[$keyVal], 0, 2) === "JX" || substr($valPecahan[$keyVal], 0, 2) === "Jx" || substr($valPecahan[$keyVal], 0, 2) === "jX" || substr($valPecahan[$keyVal], 0, 2) === "jx") {
+	            				$validasiOCR[$i]['resi'] = $val;
+	            			}
+	            		}
+	            	}
 
-            	$i++;
-            }
-            
-            // echo print_r($validasiOCR)."<br>";
-        // ===================== CARA AGAR BER ARRAY ===================
-        //     for ($main = 0; $main < count($pecahanOCR) ; $main++) {
-        //     	for ($child = 0; $child < count($pecahanOCR[$main]); $child++) {
-        //     		if (substr($pecahanOCR[$main][$child], 0, 8) === "Penerima") {
-        //     			// MENGAMBIL NILAI PENERIMA DAN NOMOR HP
-    				// 	// echo str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child])."<br>";
-    				// 	$store_nama_hp[$main] = explode(",", str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child]));
-    
-    				// 	$fixOCR[$main] = array( 'nama' => $store_nama_hp[$main][0],
-    				// 							'hp'	=> str_replace(" ", "", $store_nama_hp[$main][1])
-    				// 	);
-    				// }	
-    
-    				// if (substr($pecahanOCR[$main][$child], 0, 2) === "JX" || substr($pecahanOCR[$main][$child], 0, 2) === "Jx" || substr($pecahanOCR[$main][$child], 0, 2) === "jX" || substr($pecahanOCR[$main][$child], 0, 2) === "jx") {
-    				// 	// echo strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]))."<br>";
-    				// 	$fixOCR[$main]['resi'] = strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]));
-    				// }
-        //     	}
-        //     }
-    
-    
-        // ==================== CARA AGAR TIDAK BER ARRAY ===================
-        //     for ($main = 0; $main < count($pecahanOCR) ; $main++) {
-        //     	for ($child = 0; $child < count($pecahanOCR[$main]); $child++) {
-        //     		if (substr($pecahanOCR[$main][$child], 0, 8) === "Penerima") {
-        //     			// MENGAMBIL NILAI PENERIMA DAN NOMOR HP
-    				// 	// echo str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child])."<br>";
-    				// 	$store_nama_hp[$main] = explode(",", str_replace(array("Penerima : ", "Penerima :"), "", $pecahanOCR[$main][$child]));
-    					
-    				// 	if (count($store_nama_hp[$main]) > 0) {
-	    			// 		if ($main == count($pecahanOCR) - 1) {
-	    			// 			$nama .= $store_nama_hp[$main][0];
-	    			// 			$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$main][1]);
-	    			// 		}else{
-	    			// 			$nama .= $store_nama_hp[$main][0].",";
-	    			// 			$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$main][1]).",";
-	    			// 		}
-	    			// 		// $fixOCR[$main] = array( 'nama' => $store_nama_hp[$main][0],
-	    			// 		// 						'hp'	=> str_replace(" ", "", $store_nama_hp[$main][1])
-	    			// 		// );
+	            	$i++;
+	            }
+	            
+	            // echo print_r($validasiOCR)."<br>";
+	        // ===================== CARA AGAR BER ARRAY ===================
+	        //     for ($main = 0; $main < count($pecahanOCR) ; $main++) {
+	        //     	for ($child = 0; $child < count($pecahanOCR[$main]); $child++) {
+	        //     		if (substr($pecahanOCR[$main][$child], 0, 8) === "Penerima") {
+	        //     			// MENGAMBIL NILAI PENERIMA DAN NOMOR HP
+	    				// 	// echo str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child])."<br>";
+	    				// 	$store_nama_hp[$main] = explode(",", str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child]));
+	    
+	    				// 	$fixOCR[$main] = array( 'nama' => $store_nama_hp[$main][0],
+	    				// 							'hp'	=> str_replace(" ", "", $store_nama_hp[$main][1])
+	    				// 	);
+	    				// }	
+	    
+	    				// if (substr($pecahanOCR[$main][$child], 0, 2) === "JX" || substr($pecahanOCR[$main][$child], 0, 2) === "Jx" || substr($pecahanOCR[$main][$child], 0, 2) === "jX" || substr($pecahanOCR[$main][$child], 0, 2) === "jx") {
+	    				// 	// echo strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]))."<br>";
+	    				// 	$fixOCR[$main]['resi'] = strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]));
+	    				// }
+	        //     	}
+	        //     }
+	    
+	    
+	        // ==================== CARA AGAR TIDAK BER ARRAY ===================
+	        //     for ($main = 0; $main < count($pecahanOCR) ; $main++) {
+	        //     	for ($child = 0; $child < count($pecahanOCR[$main]); $child++) {
+	        //     		if (substr($pecahanOCR[$main][$child], 0, 8) === "Penerima") {
+	        //     			// MENGAMBIL NILAI PENERIMA DAN NOMOR HP
+	    				// 	// echo str_replace(array("Penerima : "), "", $pecahanOCR[$main][$child])."<br>";
+	    				// 	$store_nama_hp[$main] = explode(",", str_replace(array("Penerima : ", "Penerima :"), "", $pecahanOCR[$main][$child]));
+	    					
+	    				// 	if (count($store_nama_hp[$main]) > 0) {
+		    			// 		if ($main == count($pecahanOCR) - 1) {
+		    			// 			$nama .= $store_nama_hp[$main][0];
+		    			// 			$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$main][1]);
+		    			// 		}else{
+		    			// 			$nama .= $store_nama_hp[$main][0].",";
+		    			// 			$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$main][1]).",";
+		    			// 		}
+		    			// 		// $fixOCR[$main] = array( 'nama' => $store_nama_hp[$main][0],
+		    			// 		// 						'hp'	=> str_replace(" ", "", $store_nama_hp[$main][1])
+		    			// 		// );
 
-	    			// 		if (substr($pecahanOCR[$main][$child], 0, 2) === "JX" || substr($pecahanOCR[$main][$child], 0, 2) === "Jx" || substr($pecahanOCR[$main][$child], 0, 2) === "jX" || substr($pecahanOCR[$main][$child], 0, 2) === "jx") {
-		    		// 			// echo strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]))."<br>";
-		    		// 			// $fixOCR[$main]['resi'] = strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]));
-		    		// 			if ($main == count($pecahanOCR) - 1) {
-		    		// 				$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $pecahanOCR[$main][$child]));
-		    		// 			}else{
-		    		// 				$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $pecahanOCR[$main][$child])).",";
-		    		// 			}
-		    		// 		}	
-    				// 	}
-    				// }
-        //     	}
-        //     }
+		    			// 		if (substr($pecahanOCR[$main][$child], 0, 2) === "JX" || substr($pecahanOCR[$main][$child], 0, 2) === "Jx" || substr($pecahanOCR[$main][$child], 0, 2) === "jX" || substr($pecahanOCR[$main][$child], 0, 2) === "jx") {
+			    		// 			// echo strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]))."<br>";
+			    		// 			// $fixOCR[$main]['resi'] = strtoupper(str_replace(array(" ", ",", ","), "", $pecahanOCR[$main][$child]));
+			    		// 			if ($main == count($pecahanOCR) - 1) {
+			    		// 				$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $pecahanOCR[$main][$child]));
+			    		// 			}else{
+			    		// 				$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $pecahanOCR[$main][$child])).",";
+			    		// 			}
+			    		// 		}	
+	    				// 	}
+	    				// }
+	        //     	}
+	        //     }
 
-        // ==================== CARA BARU AGAR TIDAK BER ARRAY ===================
-            for ($i = 0; $i < count($validasiOCR); $i++) {
-            	$store_nama_hp[$i] = explode(",", str_replace(array("Penerima : ", "Penerima :"), "", $validasiOCR[$i]['penerima']));
-            	if (count($store_nama_hp[$i]) > 0) {
-					if ($i == count($validasiOCR) - 1) {
-						if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL && $validasiOCR[$i]['resi'] != NULL) {
-							$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
-							$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]);
-							$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi']));	
-						}
-					}else{
-						if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL && $validasiOCR[$i]['resi'] != NULL) {
-							$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
-							$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]).",";
-							$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi'])).",";	
-						}
-					}	
-				}
-            }
+	        // ==================== CARA BARU AGAR TIDAK BER ARRAY ===================
+	            for ($i = 0; $i < count($validasiOCR); $i++) {
+	            	$store_nama_hp[$i] = explode(",", str_replace(array("Penerima : ", "Penerima :"), "", $validasiOCR[$i]['penerima']));
+	            	if (count($store_nama_hp[$i]) > 0  && count($store_nama_hp[$i]) == 2) {
+						if ($i == count($validasiOCR) - 1) {
+							if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL  && $validasiOCR[$i]['resi'] != NULL) {
+								$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
+								$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]);
+								$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi']));	
+							}
+						}else{
+							if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL  && $validasiOCR[$i]['resi'] != NULL) {
+								$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]).",";
+								$hp .= str_replace(array("(", "+", ")", "#"), "", $store_nama_hp[$i][1]).",";
+								$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi'])).",";	
+							}
+						}	
+					}
+	            }
 
-    	   // echo $nama."<br>";
-    	   // echo $hp."<br>";
-    	   // echo $resi."<br>";
-    
-    	    $msg  = array( 	'sukses'	=> 'Gambar berhasil di Convert ke Teks!',
-    	    				'nama'		=> $nama,
-    	    				'hp'		=> $hp,
-    	    				'resi'		=> $resi,
-    	    				'filter'	=> $this->input->post('filter')
-    		);
-    
-        	echo json_encode($msg);   
+	            // echo print_r($store_nama_hp);
+
+	    	   // echo $nama."<br>";
+	    	   // echo $hp."<br>";
+	    	   // echo $resi."<br>";
+	    
+	    	    $msg  = array( 	'sukses'	=> 'Gambar berhasil di Convert ke Teks!',
+	    	    				'nama'		=> $nama,
+	    	    				'hp'		=> $hp,
+	    	    				'resi'		=> $resi,
+	    	    				'filter'	=> $this->input->post('filter')
+	    		);
+	    
+	        	echo json_encode($msg);	
+	    	}else{
+	    		$msg  = array( 	'validasi'	=> 'Batas Gambar yang bisa diconvert hanya 50!'
+	    		);
+	    
+	        	echo json_encode($msg);	
+	    	}   
 	    }
 	}
 
-	public function export_data_ocr($filter,$nama, $hp, $resi)
+	public function export_data_ocr()
 	{
 		$storeExport = array();
-		$nama = explode(",", str_replace("%20", " ", $nama));
-		$hp = explode(",", str_replace("%20", " ", $hp));
-		$resi = explode(",", $resi);
+		// $nama = explode(",", str_replace("%20", " ", $nama));
+		// $hp = explode(",", str_replace("%20", " ", $hp));
+		// $resi = explode(",", $resi);
+		$filter = $this->uri->segment(4);
+		$nama = explode(",", str_replace("%20", " ", $this->uri->segment(5)));
+		$hp = explode(",", str_replace("%20", " ", $this->uri->segment(6)));
+		$resi = explode(",", $this->uri->segment(7));
+		
+		// echo print_r($nama)."<br>";
+		// echo print_r($hp)."<br>";
+		// echo print_r($resi)."<br>";
 
 		if ($filter == 'no') {
 			if (count($nama) == count($hp) && count($hp) == count($resi) && count($resi) == count($nama)) {
@@ -358,7 +375,7 @@ class Alat extends CI_Controller {
 													'nomor_resi'	=> $resi[$main],
 					);
 				}
-				
+
 				$data['title']	= "Export Data Without Sync Database OCR_".date("H_i_s");			
 
 				// PHPOffice
@@ -470,17 +487,21 @@ class Alat extends CI_Controller {
 		        // set Row
 		        $rowCount = 2;
 		        foreach ($storeExport as $val_store) {
-					$data['export'] = $this->Keluar_model->get_all_detail_by_resi($val_store['nomor_resi']);
+		        	if ($val_store['nomor_resi'] != '' || $val_store['nomor_resi'] != NULL) {
+		        		$data['export'] = $this->Keluar_model->get_all_detail_by_resi($val_store['nomor_resi']);	
+		        	}
 			       	
 					foreach ($data['export'] as $list) {
 						// Ubah Data Pesanan apabila Pesanan ditemukan berdasarkan Nomor Resi
-						$ubahData = array(	'nama_penerima' => $val_store['nama_penerima'],
+						if ($val_store['nama_penerima'] != '' && $val_store['hp_penerima'] != '') {
+							$ubahData = array(	'nama_penerima' => $val_store['nama_penerima'],
 											'hp_penerima'	=> $val_store['hp_penerima'],
-						);
+							);
 
-						$this->Keluar_model->update($list->nomor_pesanan, $ubahData);
+							$this->Keluar_model->update($list->nomor_pesanan, $ubahData);
 
-						write_log();
+							write_log();	
+						}
 
 			        	// Nomor Pesanan
 				        if (is_numeric($list->nomor_pesanan)) {
@@ -635,7 +656,7 @@ class Alat extends CI_Controller {
 			$pdf = new Spatie\PdfToImage\Pdf($pdf_data['full_path']);
 			$jumlah_page = $pdf->getNumberOfPages();
 			$pdf->setOutputFormat('jpg')
-			->setResolution(1080)
+			->setResolution(720)
 			->saveAllPagesAsImages("./uploads/hasil_convertpdf/", "Hasil_".$pdf_data['raw_name']."_");
 
 			// Simpan ke Array nama file PDF dan JPG
@@ -658,8 +679,8 @@ class Alat extends CI_Controller {
 	        }
 
 			$msg  = array( 	'sukses'	=> 'PDF berhasil di Convert ke JPG!',
-							'pdf'		=> $pdf_data['raw_name'],
-    	    				'jpg'		=> $val_jpg,
+							'jpg'		=> $val_jpg,
+							'pdf'		=> $pdf_data['raw_name']
     		);
     
         	echo json_encode($msg);  

@@ -481,6 +481,15 @@ class Keyword extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 1) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID' || $row->getCellAtIndex(1) != 'ID PROVINSI' || $row->getCellAtIndex(2) != 'PROVINSI' || $row->getCellAtIndex(3) != 'KOTA / KABUPATEN' || $row->getCellAtIndex(4) != 'KEYWORD') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/keyword/provinsi');
+							}
+						}
+
 						if ($numRow > 1) {
 							$dataProvinsi 	= array(	'id_keyword_provinsi'	=> $row->getCellAtIndex(1),
 														'nama_provinsi'			=> $row->getCellAtIndex(2),
@@ -936,6 +945,15 @@ class Keyword extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 1) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID' || $row->getCellAtIndex(1) != 'ID PRODUK' || $row->getCellAtIndex(2) != 'KEYWORD') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/keyword/produk');
+							}
+						}
+
 						if ($numRow > 1) {
 							$dataProduk 	= array(	'id_keyword_produk'	=> $row->getCellAtIndex(0),
 														'id_produk'			=> $row->getCellAtIndex(1),
@@ -1380,6 +1398,15 @@ class Keyword extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 1) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID' || $row->getCellAtIndex(1) != 'ID TOKO' || $row->getCellAtIndex(2) != 'KEYWORD') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/keyword/toko');
+							}
+						}
+
 						if ($numRow > 1) {
 							$dataToko 	= array(	'id_keyword_toko'	=> $row->getCellAtIndex(0),
 														'id_toko'			=> $row->getCellAtIndex(1),
@@ -1824,6 +1851,15 @@ class Keyword extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 1) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID' || $row->getCellAtIndex(1) != 'ID KURIR' || $row->getCellAtIndex(2) != 'KEYWORD') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/keyword/kurir');
+							}
+						}
+
 						if ($numRow > 1) {
 							$dataKurir 	= array(	'id_keyword_kurir'	=> $row->getCellAtIndex(0),
 														'id_kurir'			=> $row->getCellAtIndex(1),

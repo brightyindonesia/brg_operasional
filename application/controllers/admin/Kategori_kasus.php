@@ -336,6 +336,15 @@ class Kategori_kasus extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID Kategori Kasus' || $row->getCellAtIndex(1) != 'Nama Kategori Kasus') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/kategori_kasus');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_kategori_kasus'	=> $row->getCellAtIndex(0),
 												'nama_kategori_kasus'	=> $row->getCellAtIndex(1),

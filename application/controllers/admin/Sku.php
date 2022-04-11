@@ -332,6 +332,15 @@ class Sku extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID SKU' || $row->getCellAtIndex(1) != 'Kode SKU' || $row->getCellAtIndex(2) != 'Nama SKU') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/sku');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_sku'	=> $row->getCellAtIndex(0),
 												'kode_sku'	=> $row->getCellAtIndex(1),

@@ -341,6 +341,15 @@ class Kategori_po extends CI_Controller {
 				$numRow = 1;
 				if ($numSheet == 0) {
 					foreach ($sheet->getRowIterator() as $row) {
+						if ($numRow == 1) {
+							if ($row->getCellAtIndex(0) != 'ID Kategori PO' || $row->getCellAtIndex(1) != 'Kode Kategori PO' || $row->getCellAtIndex(2) != 'Nama Kategori PO') {
+								$reader->close();
+								unlink('uploads/'.$file['file_name']);
+								$this->session->set_flashdata('message', '<div class="alert alert-danger">Import data does not match!</div>');
+								redirect('admin/kategori_po');
+							}
+						}
+
 						if ($numRow > 1) {
 							$data 	= array(	'id_kategori_po'			=> $row->getCellAtIndex(0),
 												'kode_kategori_po'			=> $row->getCellAtIndex(1),
