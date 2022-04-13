@@ -12,7 +12,7 @@ class Masuk extends CI_Controller {
 		$this->data['module'] = 'Request For Quotation';
 		$this->data['module_po'] = 'Purchase Order';
 
-	    $this->load->model(array('Request_model', 'Vendor_model', 'Sku_model', 'Kategori_po_model', 'Bahan_kemas_model', 'Po_model', 'Penerima_model', 'Timeline_bahan_model'));
+	    $this->load->model(array('Request_model', 'Vendor_model', 'Sku_model', 'Kategori_po_model', 'Bahan_kemas_model', 'Po_model', 'Penerima_model', 'Timeline_bahan_model', 'Timeline_produksi_model'));
 
 	    $this->data['company_data']    				= $this->Company_model->company_profile();
 		$this->data['layout_template']    			= $this->Template_model->layout();
@@ -1015,6 +1015,7 @@ class Masuk extends CI_Controller {
 		$data      	= $this->Po_model->get_dasbor_list($vendor, $kategori, $status, $start, $end);
     	if (isset($data)) {	
         	$msg = array(	'total'	=> $data->total,
+			        		'belum'=> $data->belum,
 			        		'proses'=> $data->proses,
 			        		'sudah'	=> $data->sudah,
         			);
@@ -1159,9 +1160,10 @@ class Masuk extends CI_Controller {
 	{
 		is_delete();
 
-		$cek_timeline = $this->Timeline_bahan_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($id)));
+		$cek_timeline_produksi = $this->Timeline_produksi_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($id)));
+		$cek_timeline_bahan = $this->Timeline_bahan_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($id)));
 
-		if (!isset($cek_timeline)) {
+		if (!isset($cek_timeline_produksi) && !isset($cek_timeline_bahan)) {
 			$cariDetail = $this->Po_model->get_all_full_detail_by_id(base64_decode($id));
 			$no_request	= str_replace("PO","RFQ",base64_decode($id));
 			if(isset($cariDetail))
@@ -1200,8 +1202,15 @@ class Masuk extends CI_Controller {
 			  redirect('admin/masuk/purchase');
 			}	
 		}else{
-			$this->session->set_flashdata('message', '<div class="alert alert-danger">Cannot be deleted, because the Purchase Order data is already in the Timeline Bahan Produksi</div>');
-			  redirect('admin/masuk/purchase');
+			if (isset($cek_timeline_produksi)) {
+			  $this->session->set_flashdata('message', '<div class="alert alert-danger">Cannot be deleted, because the Purchase Order data is already in the Timeline Produksi</div>');
+			  redirect('admin/masuk/purchase');	
+			}
+
+			if (isset($cek_timeline_bahan)) {
+			  $this->session->set_flashdata('message', '<div class="alert alert-danger">Cannot be deleted, because the Purchase Order data is already in the Timeline Bahan Produksi</div>');
+			  redirect('admin/masuk/purchase');	
+			}			
 		}
 	}
 
@@ -1373,6 +1382,17 @@ class Masuk extends CI_Controller {
 					$numRow = 1;
 					if ($numSheet == 0) {
 						foreach ($sheetXLS->getRowIterator() as $row) {
+							if ($numRow == 1) {
+								if ($row->getCellAtIndex(0) != 'nomor_RFQ / RFQ' || $row->getCellAtIndex(1) != 'tgl_RFQ' || $row->getCellAtIndex(2) != 'id_kategori_RFQ' || $row->getCellAtIndex(3) != 'id_penerima' || $row->getCellAtIndex(4) != 'id_vendor' || $row->getCellAtIndex(5) != 'id_sku' || $row->getCellAtIndex(6) != 'remarks RFQ' || $row->getCellAtIndex(7) != 'ongkir' || $row->getCellAtIndex(8) != 'id_bahan_kemas' || $row->getCellAtIndex(9) != 'kuantitas_RFQ' || $row->getCellAtIndex(10) != 'harga_RFQ' || $row->getCellAtIndex(11) != 'diskon_RFQ' || $row->getCellAtIndex(12) != 'pajak_RFQ') {
+									$reader->close();
+									unlink('uploads/'.$file['file_name']);
+
+									$msg = array(	'validasi'		=> 'Data import tidak sesuai!',
+					    			);
+							    	echo json_encode($msg);
+								}
+							}
+
 							if ($numRow > 1) {
 								// Melakukan Storing ke Array (BELUM FIX)
 								$cells 	   = $row->getCells();
@@ -1885,6 +1905,17 @@ class Masuk extends CI_Controller {
 					$numRow = 1;
 					if ($numSheet == 1) {
 						foreach ($sheetXLS->getRowIterator() as $row) {
+							if ($numRow == 1) {
+								if ($row->getCellAtIndex(0) != 'nomor_po / PO' || $row->getCellAtIndex(1) != 'tgl_po' || $row->getCellAtIndex(2) != 'id_kategori_po' || $row->getCellAtIndex(3) != 'id_penerima' || $row->getCellAtIndex(4) != 'id_vendor' || $row->getCellAtIndex(5) != 'id_sku' || $row->getCellAtIndex(6) != 'remarks po' || $row->getCellAtIndex(7) != 'ongkir' || $row->getCellAtIndex(8) != 'id_bahan_kemas' || $row->getCellAtIndex(9) != 'kuantitas_po' || $row->getCellAtIndex(10) != 'harga_po' || $row->getCellAtIndex(11) != 'diskon_po' || $row->getCellAtIndex(12) != 'pajak_po') {
+									$reader->close();
+									unlink('uploads/'.$file['file_name']);
+
+									$msg = array(	'validasi'		=> 'Data import tidak sesuai!',
+					    			);
+							    	echo json_encode($msg);
+								}
+							}
+
 							if ($numRow > 1) {
 								// Melakukan Storing ke Array (BELUM FIX)
 								$cells 	   = $row->getCells();
@@ -1935,13 +1966,10 @@ class Masuk extends CI_Controller {
 							{
 							  $row_bahan = $this->Bahan_kemas_model->get_by_id($val_po->id_bahan_kemas);
 
-							  $msg_err .= 'Nomor PO <b>'.$val_store['no_po'].'</b> dan Produk <b>'.$row_bahan->nama_bahan_kemas.' ('.$row_bahan->kode_sku_bahan_kemas.')</b> telah dihapus dari <b>Data PO</b> sebanyak <b>'.count($cek_po).'</b>. </br>';
+							  $cek_timeline_produksi = $this->Timeline_produksi_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($val_po->nomor_po)));
+							  $cek_timeline_bahan = $this->Timeline_bahan_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($val_po->nomor_po)));
 
-							  $validasi++;
-
-							  $cek_timeline = $this->Timeline_bahan_model->get_all_by_timeline_row(str_replace("PO","TML", base64_decode($id)));
-
-							  if (!isset($cek_timeline)) {
+							  if (!isset($cek_timeline_produksi) && !isset($cek_timeline_bahan)) {
 								$cariDetail = $this->Po_model->get_all_full_detail_by_id($val_po->no_po);
 								$no_request	= str_replace("PO","RFQ",$val_po->no_po);
 								if(isset($cariDetail))
@@ -1962,7 +1990,21 @@ class Masuk extends CI_Controller {
 								  $this->Po_model->delete($val_po->no_po);
 
 								  write_log();
+
+								  $msg_err .= 'Nomor PO <b>'.$val_store['no_po'].'</b> dan Produk <b>'.$row_bahan->nama_bahan_kemas.' ('.$row_bahan->kode_sku_bahan_kemas.')</b> telah dihapus dari <b>Data PO</b> sebanyak <b>'.count($cek_po).'</b>. </br>';
+
+								  $validasi++;
 								}
+							  }else{
+							  	if (isset($cek_timeline_produksi)) {
+							  		$msg_err .= 'Nomor PO <b>'.$val_store['no_po'].'</b> tidak bisa dihapus!. Dikarenakan sedang digunakan pada Timeline Produksi</br>';
+									$validasi++;	
+							  	}
+
+							  	if (isset($cek_timeline_bahan)) {
+							  		$msg_err .= 'Nomor PO <b>'.$val_store['no_po'].'</b> tidak bisa dihapus!. Dikarenakan sedang digunakan pada Timeline Bahan Produksi</br>';
+									$validasi++;
+							  	}
 							  }
 							}
 

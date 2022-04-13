@@ -82,6 +82,18 @@
               <i class="fa fa-hourglass-2"></i>
             </div>
           </div>
+
+          <!-- small box -->
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3 id="total-belum"></h3>
+
+              <p>Belum diproses</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-times"></i>
+            </div>
+          </div>
         </div>
 
         <div class="col-sm-9">
@@ -195,6 +207,7 @@
                 document.getElementById("total-po").innerHTML=data.total;
                 document.getElementById("total-sudah").innerHTML=data.sudah;
                 document.getElementById("total-proses").innerHTML=data.proses;
+                document.getElementById("total-belum").innerHTML=data.belum;
               }
               
             },

@@ -72,7 +72,7 @@ class Po_model extends CI_Model {
         $this->db->where('po.id_kategori_po', $_GET['kategori']); 
       }
       if ($_GET['status'] != 'semua') {
-        $this->db->where('status_request', $_GET['status']); 
+        $this->db->where('status_po', $_GET['status']); 
       }
       // $this->db->where( array(  "tgl_resi >="   => $first,
       //                           "tgl_resi <="   => $last
@@ -108,8 +108,9 @@ class Po_model extends CI_Model {
   function get_dasbor_list($vendor, $kategori_po, $status, $first, $last)
   {
     $this->db->select('COUNT(no_po) as "total"');
-    $this->db->select('COUNT(CASE WHEN status_po = 0 THEN 1 END) as "proses"');
-    $this->db->select('COUNT(CASE WHEN status_po = 1 THEN 1 END) as "sudah"');
+    $this->db->select('COUNT(CASE WHEN status_po = 0 THEN 1 END) as "belum"');
+    $this->db->select('COUNT(CASE WHEN status_po = 1 THEN 1 END) as "proses"');
+    $this->db->select('COUNT(CASE WHEN status_po = 2 THEN 1 END) as "sudah"');
     $this->db->join($this->table_sku, 'sku.id_sku = po.id_sku');
     $this->db->join($this->table_vendor, 'vendor.id_vendor = po.id_vendor');
     $this->db->join($this->table_kategori, 'kategori_po.id_kategori_po = po.id_kategori_po');

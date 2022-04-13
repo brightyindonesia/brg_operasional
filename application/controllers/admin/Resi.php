@@ -1,6 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+// Include librari PhpSpreadsheet
+use PhpOffice\PhpSpreadsheet\Document\Properties;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\Serializer\Encoder\EncoderInterface;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Resi extends CI_Controller {
 
 	public function __construct()
@@ -660,6 +671,178 @@ class Resi extends CI_Controller {
         			);
         	echo json_encode($msg); 
 		}
+	}
+
+	public function export_resi($kurir, $pic, $status, $periodik)
+	{
+		$start = substr($periodik, 0, 10);
+		$end = substr($periodik, 17, 24);
+		$data['title']	= "Export Data Resi Per Tanggal ".$start." - ".$end."_".date("H_i_s");
+		$data['resi'] = $this->Resi_model->get_datatable_all($kurir, $pic, $status, $start, $end);
+
+		// PHPOffice
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->setCellValue('A1', 'nomor_pesanan');
+		$sheet->setCellValue('B1', 'nomor_resi');
+		$sheet->setCellValue('C1', 'tgl_penjualan');
+		$sheet->setCellValue('D1', 'nama_kurir');
+		$sheet->setCellValue('E1', 'nama_toko');
+		$sheet->setCellValue('F1', 'nama_penerima');
+		$sheet->setCellValue('G1', 'hp_penerima');
+		$sheet->setCellValue('H1', 'alamat_penerima');
+		$sheet->setCellValue('I1', 'kabupaten');
+		$sheet->setCellValue('J1', 'provinsi');
+		$sheet->setCellValue('K1', 'created_by');
+		$sheet->setCellValue('L1', 'handled_by');
+		$sheet->setCellValue('M1', 'status_resi');
+
+		// set Row
+        $rowCount = 2;
+        // echo print_r($data['resi']);
+        // echo $kurir;
+        foreach ($data['resi'] as $list) {
+        	// Nomor Pesanan
+	        if (is_numeric($list->nomor_pesanan)) {
+	          if (strlen($list->nomor_pesanan) < 15) {
+	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+	            $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
+	          }else{
+	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+	            // enough.
+	            // $formatted_value .= ' ';
+	            // $sheet->SetCellValue('A' . $rowCount, "'".$formatted_value);
+	            $sheet->setCellValueExplicit('A' . $rowCount, $list->nomor_pesanan, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          }
+	        }else{
+	          $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
+	        }
+
+	        // Nomor Resi
+	        if (is_numeric($list->nomor_resi)) {
+	          if (strlen($list->nomor_resi) < 15) {
+	            $sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+	            $sheet->SetCellValue('B' . $rowCount, $list->nomor_resi);
+	          }else{
+	            $sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+	            // enough.
+	            // $formatted_value .= ' ';
+	            // $sheet->SetCellValue('B' . $rowCount, "'".$formatted_value);
+	            $sheet->setCellValueExplicit('B' . $rowCount, $list->nomor_resi, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          }
+	        }else{
+	          $sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          $sheet->SetCellValue('B' . $rowCount, $list->nomor_resi);
+	        }
+
+            $sheet->SetCellValue('C' . $rowCount, $list->tgl_penjualan);
+            $sheet->SetCellValue('D' . $rowCount, $list->nama_kurir);
+            $sheet->SetCellValue('E' . $rowCount, $list->nama_toko);
+            $sheet->SetCellValue('F' . $rowCount, $list->nama_penerima);
+
+	        // Nomor HP
+	        if (is_numeric($list->hp_penerima)) {
+	          if (strlen($list->hp_penerima) < 15) {
+	          	$firstCharacter = substr($list->hp_penerima, 0, 1);
+	          	if ($firstCharacter == '0') {
+
+	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
+	          		$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->setCellValueExplicit('G' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	}else if ($firstCharacter == '6') {
+	          		// $sheet->getStyle('AD' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+		           //  $sheet->SetCellValue('AD' . $rowCount, '+'.$list->hp_penerima);			          	
+
+		            $ceknoldi62 = substr($list->hp_penerima, 0, 3);
+		          	   if ($ceknoldi62 == '620') {
+		          	   	$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+			            // enough.
+			            // $formatted_value .= ' ';
+			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+			            $sheet->setCellValueExplicit('G' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		          	   }else{
+		          	   	$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+			            // enough.
+			            // $formatted_value .= ' ';
+			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+			            $sheet->setCellValueExplicit('G' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		          	   }			
+	          	}
+	          }else{
+	          	$firstCharacter = substr($list->hp_penerima, 0, 1);
+	          	if ($firstCharacter == '0') {
+	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
+	          		$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('G' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	}else if ($firstCharacter == '6') {
+
+	          		$ceknoldi62 = substr($list->hp_penerima, 0, 3);
+	          	   if ($ceknoldi62 == '620') {
+	          	   	$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('G' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	   }else{
+	          	   	$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('G' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	   }		          
+	          	}
+	          }
+	        }else{
+	          $firstCharacter = substr($list->hp_penerima, 0, 1);
+	          if ($firstCharacter == '0') {
+	          	  $edit_no = substr_replace($list->hp_penerima,"62",0, 1);	
+	      		  $sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		          $sheet->SetCellValue('G' . $rowCount, $edit_no);
+	          }else if ($firstCharacter == '6') {
+	          	   $ceknoldi62 = substr($list->hp_penerima, 0, 3);
+	          	   if ($ceknoldi62 == '620') {
+		            $sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->SetCellValue('G'.$rowCount, substr_replace($list->hp_penerima,"62",0, 3));	
+	          	   }else{
+	          	   	$sheet->getStyle('G' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			        $sheet->SetCellValue('G'.$rowCount, $list->hp_penerima);	
+	          	   }		         		
+	          }
+	        }
+
+            $sheet->SetCellValue('H' . $rowCount, $list->alamat_penerima);
+            $sheet->SetCellValue('I' . $rowCount, $list->kabupaten);
+            $sheet->SetCellValue('J' . $rowCount, $list->provinsi);
+            $sheet->SetCellValue('K' . $rowCount, $list->ra_created);
+            $sheet->SetCellValue('L' . $rowCount, $list->handled_by);
+            $sheet->SetCellValue('M' . $rowCount, $list->status);
+
+            $rowCount++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+
+		header('Content-Type: application/vnd.ms-excel');
+		header("Content-Transfer-Encoding: Binary"); 
+		header('Content-Disposition: attachment;filename="'. $data['title'] .'.xlsx"');
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		$writer->save('php://output');
+
+		die();
 	}
 
 	// public function tambah_proses()

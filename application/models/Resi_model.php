@@ -337,6 +337,35 @@ class Resi_model extends CI_Model {
     return $this->db->get($this->table)->result();
   }
 
+  function get_datatable_all($kurir, $pic, $status, $first, $last)
+  {
+    $this->db->order_by('status', 'asc');
+    $this->db->select('*, ra.created_by as ra_created, us.created_by as us_created');
+    $this->db->join('resi_access as ra', 'ra.nomor_resi = resi.nomor_resi');
+    $this->db->join('penjualan', 'penjualan.nomor_resi = resi.nomor_resi');
+    $this->db->join('toko', 'toko.id_toko = penjualan.id_toko');
+    $this->db->join('users as us', 'us.id_users = resi.id_users');
+    $this->db->join('kurir', 'kurir.id_kurir = penjualan.id_kurir');
+    if ($kurir != 'semua') {
+      $this->db->where('penjualan.id_kurir', $kurir); 
+    }
+
+    if ($pic != 'semua') {
+      $this->db->where('handled_by', $pic); 
+    }
+
+    if ($status != 'semua') {
+      $this->db->where('status', $status); 
+    }
+    // $this->db->where( array(  "tgl_resi >="   => $first,
+    //                           "tgl_resi <="   => $last
+    //                         ));
+    $this->db->where( array(  "date_format(created_resi, '%Y-%m-%d') >="   => $first,
+                              "date_format(created_resi, '%Y-%m-%d') <="   => $last
+                            ));
+    return $this->db->get($this->table)->result();
+  }
+
   function get_datatable($kurir, $status, $first, $last)
   {
     $this->db->order_by('status', 'asc');

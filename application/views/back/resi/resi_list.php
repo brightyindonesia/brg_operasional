@@ -109,7 +109,9 @@
 
         <div class="col-sm-9">
           <div class="box box-primary">
-            <!-- <div class="box-header"><a href="<?php echo $add_action ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo $btn_add ?></a> </div> -->
+            <div class="box-header">
+              <a onclick="export_resi();" class="btn btn-success"><i class="fa fa-file-excel-o"></i> Export Data</a>
+            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <div class="table-responsive">
@@ -181,6 +183,15 @@
 
   function refresh_table(){
       $('#table-resi').DataTable().ajax.reload();
+  }
+
+  function export_resi(trigger) {
+    var kurir = document.getElementById("kurir").value;
+    var pic = document.getElementById("pic").value;
+    var status = document.getElementById("status").value;
+    var periodik = document.getElementById("range-date").value;
+
+    window.open("<?php echo base_url() ?>admin/resi/export_resi/"+kurir+"/"+pic+"/"+status+"/"+periodik,+"_self");
   }
 
   function dasbor_list_count()
