@@ -698,8 +698,8 @@
     function refresh_chart() {
       dasbor_total();
       dasbor_total_penjualan();
-      pie_prokur();
-      pie_prokur_penjualan();
+      pie_provkab();
+      pie_provkab_penjualan();
       line_income();
       line_income_penjualan();
       bar_produk();
@@ -1231,7 +1231,7 @@
       // ======== End Tabel ============
 
       // ======== Pie Chart ============
-      function pie_prokur() {
+      function pie_provkab() {
         var periodik = document.getElementById("range-date-full").value;
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
@@ -1293,7 +1293,7 @@
         });      
       }
 
-      function pie_prokur_penjualan() {
+      function pie_provkab_penjualan() {
         var periodik = document.getElementById("range-date-full").value;
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
@@ -1464,20 +1464,44 @@
                         }
                     },
                     series: [{
-                        name: 'Revenue',
-                        data: data.laba
-                    },
-                    {
-                        name: 'Gross Revenue',
-                        data: data.income
-                    },
-                    {
+                        color: '#019454',
                         name: 'Diterima',
                         data: data.diterima
                     },
                     {
+                        color: '#5c2f0d',
+                        name: 'Bruto',
+                        data: data.bruto
+                    },
+                    {
+                        color: '#699bca',
+                        name: 'Revenue',
+                        data: data.revenue
+                    },
+                    {
+                        color: '#686868',
+                        name: 'Gross Revenue',
+                        data: data.gross
+                    },
+                    {
+                        color: '#fb9038',
                         name: 'Ongkir',
                         data: data.ongkir
+                    },
+                    {
+                        color: '#00818f',
+                        name: 'Margin',
+                        data: data.margin
+                    },
+                    {
+                        color: '#494a48',
+                        name: 'HPP',
+                        data: data.hpp
+                    },
+                    {
+                        color: '#82009c',
+                        name: 'Selisih Margin',
+                        data: data.selisih_margin
                     }]
                 });
               },
@@ -1536,20 +1560,44 @@
                         }
                     },
                     series: [{
-                        name: 'Revenue',
-                        data: data.laba
-                    },
-                    {
-                        name: 'Gross Revenue',
-                        data: data.income
-                    },
-                    {
+                        color: '#019454',
                         name: 'Diterima',
                         data: data.diterima
                     },
                     {
+                        color: '#5c2f0d',
+                        name: 'Bruto',
+                        data: data.bruto
+                    },
+                    {
+                        color: '#699bca',
+                        name: 'Revenue',
+                        data: data.revenue
+                    },
+                    {
+                        color: '#686868',
+                        name: 'Gross Revenue',
+                        data: data.gross
+                    },
+                    {
+                        color: '#fb9038',
                         name: 'Ongkir',
                         data: data.ongkir
+                    },
+                    {
+                        color: '#00818f',
+                        name: 'Margin',
+                        data: data.margin
+                    },
+                    {
+                        color: '#494a48',
+                        name: 'HPP',
+                        data: data.hpp
+                    },
+                    {
+                        color: '#82009c',
+                        name: 'Selisih Margin',
+                        data: data.selisih_margin
                     }]
                 });
               },

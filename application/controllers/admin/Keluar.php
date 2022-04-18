@@ -4200,7 +4200,7 @@ class Keluar extends CI_Controller {
 																'id_toko' 				=> $val_fix['id_toko'],
 																'id_kurir'	 			=> $val_fix['id_kurir'],
 																'nomor_resi'			=> $val_fix['nomor_resi'],
-																'nama_penerima' 		=> $val_fix['nama_penerima'],
+																'nama_penerima' 		=> str_replace(';', '', $val_fix['nama_penerima']),
 																'hp_penerima' 			=> $val_fix['hp_penerima'],
 																'alamat_penerima' 		=> str_replace(';', ',', $val_fix['alamat_penerima']),
 																'kabupaten' 			=> $val_fix['kabupaten'],

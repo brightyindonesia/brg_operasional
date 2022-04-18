@@ -416,7 +416,7 @@ class Alat extends CI_Controller {
 	            	if (count($store_nama_hp[$i]) > 0  && count($store_nama_hp[$i]) == 2) {
 						if ($i == count($validasiOCR) - 1) {
 							if ($store_nama_hp[$i][0] != NULL && $store_nama_hp[$i][1] != NULL  && $validasiOCR[$i]['resi'] != NULL) {
-								$nama .= str_replace(array("'"), " ", $store_nama_hp[$i][0]);
+								$nama .= str_replace(array("'", ";"), " ", $store_nama_hp[$i][0]);
 								$hp .= str_replace(array("(", "+", ")"), "", $store_nama_hp[$i][1]);
 								$resi .= strtoupper(str_replace(array(" ", ",", "."), "", $validasiOCR[$i]['resi']));	
 							}

@@ -22,7 +22,7 @@
       <div class="description-block border-right" id="dasbor-total-pending" style="color: #d11e02;font-weight: bold;">
         <!-- <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span> -->
         <!-- <h5 class="description-header"></h5>
-        <span class="description-text">TOTAL DITERIMA</span> -->
+        <span class="description-text">TOTAL PENDING</span> -->
       </div>
       <!-- /.description-block -->
     </div>
@@ -42,7 +42,7 @@
       <div class="description-block border-right" id="dasbor-total-revenue" style="color: #699bca;font-weight: bold;">
         <!-- <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span> -->
         <!-- <h5 class="description-header"></h5>
-        <span class="description-text">TOTAL OMSET</span> -->
+        <span class="description-text">TOTAL REVENUE</span> -->
       </div>
       <!-- /.description-block -->
     </div>
@@ -51,7 +51,7 @@
       <div class="description-block border-right" id="dasbor-total-gross" style="color: #686868;font-weight: bold;">
         <!-- <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span> -->
         <!-- <h5 class="description-header"></h5>
-        <span class="description-text">TOTAL MARGIN</span> -->
+        <span class="description-text">TOTAL GROSS REVENUE</span> -->
       </div>
       <!-- /.description-block -->
     </div>
@@ -81,7 +81,7 @@
       <div class="description-block" id="dasbor-total-hpp" style="color: #494a48;font-weight: bold;">
         <!-- <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span> -->
         <!-- <h5 class="description-header"></h5>
-        <span class="description-text">TOTAL MARGIN</span> -->
+        <span class="description-text">TOTAL HPP</span> -->
       </div>
       <!-- /.description-block -->
     </div>

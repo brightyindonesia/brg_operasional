@@ -1716,11 +1716,12 @@ class Dashboard_model extends CI_Model {
 		$this->db->select('tgl_penjualan');
 		$this->db->select('sum(total_harga) as total');
 		$this->db->select('sum(total_jual) as bruto');
-		$this->db->select('sum(total_hpp) as tot_hpp');
+		$this->db->select('sum(total_hpp) as hpp');
 		$this->db->select('sum(jumlah_diterima) as diterima');
 		$this->db->select('sum(ongkir) as tot_ongkir');
-		// $this->db->select('(sum(total_jual)) - (sum(total_hpp)) - (sum(ongkir)) as fix');
 		$this->db->select('(sum(total_harga)) - (sum(total_hpp)) as fix');
+		$this->db->select('sum(margin) as margin');
+		$this->db->select('sum(selisih_margin) as selisih_margin');
 		$this->db->where_not_in('id_status_transaksi', 4);
 		// $this->db->where( array(  "created >="   => $first,
   //                             	  "created <="   => $last
@@ -1739,11 +1740,12 @@ class Dashboard_model extends CI_Model {
 		$this->db->select('tgl_penjualan');
 		$this->db->select('sum(total_harga) as total');
 		$this->db->select('sum(total_jual) as bruto');
-		$this->db->select('sum(total_hpp) as tot_hpp');
+		$this->db->select('sum(total_hpp) as hpp');
 		$this->db->select('sum(jumlah_diterima) as diterima');
 		$this->db->select('sum(ongkir) as tot_ongkir');
-		// $this->db->select('(sum(total_jual)) - (sum(total_hpp)) - (sum(ongkir)) as fix');
 		$this->db->select('(sum(total_harga)) - (sum(total_hpp)) as fix');
+		$this->db->select('sum(margin) as margin');
+		$this->db->select('sum(selisih_margin) as selisih_margin');
 		$this->db->where_not_in('id_status_transaksi', 4);
 		// $this->db->where( array(  "created >="   => $first,
   //                             	  "created <="   => $last

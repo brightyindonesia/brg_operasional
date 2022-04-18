@@ -2521,48 +2521,69 @@ class Dashboard extends CI_Controller {
 
 	public function ajax_line_income()
 	{
-		$start 		= substr($this->input->post('periodik'), 0, 10);
-		$end 		= substr($this->input->post('periodik'), 13, 24);
-		$get_income	= $this->Dashboard_model->get_pendapat_periodik($start, $end);
-		$income 	= array();
-		// $hpp 		= array();
-		$diterima	= array();
-		$laba 		= array();
-		$ongkir 	= array();
+		$start 			= substr($this->input->post('periodik'), 0, 10);
+		$end 			= substr($this->input->post('periodik'), 13, 24);
+		$get_income		= $this->Dashboard_model->get_pendapat_periodik($start, $end);
+		$margin 		= array();
+		$selisih_margin = array();
+		$hpp 			= array();
+		$diterima 		= array();
+		$gross 			= array();
+		$bruto 			= array();
+		$revenue 		= array();
+		$ongkir 		= array();
 		foreach ($get_income as $val_come) {
-			$int_jumlah_income = intval($val_come->fix);
-			// $int_jumlah_hpp	   = intval($val_come->tot_hpp);
-			$int_jumlah_diterima   = intval($val_come->diterima);
-			$int_jumlah_laba   = intval($val_come->total);
+			$int_jumlah_margin = intval($val_come->margin);
+			$int_jumlah_selisih_margin = intval($val_come->selisih_margin);
+			$int_jumlah_hpp = intval($val_come->hpp);
+			$int_jumlah_diterima = intval($val_come->diterima);
+			$int_jumlah_gross = intval($val_come->fix);
+			$int_jumlah_bruto = intval($val_come->bruto);
+			$int_jumlah_revenue = intval($val_come->total);
 			$int_jumlah_ongkir = intval($val_come->tot_ongkir);
 			
-			$income[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_income		
+			$margin[] = array( 0 => $val_come->tanggal,
+							   1 => $int_jumlah_margin		
 			);
 
-			// $hpp[] = array( 0 => $val_come->tanggal,
-			// 				   1 => $int_jumlah_hpp		
-			// );
+			$selisih_margin[] = array( 0 => $val_come->tanggal,
+							   		   1 => $int_jumlah_selisih_margin		
+			);
+
+			$hpp[] = array( 0 => $val_come->tanggal,
+				   		    1 => $int_jumlah_hpp		
+			);
 
 			$diterima[] = array( 0 => $val_come->tanggal,
-							   	 1 => $int_jumlah_diterima		
+				   		    	 1 => $int_jumlah_diterima		
 			);
 
-			$laba[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_laba		
+			$gross[] = array( 0 => $val_come->tanggal,
+				   		      1 => $int_jumlah_gross		
+			);	
+
+			$bruto[] = array( 0 => $val_come->tanggal,
+				   		      1 => $int_jumlah_bruto		
 			);
+
+			$revenue[] = array( 0 => $val_come->tanggal,
+				   		      	1 => $int_jumlah_revenue		
+			);	
 
 			$ongkir[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_ongkir		
-			);
+				   		       1 => $int_jumlah_ongkir		
+			);			
 		}
 
-		$result = array( 'tanggal' => $start." - ".$end,
-						 'income'  => $income,
-						 'diterima'  => $diterima,
-						 // 'hpp' 	   => $hpp,
-						 'laba'    => $laba,
-						 'ongkir'  => $ongkir
+		$result = array( 'tanggal' 			=> $start." - ".$end,
+						 'margin'  			=> $margin,
+						 'selisih_margin'  	=> $selisih_margin,
+						 'hpp'  			=> $hpp,
+						 'diterima'			=> $diterima,
+						 'gross'			=> $gross,
+						 'bruto'			=> $bruto,
+						 'revenue'  		=> $revenue,
+						 'ongkir'  			=> $ongkir,
 		);
 
 		echo json_encode($result);
@@ -2573,45 +2594,66 @@ class Dashboard extends CI_Controller {
 		$start 		= substr($this->input->post('periodik'), 0, 10);
 		$end 		= substr($this->input->post('periodik'), 13, 24);
 		$get_income	= $this->Dashboard_model->get_pendapat_periodik_penjualan($start, $end);
-		$income 	= array();
-		// $hpp 		= array();
-		$diterima	= array();
-		$laba 		= array();
-		$ongkir 	= array();
+		$margin 		= array();
+		$selisih_margin = array();
+		$hpp 			= array();
+		$diterima 		= array();
+		$gross 			= array();
+		$bruto 			= array();
+		$revenue 		= array();
+		$ongkir 		= array();
 		foreach ($get_income as $val_come) {
-			$int_jumlah_income = intval($val_come->fix);
-			// $int_jumlah_hpp	   = intval($val_come->tot_hpp);
-			$int_jumlah_diterima   = intval($val_come->diterima);
-			$int_jumlah_laba   = intval($val_come->total);
+			$int_jumlah_margin = intval($val_come->margin);
+			$int_jumlah_selisih_margin = intval($val_come->selisih_margin);
+			$int_jumlah_hpp = intval($val_come->hpp);
+			$int_jumlah_diterima = intval($val_come->diterima);
+			$int_jumlah_gross = intval($val_come->fix);
+			$int_jumlah_bruto = intval($val_come->bruto);
+			$int_jumlah_revenue = intval($val_come->total);
 			$int_jumlah_ongkir = intval($val_come->tot_ongkir);
 			
-			$income[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_income		
+			$margin[] = array( 0 => $val_come->tanggal,
+							   1 => $int_jumlah_margin		
 			);
 
-			// $hpp[] = array( 0 => $val_come->tanggal,
-			// 				   1 => $int_jumlah_hpp		
-			// );
+			$selisih_margin[] = array( 0 => $val_come->tanggal,
+							   		   1 => $int_jumlah_selisih_margin		
+			);
+
+			$hpp[] = array( 0 => $val_come->tanggal,
+				   		    1 => $int_jumlah_hpp		
+			);
 
 			$diterima[] = array( 0 => $val_come->tanggal,
-							   	 1 => $int_jumlah_diterima		
+				   		    	 1 => $int_jumlah_diterima		
 			);
 
-			$laba[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_laba		
+			$gross[] = array( 0 => $val_come->tanggal,
+				   		      1 => $int_jumlah_gross		
+			);	
+
+			$bruto[] = array( 0 => $val_come->tanggal,
+				   		      1 => $int_jumlah_bruto		
 			);
+
+			$revenue[] = array( 0 => $val_come->tanggal,
+				   		      	1 => $int_jumlah_revenue		
+			);	
 
 			$ongkir[] = array( 0 => $val_come->tanggal,
-							   1 => $int_jumlah_ongkir		
-			);
+				   		       1 => $int_jumlah_ongkir		
+			);			
 		}
 
-		$result = array( 'tanggal' => $start." - ".$end,
-						 'income'  => $income,
-						 'diterima'  => $diterima,
-						 // 'hpp' 	   => $hpp,
-						 'laba'    => $laba,
-						 'ongkir'  => $ongkir
+		$result = array( 'tanggal' 			=> $start." - ".$end,
+						 'margin'  			=> $margin,
+						 'selisih_margin'  	=> $selisih_margin,
+						 'hpp'  			=> $hpp,
+						 'diterima'			=> $diterima,
+						 'gross'			=> $gross,
+						 'bruto'			=> $bruto,
+						 'revenue'  		=> $revenue,
+						 'ongkir'  			=> $ongkir,
 		);
 
 		echo json_encode($result);
