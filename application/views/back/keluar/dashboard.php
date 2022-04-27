@@ -70,6 +70,7 @@
   <script src="<?php echo base_url('assets/plugins/highcharts/js/') ?>accessibility.js"></script>
   <script src="<?php echo base_url('assets/plugins/highcharts/js/') ?>data.js"></script>
   <script src="<?php echo base_url('assets/plugins/highcharts/js/') ?>drilldown.js"></script>
+  
   <!-- date-range-picker -->
   <script src="<?php echo base_url('assets/plugins/') ?>moment/min/moment.min.js"></script>
   <script src="<?php echo base_url('assets/plugins/') ?>bootstrap-daterangepicker/daterangepicker.js"></script>
@@ -81,10 +82,8 @@
 
   <script type="text/javascript">
     window.onload = function() {
-      get_data_toko_by_periodik();
-      get_data_gudang_by_periodik();
-      refresh_tabel();
       refresh_dasbor();
+      refresh_tabel();
     }
 
     $("#toko-impor-id").select2({
@@ -129,10 +128,14 @@
 
 
     function refresh_dasbor() {
+      $("#modal-proses").modal('show');
       dasbor_protok_2();
       dasbor_prokur_2();
       dasbor_protok_2_penjualan();
       dasbor_prokur_2_penjualan();
+      get_data_toko_by_periodik();
+      get_data_gudang_by_periodik();
+      
       // dasbor_prosku_2();
       // dasbor_prosku_2_penjualan();
       // dasbor_prokur();
@@ -140,21 +143,23 @@
     }
 
     function refresh_tabel(){
-      $('#table-sku-keluar-impor').DataTable().ajax.reload();
-      $('#table-sku-keluar-penjualan').DataTable().ajax.reload();
-      $('#table-sku-gudang-keluar-impor').DataTable().ajax.reload();
-      $('#table-sku-gudang-keluar-penjualan').DataTable().ajax.reload();
+      // $('#table-sku-keluar-impor').DataTable().ajax.reload();
+      // $('#table-sku-keluar-penjualan').DataTable().ajax.reload();
+      // $('#table-sku-gudang-keluar-impor').DataTable().ajax.reload();
+      // $('#table-sku-gudang-keluar-penjualan').DataTable().ajax.reload();
+      // $("#modal-proses").modal('hide');
     }
 
     // ==================== DASBOR SKU ================================
 
     $('#table-sku-keluar-impor').DataTable({
         "iDisplayLength":50,
+        "deferRender": true,
         "paging":   true,
         "ordering": false,
         "info":     true,
         "searching": true,
-        "processing": false,
+        "processing": true,
         "serverSide": true,
         "autoWidth": false,
         'ajax': {
@@ -184,11 +189,12 @@
 
     $('#table-sku-keluar-penjualan').DataTable({
         "iDisplayLength":50,
+        "deferRender": true,
         "paging":   true,
         "ordering": false,
         "info":     true,
         "searching": true,
-        "processing": false,
+        "processing": true,
         "serverSide": true,
         "autoWidth": false,
         'ajax': {
@@ -218,11 +224,12 @@
 
     $('#table-sku-gudang-keluar-impor').DataTable({
         "iDisplayLength":50,
+        "deferRender": true,
         "paging":   true,
         "ordering": false,
         "info":     true,
         "searching": true,
-        "processing": false,
+        "processing": true,
         "serverSide": true,
         "autoWidth": false,
         'ajax': {
@@ -252,11 +259,12 @@
 
     $('#table-sku-gudang-keluar-penjualan').DataTable({
         "iDisplayLength":50,
+        "deferRender": true,
         "paging":   true,
         "ordering": false,
         "info":     true,
         "searching": true,
-        "processing": false,
+        "processing": true,
         "serverSide": true,
         "autoWidth": false,
         'ajax': {
@@ -289,6 +297,7 @@
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       $.ajax({ 
+        queue: true,
         url:"<?php echo base_url()?>admin/keluar/get_toko_sku_by_periodik",
         method:"post",
         dataType: 'JSON', 
@@ -345,7 +354,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({ 
+      $.ajax({  
+        queue: true,
         url:"<?php echo base_url()?>admin/keluar/get_gudang_sku_by_periodik",
         method:"post",
         dataType: 'JSON', 
@@ -361,6 +371,7 @@
           }
 
           if (data.sukses) {
+            $("#modal-proses").modal('hide');
             // var options = '';
             var arr_id_select2 = [];
             var arr_id_select2_penjualan = [];
@@ -405,7 +416,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_protok",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -481,7 +493,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_protok_2",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -766,7 +779,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_prokur",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -842,7 +856,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_prokur_2",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -920,7 +935,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_protok_2_penjualan",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1014,7 +1030,8 @@
       var periodik = document.getElementById("range-date").value;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      $.ajax({
+      $.ajax({ 
+            queue: true,
             url: "<?php echo base_url()?>admin/keluar/ajax_dasbor_prokur_2_penjualan",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1088,26 +1105,24 @@
 
     $(document).ready( function () {
       $('#range-date').on('change', function(){
-        get_data_toko_by_periodik();
-        get_data_gudang_by_periodik();
         refresh_tabel();
         refresh_dasbor();
       });
 
       $('#toko-impor-id').on('change', function (e) {
-        refresh_tabel();
+        $('#table-sku-keluar-impor').DataTable().ajax.reload();
       });
 
       $('#toko-penjualan-id').on('change', function (e) {
-        refresh_tabel();
+        $('#table-sku-keluar-penjualan').DataTable().ajax.reload();
       });
 
       $('#gudang-impor-id').on('change', function (e) {
-        refresh_tabel();
+        $('#table-sku-gudang-keluar-impor').DataTable().ajax.reload();
       });
 
       $('#gudang-penjualan-id').on('change', function (e) {
-        refresh_tabel();
+        $('#table-sku-gudang-keluar-penjualan').DataTable().ajax.reload();
       });
     });
 

@@ -39,6 +39,9 @@
             <div class="form-group"><label>Order No (*)</label>
               <?php echo form_input($order_no, $menu->order_no) ?>
             </div>
+            <div class="form-group"><label>Filter Menu</label>
+              <?php echo form_dropdown('filter', $get_all_filter, $menu->filter_menu, $filter) ?>
+            </div>
           </div>
           <?php echo form_input($id_menu, $menu->id_menu) ?>
           <div class="box-footer">

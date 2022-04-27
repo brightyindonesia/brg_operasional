@@ -40,8 +40,12 @@ class Menu extends CI_Controller{
   {
     is_create();
 
-    $this->data['page_title'] = 'Create New '.$this->data['module'];
-    $this->data['action']     = 'admin/menu/create_action';
+    $this->data['page_title']     = 'Create New '.$this->data['module'];
+    $this->data['action']         = 'admin/menu/create_action';
+    $this->data['get_all_filter'] = array(  ''              => '- Pilih Fiter -',
+                                            'Operasional'   => 'Operasional',
+                                            'Shopee'        => 'Shopee',
+                                    );
 
     $this->data['menu_name'] = [
       'name'          => 'menu_name',
@@ -84,6 +88,12 @@ class Menu extends CI_Controller{
       'type'          => 'number',
       'value'         => $this->form_validation->set_value('order_no'),
     ];
+    $this->data['filter'] = [
+      'class'         => 'form-control select2bs4',
+      'id'            => 'status',
+      'required'      => '',
+      'style'         => 'width:100%'
+    ];
 
     $this->load->view('back/menu/menu_add', $this->data);
 
@@ -95,6 +105,7 @@ class Menu extends CI_Controller{
     $this->form_validation->set_rules('menu_controller', 'Controller Name', 'trim|required');
     $this->form_validation->set_rules('menu_function', 'Function', 'trim|required');
     $this->form_validation->set_rules('menu_icon', 'Icon', 'trim|required');
+    $this->form_validation->set_rules('filter', 'Filter', 'required');
 
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
@@ -111,6 +122,7 @@ class Menu extends CI_Controller{
         'menu_function'      => strtolower($this->input->post('menu_function')),
         'menu_icon'     => $this->input->post('menu_icon'),
         'order_no'      => $this->input->post('order_no'),
+        'filter_menu'      => $this->input->post('filter'),
       );
 
       $this->Menu_model->insert($data);
@@ -132,6 +144,10 @@ class Menu extends CI_Controller{
     {
       $this->data['page_title'] = 'Update Data '.$this->data['module'];
       $this->data['action']     = 'admin/menu/update_action';
+      $this->data['get_all_filter'] = array(  ''              => '- Pilih Fiter -',
+                                              'Operasional'   => 'Operasional',
+                                              'Shopee'        => 'Shopee',
+                                      );
 
       $this->data['id_menu'] = [
         'name'          => 'id_menu',
@@ -173,6 +189,12 @@ class Menu extends CI_Controller{
         'required'      => '',
         'type'          => 'number',
       ];
+      $this->data['filter'] = [
+        'class'         => 'form-control select2bs4',
+        'id'            => 'status',
+        'required'      => '',
+        'style'         => 'width:100%'
+      ];
 
       $this->load->view('back/menu/menu_edit', $this->data);
     }
@@ -190,6 +212,7 @@ class Menu extends CI_Controller{
     $this->form_validation->set_rules('menu_controller', 'Controller Name', 'trim|required');
     $this->form_validation->set_rules('menu_function', 'Function Name', 'trim|required');
     $this->form_validation->set_rules('menu_icon', 'Icon', 'trim|required');
+    $this->form_validation->set_rules('filter', 'Filter', 'required');
 
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
@@ -206,6 +229,7 @@ class Menu extends CI_Controller{
         'menu_function'   => strtolower($this->input->post('menu_function')),
         'menu_icon'       => $this->input->post('menu_icon'),
         'order_no'        => $this->input->post('order_no'),
+        'filter_menu'     => $this->input->post('filter'),
       );
 
       $this->Menu_model->update($this->input->post('id_menu'),$data);

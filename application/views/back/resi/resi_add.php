@@ -235,6 +235,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/resi/dasbor_list_count_admin/',
                 type: "post",
                 data: {[csrfName]: csrfHash},

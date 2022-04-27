@@ -674,7 +674,8 @@
     }
 
     window.onload = function() {
-      refresh_table();
+      $("#modal-proses").modal('show');
+      // refresh_table();
       refresh_chart();
       referesh_matriks();
     }
@@ -781,6 +782,7 @@
     )
 
     $('#range-date-full').on('change', function(){
+      $("#modal-proses").modal('show');
       refresh_table();
       refresh_chart();
       referesh_matriks();
@@ -805,6 +807,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_penjualan/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -859,6 +862,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_resi/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -913,6 +917,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_retur/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -969,6 +974,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_penjualan_real/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1023,6 +1029,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_resi_real/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1077,6 +1084,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+                queue: true,
                 url:'<?php echo base_url()?>admin/dashboard/dasbor_list_count_retur_real/',
                 type: "post",
                 data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1091,6 +1099,7 @@
                   // })
                   toastr.error(data.validasi)
                 }else{
+                  $("#modal-proses").modal('hide');
                   document.getElementById("total-retur-real").innerHTML=data.total;
                   document.getElementById("jumlah-sedang-retur-real").innerHTML=data.diproses;
                   document.getElementById("jumlah-sudah-retur-real").innerHTML=data.sudah;
@@ -1236,6 +1245,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_pie_provkab",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1298,6 +1308,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_pie_provkab_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1362,6 +1373,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_total",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1390,6 +1402,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_total_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1420,6 +1433,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_line_income",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1516,6 +1530,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_line_income_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1614,6 +1629,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_prosku",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1708,6 +1724,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_prosku_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1802,6 +1819,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_produk",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1875,6 +1893,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_produk_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -1950,6 +1969,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_kurir",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -2020,6 +2040,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_kurir_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -2092,6 +2113,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_pesanan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -2162,6 +2184,7 @@
         var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
         $.ajax({
+              queue: true,
               url: "<?php echo base_url()?>admin/dashboard/ajax_bar_pesanan_penjualan",
               type: "post",
               data: {periodik: periodik, [csrfName]: csrfHash},
@@ -2234,6 +2257,7 @@
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       $.ajax({
+            queue: true,
             url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_jenis_toko",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},
@@ -2309,6 +2333,7 @@
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
           csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       $.ajax({
+            queue: true,
             url: "<?php echo base_url()?>admin/dashboard/ajax_dasbor_jenis_toko_penjualan",
             type: "post",
             data: {periodik: periodik, [csrfName]: csrfHash},

@@ -842,8 +842,9 @@
     }
 
     var table_impor = $('#table-penjualan-impor').DataTable({
-        "iDisplayLength":50,
-        "processing": false,
+        "iDisplayLength":50,        
+        "deferRender": true,
+        "processing": true,
         "serverSide": true,
         "responsive": true,
         "autoWidth": false,
@@ -858,7 +859,7 @@
               d.periodik = $('#range-date').val();
               d.status = $('#status').val();
               dasbor_list_count();
-              dasbor_list_count_penjualan();
+              // dasbor_list_count_penjualan();
             }
         },
         'columns': [
@@ -998,7 +999,8 @@
 
     var table_penjualan = $('#table-penjualan-penjualan').DataTable({
         "iDisplayLength":50,
-        "processing": false,
+        "deferRender": true,
+        "processing": true,
         "serverSide": true,
         "responsive": true,
         "autoWidth": false,
@@ -1012,7 +1014,7 @@
               d.resi = $('#resi').val();
               d.periodik = $('#range-date').val();
               d.status = $('#status').val();
-              dasbor_list_count();
+              // dasbor_list_count();
               dasbor_list_count_penjualan();
             }
         },

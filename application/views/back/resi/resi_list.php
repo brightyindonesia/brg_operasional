@@ -216,6 +216,7 @@
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
         csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       $.ajax({
+              queue: true,
               url:'<?php echo base_url()?>admin/resi/dasbor_list_count/',
               type: "post",
               data: {pic: pic, kurir: kurir, status: status, periodik: periodik, [csrfName]: csrfHash},
@@ -292,7 +293,8 @@
 
     var table = $('#table-resi').DataTable({
           "iDisplayLength":50,
-          'processing': false,
+          "deferRender": true,
+          'processing': true,
           'serverSide': true,
           "responsive": true,
           "autoWidth": false,

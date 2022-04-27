@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('database','session','form_validation','lib_keluar','lib_produk', 'lib_timeline_produksi', 'lib_keyword', 'pdfgenerator');
+$autoload['libraries'] = array('database','session','form_validation','lib_keluar','lib_produk', 'lib_timeline_produksi', 'lib_keyword', 'pdfgenerator', 'lib_shopee');
 
 /*
 | -------------------------------------------------------------------

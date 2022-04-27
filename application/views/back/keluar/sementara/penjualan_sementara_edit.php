@@ -25,6 +25,10 @@
           <div class="box-body">
             <div class="row">
               <div class="col-sm-6">
+                  <div class="form-group date"><label>Tanggal Penjualan (*)</label>
+                    <input type='text' class="form-control" id='dtpicker-penjualan'/>
+                  </div>
+
                   <div class="form-group"><label>Nomor Pesanan (*)</label>
                     <?php echo form_input($nomor_pesanan, $penjualan->nomor_pesanan) ?>
                   </div>
@@ -58,6 +62,10 @@
                   </div>
               </div>
               <div class="col-sm-6">
+                  <div class="form-group date"><label>Tanggal Import (*)</label>
+                    <input type='text' class="form-control" id='dtpicker-impor' />
+                  </div>
+
                   <div class="form-group"><label>Nama Penerima (*)</label>
                     <?php echo form_input($nama_penerima, $penjualan->nama_penerima) ?>
                   </div>
@@ -262,9 +270,31 @@
   <!-- /.content-wrapper -->
 
   <?php $this->load->view('back/template/footer'); ?>
-  <!-- Select2 -->
+  <!-- date-range-picker -->
+  <script src="<?php echo base_url('assets/plugins/') ?>moment/min/moment-with-locales.js"></script>
+  <script src="<?php echo base_url('assets/plugins/') ?>bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
 
   <script type="text/javascript">
+    $('#dtpicker-penjualan').datetimepicker({
+        "allowInputToggle": true,
+        "showClose": true,
+        "showClear": true,
+        "showTodayButton": true,
+        "format": "MM/DD/YYYY HH:mm:ss",
+    });
+
+    $("#dtpicker-penjualan").data("DateTimePicker").date(new Date(<?php echo date("\"Y/m/d H:i:s\"", strtotime($penjualan->tgl_penjualan)); ?>));
+
+    $('#dtpicker-impor').datetimepicker({
+        "allowInputToggle": true,
+        "showClose": true,
+        "showClear": true,
+        "showTodayButton": true,
+        "format": "MM/DD/YYYY HH:mm:ss",
+    });
+
+    $("#dtpicker-impor").data("DateTimePicker").date(new Date(<?php echo date("\"Y/m/d H:i:s\"", strtotime($penjualan->created)); ?>));
+    
     // submit form masuk
     $('#penjualan_ubah').click(function(e){
       const Toast = Swal.mixin({
@@ -281,6 +311,8 @@
       })
       e.preventDefault();
 
+      var tgl_penjualan = document.getElementById('dtpicker-penjualan').value;
+      var tgl_import = document.getElementById('dtpicker-impor').value;
       var toko = document.getElementById('toko').value;
       var kurir = document.getElementById('kurir').value;
       var ongkir = document.getElementById('ongkir').value;
@@ -317,10 +349,20 @@
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
       csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       // alert(panjangArray);
-      if (status == '' && toko == '' && kurir == '' && ongkir == '' && no_pesanan == '' && nama_penerima == '' && provinsi == '' && alamat == '' && dt_id == '' && dt_qty == '' && dt_harga == '' && dt_jumlah == '' && dt_hpp == '' && dt_jumlah_hpp == '') {
+      if (status == '' && toko == '' && kurir == '' && ongkir == '' && no_pesanan == '' && nama_penerima == '' && provinsi == '' && alamat == '' && dt_id == '' && dt_qty == '' && dt_harga == '' && dt_jumlah == '' && dt_hpp == '' && dt_jumlah_hpp == '' && tgl_penjualan == '' && tgl_import == '') {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. Harap diisi!'
+        });
+      }else if(tgl_penjualan == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Tanggal Penjualan harap dipilih!'
+        });
+      }else if(tgl_import == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Tanggal Import harap dipilih!'
         });
       }else if(toko == '') {
         Toast.fire({
@@ -373,7 +415,7 @@
             url:"<?php echo base_url()?>admin/keluar/ubah_sementara_proses",
             method:"post",
             dataType: 'JSON', 
-            data:{diterima: diterima, status:status, toko:toko, kurir: kurir, ongkir: ongkir, admin: admin, no_pesanan: no_pesanan, nama_penerima: nama_penerima, provinsi: provinsi, kabupaten: kabupaten, alamat: alamat, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_hpp: JS_hpp, dt_jml_hpp: JS_jumlah_hpp, length: panjangArray, hp_penerima: hp_penerima, [csrfName]: csrfHash},
+            data:{diterima: diterima, status:status, toko:toko, kurir: kurir, ongkir: ongkir, admin: admin, no_pesanan: no_pesanan, nama_penerima: nama_penerima, provinsi: provinsi, kabupaten: kabupaten, alamat: alamat, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_hpp: JS_hpp, dt_jml_hpp: JS_jumlah_hpp, length: panjangArray, hp_penerima: hp_penerima, tgl_penjualan: tgl_penjualan, tgl_import: tgl_import, [csrfName]: csrfHash},
             success:function(data)  {  
               // alert(data);
               if (data.validasi) {
@@ -410,7 +452,7 @@
             url:"<?php echo base_url()?>admin/keluar/ubah_sementara_proses",
             method:"post",
             dataType: 'JSON', 
-            data:{diterima: diterima, status:status, toko:toko, kurir: kurir, ongkir: ongkir, admin: admin, resi: resi, no_pesanan: no_pesanan, nama_penerima: nama_penerima, provinsi: provinsi, kabupaten: kabupaten, alamat: alamat, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_hpp: JS_hpp, dt_jml_hpp: JS_jumlah_hpp, length: panjangArray, hp_penerima: hp_penerima, [csrfName]: csrfHash},
+            data:{diterima: diterima, status:status, toko:toko, kurir: kurir, ongkir: ongkir, admin: admin, resi: resi, no_pesanan: no_pesanan, nama_penerima: nama_penerima, provinsi: provinsi, kabupaten: kabupaten, alamat: alamat, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_hpp: JS_hpp, dt_jml_hpp: JS_jumlah_hpp, length: panjangArray, hp_penerima: hp_penerima, tgl_penjualan: tgl_penjualan, tgl_import: tgl_import, [csrfName]: csrfHash},
             success:function(data)  {  
               // alert(data);
               if (data.validasi) {

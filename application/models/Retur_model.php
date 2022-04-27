@@ -31,7 +31,7 @@ class Retur_model extends CI_Model {
   public $column_search_produk = array('retur.nomor_pesanan','retur.nomor_retur', 'nama_produk', 'keterangan_retur'); //field yang diizin untuk pencarian
   public $column_order_riwayat = array(null, 'retur.nomor_retur', 'nama_produk','updated_qty_produk', 'updated_qty_retur', null); //field yang ada di table user
   public $column_search_riwayat = array('retur.nomor_retur', 'nama_produk','updated_qty_produk', 'updated_qty_retur'); //field yang diizin untuk pencarian 
-  public $order_data = array('tgl_retur' => 'asc'); // default order 
+  public $order_data = array('tgl_retur' => 'desc'); // default order 
 
   // Table Server Side
   // Retur
@@ -64,7 +64,8 @@ class Retur_model extends CI_Model {
       {
           $this->db->order_by($this->column_order[$_GET['order']['0']['column']], $_GET['order']['0']['dir']);
       } 
-      else if(isset($this->order_data))
+      
+      if(isset($this->order_data))
       {
           $order = $this->order_data;
           $this->db->order_by(key($order), $order[key($order)]);

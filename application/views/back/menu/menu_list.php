@@ -36,6 +36,7 @@
                   <th style="text-align: center">Icon</th>
                   <th style="text-align: center">Order No</th>
                   <th style="text-align: center">Status</th>
+                  <th style="text-align: center">Filter Menu</th>
                   <th style="text-align: center">Action</th>
                 </tr>
               </thead>
@@ -55,6 +56,7 @@
                     <td style="text-align: center"><i class="fa fa-2x <?php echo $data->menu_icon ?>"></i> </td>
                     <td style="text-align: center"><?php echo $data->order_no ?></td>
                     <td style="text-align: center"><?php echo $is_active ?></td>
+                    <td style="text-align: center"><?php echo $data->filter_menu ?></td>
                     <td style="text-align: center"><?php echo $edit ?> <?php echo $delete ?></td>
                   </tr>
                 <?php } ?>
@@ -68,6 +70,7 @@
                   <th style="text-align: center">Icon</th>
                   <th style="text-align: center">Order No</th>
                   <th style="text-align: center">Status</th>
+                  <th style="text-align: center">Filter Menu</th>
                   <th style="text-align: center">Action</th>
                 </tr>
               </tfoot>

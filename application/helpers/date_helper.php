@@ -70,3 +70,14 @@ function standard_date_format($str) {
     }
     return  $results;
 }
+
+function convertDateTime($date, $format = 'Y-m-d H:i:s')
+{
+    $tz1 = 'UTC';
+    $tz2 = 'Asia/Jakarta'; // UTC +7
+
+    $d = new DateTime($date, new DateTimeZone($tz1));
+    $d->setTimeZone(new DateTimeZone($tz2));
+
+    return $d->format($format);
+}

@@ -27,10 +27,10 @@ class Alat extends CI_Controller {
 		
 		$this->data['module'] = 'Alat';
 
-	    $this->load->model(array());
+		$this->load->model(array('Keluar_model'));
 
 	    $this->data['company_data']    		= $this->Company_model->company_profile();
-			$this->data['layout_template']  = $this->Template_model->layout();
+		$this->data['layout_template']  = $this->Template_model->layout();
 	    $this->data['skins_template']     	= $this->Template_model->skins();
 
 	    $this->data['btn_submit'] = 'Save';

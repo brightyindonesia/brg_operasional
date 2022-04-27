@@ -1602,6 +1602,8 @@ class Keluar extends CI_Controller {
 		$i = $this->input;
 
 		$len = $i->post('length');
+		$tgl_penjualan = $i->post('tgl_penjualan');
+		$tgl_import = $i->post('tgl_import');
 		$toko = $i->post('toko');
 		$kurir = $i->post('kurir');
 		$diterima = $i->post('diterima');
@@ -1700,6 +1702,8 @@ class Keluar extends CI_Controller {
 					}		
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
+									'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+									'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 		        					'id_toko'				=> $toko,
 									'id_kurir'	 			=> $kurir,
 									'id_status_transaksi'	=> $status,
@@ -1731,6 +1735,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -1800,6 +1806,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 			=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -1829,6 +1837,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -1946,6 +1956,8 @@ class Keluar extends CI_Controller {
 		$i = $this->input;
 
 		$len = $i->post('length');
+		$tgl_penjualan = $i->post('tgl_penjualan');
+		$tgl_import = $i->post('tgl_import');
 		$toko = $i->post('toko');
 		$kurir = $i->post('kurir');
 		$diterima = $i->post('diterima');
@@ -2045,6 +2057,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -2075,6 +2089,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -2144,6 +2160,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 			=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,
@@ -2173,6 +2191,8 @@ class Keluar extends CI_Controller {
 
 					$data = array(	'id_users' 				=> $this->session->userdata('id_users'),
         					'id_toko'				=> $toko,
+							'tgl_penjualan'			=> date('Y-m-d H:i:s', strtotime($tgl_penjualan)),
+							'created'				=> date('Y-m-d H:i:s', strtotime($tgl_import)),
 							'id_kurir'	 			=> $kurir,
 							'id_status_transaksi'	=> $status,
 							'nomor_resi' 			=> $resi,

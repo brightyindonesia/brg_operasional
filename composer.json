@@ -16,7 +16,8 @@
 		"phpoffice/phpspreadsheet": "^1.21",
 		"thiagoalessio/tesseract_ocr": "^2.12",
 		"spatie/pdf-to-image": "^1.2",
-		"org_heigl/ghostscript": "^2.3"
+		"org_heigl/ghostscript": "^2.3",
+		"guzzlehttp/guzzle": "^7.0"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

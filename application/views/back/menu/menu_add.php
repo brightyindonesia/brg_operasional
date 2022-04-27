@@ -39,6 +39,9 @@
             <div class="form-group"><label>Order No (*)</label>
               <?php echo form_input($order_no) ?>
             </div>
+            <div class="form-group"><label>Filter Menu</label>
+              <?php echo form_dropdown('filter', $get_all_filter, '', $filter) ?>
+            </div>
           </div>
           <div class="box-footer">
             <button type="submit" name="button" class="btn btn-success"><i class="fa fa-save"></i> <?php echo $btn_submit ?></button>

@@ -45,6 +45,7 @@
       $this->db->join('menu_access', 'menu.id_menu = menu_access.menu_id');
       $this->db->join('submenu', 'menu.id_menu = submenu.id_submenu', 'LEFT');
       $this->db->where('menu_access.usertype_id', $this->session->usertype);
+      $this->db->where('filter_menu', 'Operasional');
       $this->db->where('menu.is_active', '1');
       $this->db->group_by('menu.id_menu');
       $this->db->order_by('menu.order_no');
