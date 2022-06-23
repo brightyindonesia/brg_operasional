@@ -144,6 +144,18 @@
       window.open("<?php echo base_url() ?>admin/keluar/export_keluar_penjualan/" + trigger + "/" + kurir + "/" + toko + "/" + resi + "/" + status + "/" + periodik, +"_self");
     }
 
+    function export_customer_insight(trigger) {
+        provinsi = $('#provinsi').val() ? $('#provinsi').val() : '';
+        kabupaten = $('#kabupaten').val() ? $('#kabupaten').val() : '';
+        belanja_max = $('#belanja_max').val() ? $('#belanja_max').val() : '';
+        belanja_min = $('#belanja_min').val() ? $('#belanja_min').val() : '';
+        qty_min = $('#qty_min').val() ? $('#qty_min').val() : '';
+        qty_max = $('#qty_max').val() ? $('#qty_max').val() : '';
+        periodik = $('#range-date').val() ? $('#range-date').val() : '';
+
+        window.open(`<?= base_url('admin/keluar/export_customer_insight') ?>?provinsi=${provinsi}&kabupaten=${kabupaten}&belanja_max=${belanja_max}&belanja_min=${belanja_min}&qty_min=${qty_min}&qty_max=${qty_max}&periodik=${periodik}`, '_self');
+        
+      }
 
 
 
@@ -197,6 +209,8 @@
 
 
       }
+
+      
 
       var table_customer_insight = $('#table-customer-insight').DataTable({
         "iDisplayLength": 50,

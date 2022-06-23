@@ -769,8 +769,11 @@ class Keluar_model extends CI_Model
       "date_format(tgl_penjualan, '%Y-%m-%d') <="   => $last
     ));
 
+    $start = isset($_GET['start']) && $_GET['start'] != null ? $_GET['start'] : 0;
+    $length = isset($_GET['length']) && $_GET['length'] != null ? $_GET['length'] : 50;
+
     $this->db->group_by('nama_penerima, hp_penerima');
-    $this->db->limit($_GET['length'], $_GET['start']);
+    $this->db->limit($length, $start);
     $this->db->order_by('total_qty', 'desc');
 
     return $this->db->get($this->table)->result();

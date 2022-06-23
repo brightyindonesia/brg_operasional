@@ -1,5 +1,7 @@
 <div class="box box-primary no-border">
-
+<div class="box-header">
+    <a onclick="export_customer_insight('customer_insight');" class="btn btn-success"><i class="fa fa-file-excel-o"></i> Export Data</a>
+  </div>
   <!-- /.box-header -->
   <div class="box-body">
     <div class="table-responsive">

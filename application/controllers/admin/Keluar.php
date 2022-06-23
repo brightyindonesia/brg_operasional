@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\PDF\DomPDF;
 
 class Keluar extends CI_Controller {
 
@@ -5908,6 +5909,152 @@ class Keluar extends CI_Controller {
 				);
 		echo json_encode($msg);
 	}
+
+	// public function export_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max)
+	public function export_customer_insight()
+	{
+		$start = substr($this->input->get('periodik'), 0, 10);
+		$end = substr($this->input->get('periodik'), 13, 24);
+		$provinsi = $this->input->get('provinsi');
+		$kabupaten = $this->input->get('kabupaten');
+		$belanja_min = $this->input->get('belanja_min');
+		$belanja_max = $this->input->get('belanja_max');
+		$qty_min = $this->input->get('qty_min');
+		$qty_max = $this->input->get('qty_max');
+		$data['title']	= "Export Data Customer Insight Per Tanggal ".$start." - ".$end."_".date("H_i_s");
+        $lists = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max);
+		// die(print_r($lists));
+		// PHPOffice
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->setCellValue('A1', 'nomor_pesanan');
+		$sheet->setCellValue('B1', 'nama_penerima');
+		$sheet->setCellValue('C1', 'hp_penerima');
+		$sheet->setCellValue('D1', 'qty');
+		$sheet->setCellValue('E1', 'frequency');
+		$sheet->setCellValue('F1', 'total_belanja');
+
+        // set Row
+        $rowCount = 2;
+        foreach ($lists as $list) {
+        	// Nomor Pesanan
+	        if (is_numeric($list->nomor_pesanan)) {
+	          if (strlen($list->nomor_pesanan) < 15) {
+	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+	            $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
+	          }else{
+	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+	            // enough.
+	            // $formatted_value .= ' ';
+	            // $sheet->SetCellValue('A' . $rowCount, "'".$formatted_value);
+	            $sheet->setCellValueExplicit('A' . $rowCount, $list->nomor_pesanan, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          }
+	        }else{
+	          $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
+	        }
+            $sheet->SetCellValue('B' . $rowCount, $list->nama_penerima);
+
+	        // Nomor HP
+	        if (is_numeric($list->hp_penerima)) {
+	          if (strlen($list->hp_penerima) < 15) {
+	          	$firstCharacter = substr($list->hp_penerima, 0, 1);
+	          	if ($firstCharacter == '0') {
+
+	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
+	          		$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->setCellValueExplicit('C' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	}else if ($firstCharacter == '6') {
+	          		// $sheet->getStyle('AD' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+		           //  $sheet->SetCellValue('AD' . $rowCount, '+'.$list->hp_penerima);			          	
+
+		            $ceknoldi62 = substr($list->hp_penerima, 0, 3);
+		          	   if ($ceknoldi62 == '620') {
+		          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+			            // enough.
+			            // $formatted_value .= ' ';
+			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+			            $sheet->setCellValueExplicit('C' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		          	   }else{
+		          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+			            // enough.
+			            // $formatted_value .= ' ';
+			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+			            $sheet->setCellValueExplicit('C' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		          	   }			
+	          	}
+	          }else{
+	          	$firstCharacter = substr($list->hp_penerima, 0, 1);
+	          	if ($firstCharacter == '0') {
+	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
+	          		$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('C' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	}else if ($firstCharacter == '6') {
+
+	          		$ceknoldi62 = substr($list->hp_penerima, 0, 3);
+	          	   if ($ceknoldi62 == '620') {
+	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('C' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	   }else{
+	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
+		            // enough.
+		            // $formatted_value .= ' ';
+		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
+		            $sheet->setCellValueExplicit('C' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          	   }		          
+	          	}
+	          }
+	        }else{
+	          $firstCharacter = substr($list->hp_penerima, 0, 1);
+	          if ($firstCharacter == '0') {
+	          	  $edit_no = substr_replace($list->hp_penerima,"62",0, 1);	
+	      		  $sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		          $sheet->SetCellValue('C' . $rowCount, $edit_no);
+	          }else if ($firstCharacter == '6') {
+	          	   $ceknoldi62 = substr($list->hp_penerima, 0, 3);
+	          	   if ($ceknoldi62 == '620') {
+		            $sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->SetCellValue('C'.$rowCount, substr_replace($list->hp_penerima,"62",0, 3));	
+	          	   }else{
+	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			        $sheet->SetCellValue('C'.$rowCount, $list->hp_penerima);	
+	          	   }		         		
+	          }
+	        }
+			
+			$sheet->SetCellValue('D' . $rowCount, $list->qty);
+			$sheet->SetCellValue('E' . $rowCount, $list->jumlah_pesanan);
+			$sheet->SetCellValue('F' . $rowCount, 'Rp. ' . number_format($list->total_harga_jual,0,",","."));
+
+            $rowCount++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+		
+		header('Content-Type: application/vnd.ms-excel');
+		header("Content-Transfer-Encoding: Binary"); 
+		header('Content-Disposition: attachment;filename="'. $data['title'] .'.xlsx"');
+		header("Pragma: no-cache");
+		header("Expires: 0");
+
+		$writer->save('php://output');
+
+		die();
+	}
+
 }
 
 /* End of file Keluar.php */
