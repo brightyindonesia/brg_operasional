@@ -29,14 +29,14 @@
               <div class="form-group">
                 <div class="radio">
                   <label>
-                  <input type="radio" name="option" id="option" value="no" checked>
+                    <input type="radio" name="option" id="option" value="no" checked>
                     Not with OCR
                   </label>
                 </div>
 
                 <div class="radio">
                   <label>
-                  <input type="radio" name="option" id="option" value="yes">
+                    <input type="radio" name="option" id="option" value="yes">
                     With OCR
                   </label>
                 </div>
@@ -54,14 +54,14 @@
                 <div class="form-group">
                   <div class="radio">
                     <label>
-                    <input type="radio" name="filter_ocr" id="filter-ocr" value="no" checked>
+                      <input type="radio" name="filter_ocr" id="filter-ocr" value="no" checked>
                       Don't Sync Database
                     </label>
                   </div>
 
                   <div class="radio">
                     <label>
-                    <input type="radio" name="filter_ocr" id="filter-ocr" value="yes">
+                      <input type="radio" name="filter_ocr" id="filter-ocr" value="yes">
                       Sync Database
                     </label>
                   </div>
@@ -79,7 +79,7 @@
 
             <div class="box-body">
               <div class="form-group"><label>Upload File Image (*)</label>
-                  <input type="file" name="file_pdf" id="file_pdf" class="form-control" onchange="previewPDF();" accept="application/pdf">
+                <input type="file" name="file_pdf" id="file_pdf" class="form-control" onchange="previewPDF();" accept="application/pdf">
               </div>
 
               <div class="form-group">
@@ -91,7 +91,7 @@
               <!-- /.box-body -->
             </div>
           </div>
-        </div>  
+        </div>
       </div>
 
       <div id="message-validasi-tabel"></div>
@@ -104,63 +104,63 @@
   <?php $this->load->view('back/template/footer'); ?>
   <script>
     const Toast = Swal.mixin({
-        toast: false,
-        position: 'center',
-        showConfirmButton: false,
-        // confirmButtonColor: '#86ccca',
-        timer: 3000,
-        timerProgressBar: false,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      })
+      toast: false,
+      position: 'center',
+      showConfirmButton: false,
+      // confirmButtonColor: '#86ccca',
+      timer: 3000,
+      timerProgressBar: false,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
 
-    $('input[name=option]').change(function () {
-       if ($('input[name=option]:checked').val() == 'no') {
+    $('input[name=option]').change(function() {
+      if ($('input[name=option]:checked').val() == 'no') {
         document.getElementById("after-option").style.display = "none";
-       }else{
+      } else {
         document.getElementById("after-option").style.display = "block";
-       }
-        
+      }
+
     });
 
     function previewPDF() {
       $('#preview').empty();
       document.getElementById("preview").style.display = "block";
-      var file =document.getElementById("file_pdf").files[0];
-      var url =URL.createObjectURL(file );
-      $('#preview').attr('src',url);
+      var file = document.getElementById("file_pdf").files[0];
+      var url = URL.createObjectURL(file);
+      $('#preview').attr('src', url);
     }
 
-    $('#pdf_tambah').click(function(e){
+    $('#pdf_tambah').click(function(e) {
       e.preventDefault();
       $("#modal-proses").modal('show');
       var pdf = document.getElementById('file_pdf');
       var option = $('input[name=option]:checked').val();
       // var jenis = $('select[name=jenis] option').filter(':selected').val();
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
-      csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-      if(pdf.files['length'] == 0){
+        csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+      if (pdf.files['length'] == 0) {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. File PDF harus diisi!'
         });
-      }else{
+      } else {
         var formData = new FormData();
 
         // console.log(dataGambar);     
         formData.append([csrfName], csrfHash);
-        formData.append('pdf', $('#file_pdf')[0].files[0]);   
+        formData.append('pdf', $('#file_pdf')[0].files[0]);
         // formData.append('jenis', jenis);   
-        $.ajax({ 
-          url:"<?php echo base_url()?>admin/alat/proses_convertpdf",
-          method:"post",
-          dataType: 'JSON', 
-          data:formData,
+        $.ajax({
+          url: "<?php echo base_url() ?>admin/alat/proses_convertpdf",
+          method: "post",
+          dataType: 'JSON',
+          data: formData,
           contentType: false,
           processData: false,
-          success:function(data)  {  
+          success: function(data) {
             // alert(data);
             if (data.validasi) {
               $("#modal-proses").modal('hide');
@@ -178,73 +178,73 @@
                   icon: 'success',
                   title: 'Sukses!',
                   text: data.sukses,
-                }).then(function(){
-                    window.open("<?php echo base_url() ?>admin/alat/compress_convertpdf/"+data.pdf+"/"+data.jpg+"");
+                }).then(function() {
+                  window.open("<?php echo base_url() ?>admin/alat/compress_convertpdf/" + data.pdf + "/" + data.jpg + "");
                 });
               }
-            }else if (option == 'yes') {
+            } else if (option == 'yes') {
               if (data.sukses) {
                 $("#modal-proses").modal('hide');
                 Toast.fire({
                   icon: 'success',
                   title: 'Sukses!',
                   text: data.sukses,
-                }).then(function(){
-                    $("#modal-proses").modal('show');
-                    var formData = new FormData();
-                    if ($('input[name=filter_ocr]:checked').val() == 'no') {
-                      var ocr = 'no';
-                    }else{
-                      var ocr = 'yes';
+                }).then(function() {
+                  $("#modal-proses").modal('show');
+                  var formData = new FormData();
+                  if ($('input[name=filter_ocr]:checked').val() == 'no') {
+                    var ocr = 'no';
+                  } else {
+                    var ocr = 'yes';
+                  }
+                  formData.append([csrfName], csrfHash);
+                  formData.append('jpg', data.jpg);
+                  formData.append('ocr', ocr);
+                  $.ajax({
+                    url: "<?php echo base_url() ?>admin/alat/proses_ocr_by_convertpdf",
+                    method: "post",
+                    dataType: 'JSON',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                      // alert(data);
+                      if (data.validasi) {
+                        $("#modal-proses").modal('hide');
+                        Toast.fire({
+                          icon: 'error',
+                          title: 'Perhatian!',
+                          text: data.validasi
+                        })
+                      }
+
+                      if (data.sukses) {
+                        $("#modal-proses").modal('hide');
+                        Toast.fire({
+                          icon: 'success',
+                          title: 'Sukses!',
+                          text: data.sukses,
+                        }).then(function() {
+                          window.open("<?php echo base_url() ?>admin/alat/export_data_ocr/" + data.filter + "/" + data.nama + "/" + data.hp + "/" + data.resi + "");
+                        });
+                      }
+
+                    },
+                    error: function(data) {
+                      console.log(data.responseText);
+                      // Toast.fire({
+                      //   type: 'warning',
+                      //   title: 'Perhatian!',
+                      //   text: data.responseText
+                      // });
+
                     }
-                    formData.append([csrfName], csrfHash); 
-                    formData.append('jpg', data.jpg);   
-                    formData.append('ocr', ocr);   
-                    $.ajax({ 
-                      url:"<?php echo base_url()?>admin/alat/proses_ocr_by_convertpdf",
-                      method:"post",
-                      dataType: 'JSON', 
-                      data:formData,
-                      contentType: false,
-                      processData: false,
-                      success:function(data)  {  
-                        // alert(data);
-                        if (data.validasi) {
-                          $("#modal-proses").modal('hide');
-                          Toast.fire({
-                            icon: 'error',
-                            title: 'Perhatian!',
-                            text: data.validasi
-                          })
-                        }
-
-                        if (data.sukses) {
-                          $("#modal-proses").modal('hide');
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Sukses!',
-                            text: data.sukses,
-                          }).then(function(){
-                              window.open("<?php echo base_url() ?>admin/alat/export_data_ocr/"+data.filter+"/"+data.nama+"/"+data.hp+"/"+data.resi+"");
-                          });
-                        }
-                        
-                      },
-                      error: function(data){
-                        console.log(data.responseText);
-                        // Toast.fire({
-                        //   type: 'warning',
-                        //   title: 'Perhatian!',
-                        //   text: data.responseText
-                        // });
-
-                      } 
-                    });
+                  });
                 });
               }
-            }            
+            }
           },
-          error: function(data){
+          error: function(data) {
             console.log(data.responseText);
             // Toast.fire({
             //   type: 'warning',
@@ -252,20 +252,20 @@
             //   text: data.responseText
             // });
 
-          } 
+          }
         });
       }
     });
 
     // $("#file-input").fileinput({
     //     theme: 'fa',
-    //     uploadUrl: '<?php echo base_url()?>admin/alat/proses_orc',
+    //     uploadUrl: '<?php echo base_url() ?>admin/alat/proses_orc',
     //     enableResumableUpload: false,
     //     // uploadAsync: false,
     //     resumableUploadOptions: {
     //        // uncomment below if you wish to test the file for previous partial uploaded chunks
     //        // to the server and resume uploads from that point afterwards
-    //        // testUrl: '<?php echo base_url()?>admin/alat/proses_orc'
+    //        // testUrl: '<?php echo base_url() ?>admin/alat/proses_orc'
     //     },
     //     uploadExtraData: {
     //         '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>', // for access control / security 
@@ -323,7 +323,7 @@
     // });
 
 
-    $('#restoredb').click(function(e){
+    $('#restoredb').click(function(e) {
       const Toast = Swal.mixin({
         toast: false,
         position: 'center',
@@ -341,29 +341,29 @@
       var restore = document.getElementById('restore_db');
       var JS_restore = JSON.stringify(restore.files[0]);
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
-      csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+        csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       // alert(panjangArray);
-      
-      if(restore.files['length'] == 0){
+
+      if (restore.files['length'] == 0) {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. File DB harus diisi!'
         });
-      }else{
+      } else {
         var formData = new FormData();
-        formData.append('restore_db', $('#restore_db')[0].files[0]);      
-        formData.append([csrfName], csrfHash); 
+        formData.append('restore_db', $('#restore_db')[0].files[0]);
+        formData.append([csrfName], csrfHash);
 
         $("#modal-proses").modal('show');
-        $.ajax({ 
-          url:"<?php echo base_url()?>admin/keluar/restore_db",
-          method:"post",
-          dataType: 'JSON', 
+        $.ajax({
+          url: "<?php echo base_url() ?>admin/keluar/restore_db",
+          method: "post",
+          dataType: 'JSON',
           // data:{img: JS_image,vendor:vendor, penerima:penerima, sku: sku, kategori: kategori, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash},
           data: formData,
           contentType: false,
           processData: false,
-          success:function(data)  {  
+          success: function(data) {
             // alert(data);
             if (data.validasi) {
               $("#modal-proses").modal('hide');
@@ -380,15 +380,15 @@
                 icon: 'success',
                 title: 'Sukses!',
                 text: data.sukses,
-              }).then(function(){
-                window.location.replace("<?php echo base_url()?>admin/dashboard");
+              }).then(function() {
+                window.location.replace("<?php echo base_url() ?>admin/dashboard");
               });
             }
-            
+
           },
-          error: function(data){
+          error: function(data) {
             console.log(data.responseText);
-          } 
+          }
         });
       }
     });
@@ -397,4 +397,5 @@
 <!-- ./wrapper -->
 
 </body>
+
 </html>

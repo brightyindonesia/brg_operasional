@@ -1238,8 +1238,119 @@ class Keluar extends CI_Controller {
 	    	echo json_encode($msg);
 		}
 	}
+    // ORIGINAL
+	public function customerinsight()
+	{
+		is_read();    
 
+	    $this->data['page_title'] = 'Customer Insight';
 
+	    $this->data['get_all_provinsi'] = $this->Keyword_model->get_all_provinsi_combobox();
+	    $this->data['get_all_toko'] = $this->Keluar_model->get_all_toko_list();
+	    $this->data['get_all_status'] = $this->Keluar_model->get_all_status_list();
+	    $this->data['get_all_resi'] = array( 'semua'	=> '- Semua Data-',
+	    									   '' 		=> 'Tidak Ada Resi'
+	     								);
+
+	    // $this->data['get_all'] = $this->Keluar_model->get_all();
+	    $this->data['provinsi'] = [
+	    	'class'         => 'form-control select2bs4',
+	    	'id'            => 'provinsi',
+	      	'required'      => '',
+	      	'style' 		=> 'width:100%'
+	    ];
+
+	    $this->data['kabupaten'] = [
+	    	'class'         => 'form-control select2bs4',
+	    	'id'            => 'kabupaten',
+	      	'required'      => '',
+	      	'style' 		=> 'width:100%'
+	    ];
+
+	    $this->data['resi'] = [
+	    	'class'         => 'form-control select2bs4',
+	    	'id'            => 'resi',
+	      	'required'      => '',
+	      	'style' 		=> 'width:100%'
+	    ];
+
+	    $this->data['status'] = [
+	    	'class'         => 'form-control select2bs4',
+	    	'id'            => 'status',
+	      	'required'      => '',
+	      	'style' 		=> 'width:100%'
+	    ];
+
+	    $this->data['diterima'] = [	
+		  	'id' 			=> 'diterima', 
+	        'type'          => 'hidden',
+	      ];
+
+	    $this->load->view('back/keluar/customer_insight', $this->data);
+	}
+
+	function get_data_customer_insight()
+    {	$start = substr($this->input->get('periodik'), 0, 10);
+		$end = substr($this->input->get('periodik'), 13, 24);
+		$provinsi = $this->input->get('provinsi');
+		$kabupaten = $this->input->get('kabupaten');
+		$belanja_min = $this->input->get('belanja_min');
+		$belanja_max = $this->input->get('belanja_max');
+		$qty_min = $this->input->get('qty_min');
+		$qty_max = $this->input->get('qty_max');
+        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max);
+        $dataJSON = array();
+        foreach ($list as $data) {
+			$get_detail_penjualan = $this->Keluar_model->get_detail_by_cust_data($data->nama_penerima, $data->hp_penerima, $start, $end);
+			$detail = '<table cellpadding="0" width="100%" cellspacing="0" class="table" border="0" style="padding-left:50px;">'.
+					  '<tr align="center">'.
+			                '<td width="1%">Qty</td>'.
+			                '<td colspan="2">Nama Produk</td>'.
+			            '</tr>';
+
+						foreach ($get_detail_penjualan as $val_detail) {
+							$detail .= '<tr align="center">'.
+											'<td>'.$val_detail->total_qty.'</td>'.
+											'<td colspan="2">'.$val_detail->nama_produk.'</td>'.
+										'</tr>';
+						}
+			
+            $row = array();
+            $row['nomor_pesanan'] = $data->nomor_pesanan;
+            $row['tanggal'] = date('d-m-Y', strtotime($data->tgl_penjualan));
+            $row['nomor_resi'] = $data->nomor_resi;
+            $row['nama_penerima'] = $data->nama_penerima;
+            $row['hp_penerima'] = $data->hp_penerima;
+            $row['provinsi'] = $data->provinsi;
+            $row['kabupaten'] = $data->kabupaten;
+            $row['created'] = $data->created;
+			$row['total_harga'] = $data->total_harga;
+            $row['total_jual'] = $data->total_jual;
+            $row['total_hpp'] = $data->total_hpp;
+            $row['margin'] = $data->margin;
+            $row['selisih_margin'] = $data->selisih_margin;
+            $row['ongkir'] = $data->ongkir;
+            $row['jumlah_diterima'] = $data->jumlah_diterima;
+			$row['total_qty'] = $data->total_qty;
+			$row['jumlah_pesanan'] = $data->jumlah_pesanan;
+			$row['total_harga_jual'] = 'Rp. ' . number_format($data->total_harga_jual,0,",",".");
+            if ($data->tgl_diterima == NULL) {
+            	$row['tgl_diterima'] = "-";
+            }else{
+            	$row['tgl_diterima'] = $data->tgl_diterima;
+            }
+			$row['detail'] = $detail;
+            $dataJSON[] = $row;
+        }
+ 
+        $output = array(
+            "recordsTotal" => 10,
+            "recordsFiltered" => 10,
+            "data" => $dataJSON,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+    }
 	public function ubah($id = '')
 	{
 		is_update();

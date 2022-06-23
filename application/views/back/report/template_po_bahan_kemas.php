@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Laporan PO</title>
   <style type="text/css">
@@ -8,18 +9,19 @@
     }
   </style>
 </head>
-<body>
-  <?php 
-    $hariIndo = hari(date('l', strtotime($purchase->tgl_po)));
-    $pathL = base_url()."assets/images/company/brighty.jpg";
-    $typeL = pathinfo($pathL, PATHINFO_EXTENSION);
-    $dataL = file_get_contents($pathL);
-    $base64L = 'data:image/' . $typeL . ';base64,' . base64_encode($dataL);
 
-    $TTDpathL = base_url()."assets/images/company/ttd_yuki.jpg";
-    $TTDtypeL = pathinfo($TTDpathL, PATHINFO_EXTENSION);
-    $TTDdataL = file_get_contents($TTDpathL);
-    $TTDbase64L = 'data:image/' . $TTDtypeL . ';base64,' . base64_encode($TTDdataL);
+<body>
+  <?php
+  $hariIndo = hari(date('l', strtotime($purchase->tgl_po)));
+  $pathL = base_url() . "assets/images/company/brighty.jpg";
+  $typeL = pathinfo($pathL, PATHINFO_EXTENSION);
+  $dataL = file_get_contents($pathL);
+  $base64L = 'data:image/' . $typeL . ';base64,' . base64_encode($dataL);
+
+  $TTDpathL = base_url() . "assets/images/company/ttd_yuki.jpg";
+  $TTDtypeL = pathinfo($TTDpathL, PATHINFO_EXTENSION);
+  $TTDdataL = file_get_contents($TTDpathL);
+  $TTDbase64L = 'data:image/' . $TTDtypeL . ';base64,' . base64_encode($TTDdataL);
   ?>
   <table cellspacing="0" cellpadding="0" border="0" width="100%">
     <tr>
@@ -31,7 +33,7 @@
 
       <td valign="top" colspan="2">
         <p align="right" style="font-size: 24px;color:#009eae;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;">PURCHASE ORDER</p>
-        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Hari, Tanggal: <?php echo $hariIndo.", ".date('d F Y', strtotime($purchase->tgl_po)) ?></p>
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Hari, Tanggal: <?php echo $hariIndo . ", " . date('d F Y', strtotime($purchase->tgl_po)) ?></p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 5px;padding: 0;"><?php echo $purchase->no_po ?></p>
       </td>
     </tr>
@@ -54,7 +56,7 @@
       </td>
     </tr>
   </table>
-  
+
   <table cellspacing="0" cellpadding="3" style="margin-top: 10px;" border="0" width="100%">
     <tr align="center" style="background-color: #f8f8f8;font-size: 12px;">
       <th style="border-top: 1px solid black;border-bottom: 1px solid black;border-right: 1px solid black;border-left: 1px solid black;">No</th>
@@ -95,37 +97,37 @@
 
 
     <?php
-      $i = 1; 
-      foreach ($daftar_bahan_kemas as $row) {
+    $i = 1;
+    foreach ($daftar_bahan_kemas as $row) {
     ?>
-    <tr>
-      <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;"><?php echo $i ?></td>
-      <td align="left" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo $row->nama_bahan_kemas ?>
-      </td>
-      <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo number_format($row->kuantitas_po,null,",",".") ?>
-        <!-- <?php echo $row->kuantitas_po ?> -->
-      </td>
-      <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo $row->nama_satuan ?>
-      </td>
-      <td align="right" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo rupiah($row->harga_po) ?>
-      </td>
-      <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo $row->diskon_po." %" ?>
-      </td>
-      <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo $row->pajak_po." %" ?>
-      </td>
-      <td align="right" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
-        <?php echo rupiah($row->harga_po * $row->kuantitas_po) ?>
-      </td>
-    </tr>
+      <tr>
+        <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;"><?php echo $i ?></td>
+        <td align="left" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo $row->nama_bahan_kemas ?>
+        </td>
+        <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo number_format($row->kuantitas_po, null, ",", ".") ?>
+          <!-- <?php echo $row->kuantitas_po ?> -->
+        </td>
+        <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo $row->nama_satuan ?>
+        </td>
+        <td align="right" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo rupiah($row->harga_po) ?>
+        </td>
+        <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo $row->diskon_po . " %" ?>
+        </td>
+        <td align="center" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo $row->pajak_po . " %" ?>
+        </td>
+        <td align="right" style="border-right: 1px solid black;border-left: 1px solid black;border-top:0;border-bottom:0;font-size: 12px;">
+          <?php echo rupiah($row->harga_po * $row->kuantitas_po) ?>
+        </td>
+      </tr>
     <?php
-        $i++;
-      }
+      $i++;
+    }
     ?>
 
     <tr>
@@ -171,7 +173,7 @@
       <td align="right" style="border-top: 1px solid black;border-bottom: 1px solid black;border-right: 1px solid black;border-left: 1px solid black;font-size: 12px;">
         <b><?php echo rupiah(($purchase->total_harga_po + $purchase->total_pajak_po) - $purchase->total_diskon_po) ?></b>
       </td>
-    </tr>    
+    </tr>
   </table>
 
   <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -188,16 +190,16 @@
   <table cellspacing="0" cellpadding="0" style="margin-top: 10px;" border="0" width="100%">
     <tr>
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
-   <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?><br> Diajukan Oleh,</p>
+        <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
         <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
         <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
         <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">(Ibrahim Tirta)</p> -->
       </td>
 
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="right" style="vertical-align: text-top;margin-right:45px;margin-bottom:0px;margin-top:0px;padding: 0;">Menyetujui,</p>
-   <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
+        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"> Dibayarkan Oleh,</p>
+        <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
         <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
         <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
         <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">(Ibrahim Tirta)</p> -->
@@ -218,10 +220,55 @@
         <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Procurement</p>
       </td>
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(M. Hadiyatullah)</u></p>
-        <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">CEO PT Brighty Global Sinergi</p>
+
+        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(Luni Wahyuni)</u></p>
+        <p align="right" style="vertical-align: text-top;margin-right:52px;margin-bottom:0px;margin-top:0px;padding: 0;">Finance</p>
       </td>
     </tr>
   </table>
+  <br><br>
+  <table cellspacing="0" cellpadding="0" style="margin-top: 10px;" border="0" width="100%">
+    <tr>
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Mengetahui,</p>
+        <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
+        <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
+        <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
+        <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">(Ibrahim Tirta)</p> -->
+      </td>
+
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        <p align="right" style="vertical-align: text-top;margin-right:55px;margin-bottom:0px;margin-top:0px;padding: 0;">Menyetujui,</p>
+        <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
+        <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
+        <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
+        <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">(Ibrahim Tirta)</p> -->
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        &nbsp;
+        <br>
+        &nbsp;
+        <br> &nbsp;<br>&nbsp;<br>
+      </td>
+
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        &nbsp;
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;"><u>(Setia Wardhani)</u></p>
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">FAT Manager</p>
+      </td>
+      <td valign="top" colspan="2" style="font-size: 12px;">
+        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(M. Hadiyatullah)</u></p>
+        <p align="right" style="vertical-align: text-top;margin:0px;margin-right:22px;padding: 0;">Chief Executive Officer</p>
+      </td>
+    </tr>
+  </table>
+
 </body>
+
 </html>

@@ -19,7 +19,9 @@
 
     <!-- Main content -->
     <section class="content">
-      <?php if($this->session->flashdata('message')){echo $this->session->flashdata('message');} ?>
+      <?php if ($this->session->flashdata('message')) {
+        echo $this->session->flashdata('message');
+      } ?>
       <div class="row">
         <div class="col-sm-3">
           <div class="box box-primary">
@@ -61,7 +63,7 @@
               <i class="fa fa-refresh"></i>
             </div>
           </div>
-          
+
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
@@ -111,7 +113,8 @@
 
         <div class="col-sm-9">
           <div class="box box-primary">
-            <div class="box-header"><a href="<?php echo $add_action ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo $btn_add ?></a> </div>
+            <div class="box-header"><a href="<?php echo $add_action ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo $btn_add ?></a> <a onclick="export_resi();" class="btn btn-success"><i class="fa fa-file-excel-o"></i> Export Data</a>
+            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <div class="table-responsive">
@@ -131,7 +134,7 @@
             </div>
             <!-- /.box-body -->
           </div>
-          <!-- /.box -->    
+          <!-- /.box -->
         </div>
       </div>
     </section>
@@ -148,25 +151,24 @@
   <link rel="stylesheet" href="<?php echo base_url('assets/plugins/') ?>datatables-bs/css/dataTables.bootstrap.min.css">
   <script src="<?php echo base_url('assets/plugins/') ?>datatables-bs/js/dataTables.bootstrap.min.js"></script>
   <script>
-  // $('#range-date').daterangepicker({
-  //     locale: {
-  //       format: 'DD/MM/YYYY'
-  //     }
-  // });
-  $('#range-date').daterangepicker(
-      {
-        ranges   : {
-          'Today'       : [moment(), moment()],
-          'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-          'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+    // $('#range-date').daterangepicker({
+    //     locale: {
+    //       format: 'DD/MM/YYYY'
+    //     }
+    // });
+    $('#range-date').daterangepicker({
+        ranges: {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-          'This Month'  : [moment().startOf('month'), moment().endOf('month')],
-          'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-          'This Years'  : [moment().startOf('years'), moment().endOf('years')],
-          'Last Years'  : [moment().subtract(1, 'years').startOf('years'), moment().subtract(1, 'years').endOf('years')],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+          'This Years': [moment().startOf('years'), moment().endOf('years')],
+          'Last Years': [moment().subtract(1, 'years').startOf('years'), moment().subtract(1, 'years').endOf('years')],
         },
         startDate: moment().startOf('month'),
-        endDate  : moment().endOf('month'),
+        endDate: moment().endOf('month'),
         // startDate: moment().subtract(29, 'days'),
         // endDate  : moment(),
 
@@ -175,236 +177,263 @@
         }
       },
 
-      function (start, end) {
+      function(start, end) {
         $('#range-date-full span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'))
       }
     )
 
-  function refresh_table(){
+    function refresh_table() {
       $('#table-retur').DataTable().ajax.reload();
-  }
+    }
 
-  function dasbor_list_count()
-    {
-        const Toast = Swal.mixin({
-          toast: false,
-          position: 'center',
-          showConfirmButton: false,
-          // confirmButtonColor: '#86ccca',
-          timer: 3000,
-          timerProgressBar: false,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
+    function dasbor_list_count() {
+      const Toast = Swal.mixin({
+        toast: false,
+        position: 'center',
+        showConfirmButton: false,
+        // confirmButtonColor: '#86ccca',
+        timer: 3000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
+      var kurir = document.getElementById("kurir").value;
+      var toko = document.getElementById("toko").value;
+      var status = document.getElementById("status").value;
+      var followup = document.getElementById("followup").value;
+      var periodik = document.getElementById("range-date").value;
+      var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+        csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+      $.ajax({
+        url: '<?php echo base_url() ?>admin/retur/dasbor_list_count/',
+        type: "post",
+        data: {
+          status: status,
+          kurir: kurir,
+          toko: toko,
+          periodik: periodik,
+          followup: followup,
+          [csrfName]: csrfHash
+        },
+        dataType: 'JSON',
+        success: function(data) {
+          // console.log(data);
+          if (data.validasi) {
+            // Toast.fire({
+            //   icon: 'error',
+            //   title: 'Perhatian!',
+            //   text: data.validasi
+            // })
+            toastr.error(data.validasi)
+          } else {
+            document.getElementById("total-retur").innerHTML = data.total;
+            document.getElementById("total-sudah").innerHTML = data.sudah;
+            document.getElementById("total-diproses").innerHTML = data.diproses;
+            document.getElementById("total-sudah-followup").innerHTML = data.sudah_fu;
+            document.getElementById("total-belum-followup").innerHTML = data.belum_fu;
           }
-        })
 
-        var kurir = document.getElementById("kurir").value;
-        var toko = document.getElementById("toko").value;
-        var status = document.getElementById("status").value;
-        var followup = document.getElementById("followup").value;
-        var periodik = document.getElementById("range-date").value;
-        var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
-          csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-        $.ajax({
-                url:'<?php echo base_url()?>admin/retur/dasbor_list_count/',
-                type: "post",
-                data: {status: status, kurir: kurir, toko: toko, periodik: periodik, followup: followup, [csrfName]: csrfHash},
-                dataType: 'JSON',
-                success:function(data)  {  
-                // console.log(data);
-                if (data.validasi) {
-                  // Toast.fire({
-                  //   icon: 'error',
-                  //   title: 'Perhatian!',
-                  //   text: data.validasi
-                  // })
-                  toastr.error(data.validasi)
-                }else{
-                  document.getElementById("total-retur").innerHTML=data.total;
-                  document.getElementById("total-sudah").innerHTML=data.sudah;
-                  document.getElementById("total-diproses").innerHTML=data.diproses;
-                  document.getElementById("total-sudah-followup").innerHTML=data.sudah_fu;
-                  document.getElementById("total-belum-followup").innerHTML=data.belum_fu;
-                }
-                
-              },
-              error: function(data){
-                console.log(data.responseText);
-                // Toast.fire({
-                //   type: 'warning',
-                //   title: 'Perhatian!',
-                //   text: data.responseText
-                // });
+        },
+        error: function(data) {
+          console.log(data.responseText);
+          // Toast.fire({
+          //   type: 'warning',
+          //   title: 'Perhatian!',
+          //   text: data.responseText
+          // });
 
-              }  
-        });
-        return false;
+        }
+      });
+      return false;
     }
 
-  $(document).ready( function () {
-    $('#kurir').on('change', function(){
-      refresh_table();
-    });
-
-    $('#toko').on('change', function(){
-      refresh_table();
-    });
-
-    $('#status').on('change', function(){
-      refresh_table();
-    });
-
-    $('#followup').on('change', function(){
-      refresh_table();
-    });
-
-    $('#range-date').on('change', function(){
-      refresh_table();
-    });
-
-    // $('#btn-pilih').click(function(){
-    //     var kurir = $('#kurir').val();
-    //     if (kurir != '') {
-    //         refresh_table();
-    //     }else{
-    //         $('#table-resi').dataTable().fnReloadAjax();
-    //     }
-    // });
-
-    // Detail Datatable Ajax
-    function format ( d ) {
-        // `d` is the original data object for the row
-        return '<table cellpadding="0" width="100%" cellspacing="0" class="table" border="0" style="padding-left:50px;">'+
-            '<tr>'+
-                '<td width="20%">Tanggal Impor</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.created+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Status Retur</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.status+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Status Follow Up</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.status_fu+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Nama Toko</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.nama_toko+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Nama Kurir</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.nama_kurir+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Keterangan Retur</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.keterangan+'</td>'+
-            '</tr>'+
-        '</table>'+
-        '<hr width="100%">'+
-        '<table cellpadding="0" width="100%" cellspacing="0" class="table" border="0" style="padding-left:50px;">'+
-            '<tr>'+
-                '<td width="20%">Nama Penerima</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.nama_penerima+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Nomor Handphone</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.hp_penerima+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Provinsi</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.provinsi+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td width="20%">Kota / Kabupaten</td>'+
-                '<td width="1%">:</td>'+
-                '<td>'+d.kabupaten+'</td>'+
-            '</tr>'+
-        '</table>'+d.detail;
-
-
-    }
-
-    var table = $('#table-retur').DataTable({
-          "iDisplayLength":50,
-          "processing": true,
-          "serverSide": true,
-          "responsive": true,
-          "autoWidth": false,
-          "bAutoWidth": false,
-          'ajax': {
-              'url': '<?php echo base_url()?>admin/retur/get_data_retur',
-              'data': function(d){
-                d.kurir = $('#kurir').val();
-                d.toko = $('#toko').val();
-                d.periodik = $('#range-date').val();
-                d.status = $('#status').val();
-                d.followup = $('#followup').val();
-                dasbor_list_count();
-              }
-          },
-          'columns': [
-              {
-                  "className"     : 'details-control',
-                  "orderable"     :  false,
-                  "data"          :  null,
-                  "defaultContent":  ''
-              },
-              { data: "tanggal"},
-              { data: "nomor_retur"},
-              { data: "nomor_pesanan"},
-              { data: "nomor_resi"},
-              // { data: "total_harga"},
-              { data: "action"},
-              // { data: "hapus"},
-          ],
-          columnDefs: [
-            { className: 'text-center', 
-              targets: [0, 1, 4, 5] 
-            },
-            { className: 'text-left', 
-              targets: [2,3] 
-            }
-          ]
-          // "fnServerParams": function ( aoData ) {
-          //   aoData.push( { "name": "kurir", "value": $('#kurir').val()} );
-          //   aoData.push( { "name": "toko", "value": $('#toko').val()} );
-          //   aoData.push( { "name": "periodik", "value": $('#range-date').val()} );
-          //   aoData.push( { "name": "status", "value": $('#status').val()} );
-          //   dasbor_list_count();
-          // }
+    $(document).ready(function() {
+      $('#kurir').on('change', function() {
+        refresh_table();
       });
 
-    // Add event listener for opening and closing details
-    $('#table-retur').on('click', 'td.details-control', function () {
+      $('#toko').on('change', function() {
+        refresh_table();
+      });
+
+      $('#status').on('change', function() {
+        refresh_table();
+      });
+
+      $('#followup').on('change', function() {
+        refresh_table();
+      });
+
+      $('#range-date').on('change', function() {
+        refresh_table();
+      });
+
+      // $('#btn-pilih').click(function(){
+      //     var kurir = $('#kurir').val();
+      //     if (kurir != '') {
+      //         refresh_table();
+      //     }else{
+      //         $('#table-resi').dataTable().fnReloadAjax();
+      //     }
+      // });
+
+      // Detail Datatable Ajax
+      function format(d) {
+        // `d` is the original data object for the row
+        return '<table cellpadding="0" width="100%" cellspacing="0" class="table" border="0" style="padding-left:50px;">' +
+          '<tr>' +
+          '<td width="20%">Tanggal Impor</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.created + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Status Retur</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.status + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Status Follow Up</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.status_fu + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Nama Toko</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.nama_toko + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Nama Kurir</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.nama_kurir + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Keterangan Retur</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.keterangan + '</td>' +
+          '</tr>' +
+          '</table>' +
+          '<hr width="100%">' +
+          '<table cellpadding="0" width="100%" cellspacing="0" class="table" border="0" style="padding-left:50px;">' +
+          '<tr>' +
+          '<td width="20%">Nama Penerima</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.nama_penerima + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Nomor Handphone</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.hp_penerima + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Provinsi</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.provinsi + '</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td width="20%">Kota / Kabupaten</td>' +
+          '<td width="1%">:</td>' +
+          '<td>' + d.kabupaten + '</td>' +
+          '</tr>' +
+          '</table>' + d.detail;
+
+
+      }
+
+      var table = $('#table-retur').DataTable({
+        "iDisplayLength": 50,
+        "processing": true,
+        "serverSide": true,
+        "responsive": true,
+        "autoWidth": false,
+        "bAutoWidth": false,
+        'ajax': {
+          'url': '<?php echo base_url() ?>admin/retur/get_data_retur',
+          'data': function(d) {
+            d.kurir = $('#kurir').val();
+            d.toko = $('#toko').val();
+            d.periodik = $('#range-date').val();
+            d.status = $('#status').val();
+            d.followup = $('#followup').val();
+            dasbor_list_count();
+          }
+        },
+        'columns': [{
+            "className": 'details-control',
+            "orderable": false,
+            "data": null,
+            "defaultContent": ''
+          },
+          {
+            data: "tanggal"
+          },
+          {
+            data: "nomor_retur"
+          },
+          {
+            data: "nomor_pesanan"
+          },
+          {
+            data: "nomor_resi"
+          },
+          // { data: "total_harga"},
+          {
+            data: "action"
+          },
+          // { data: "hapus"},
+        ],
+        columnDefs: [{
+            className: 'text-center',
+            targets: [0, 1, 4, 5]
+          },
+          {
+            className: 'text-left',
+            targets: [2, 3]
+          }
+        ]
+        // "fnServerParams": function ( aoData ) {
+        //   aoData.push( { "name": "kurir", "value": $('#kurir').val()} );
+        //   aoData.push( { "name": "toko", "value": $('#toko').val()} );
+        //   aoData.push( { "name": "periodik", "value": $('#range-date').val()} );
+        //   aoData.push( { "name": "status", "value": $('#status').val()} );
+        //   dasbor_list_count();
+        // }
+      });
+
+      // Add event listener for opening and closing details
+      $('#table-retur').on('click', 'td.details-control', function() {
         var tr = $(this).closest('tr');
-        var row = table.row( tr );
- 
-        if ( row.child.isShown() ) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
+        var row = table.row(tr);
+
+        if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          // Open this row
+          row.child(format(row.data())).show();
+          tr.addClass('shown');
         }
-        else {
-            // Open this row
-            row.child( format(row.data()) ).show();
-            tr.addClass('shown');
-        }
+      });
     });
-  });
+
+    function export_resi(trigger) {
+
+      var kurir = document.getElementById("kurir").value;
+      var toko = document.getElementById("toko").value;
+      var status = document.getElementById("status").value;
+      var periodik = document.getElementById("range-date").value;
+      var followup = document.getElementById("followup").value;
+
+      window.open("<?php echo base_url() ?>admin/retur/export_list_retur/" + kurir + "/" + toko + "/" + status + "/" + periodik + "/" + followup, +"_self");
+    }
   </script>
 
 </div>
 <!-- ./wrapper -->
 
 </body>
+
 </html>

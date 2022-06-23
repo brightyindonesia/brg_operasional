@@ -19,11 +19,13 @@
 
     <!-- Main content -->
     <section class="content">
-      <?php if($this->session->flashdata('message')){echo $this->session->flashdata('message');} ?>
+      <?php if ($this->session->flashdata('message')) {
+        echo $this->session->flashdata('message');
+      } ?>
 
       <div class="box box-primary">
         <div class="box-header">
-          <a href="<?php echo $add_action ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo $btn_add ?></a> 
+          <a href="<?php echo $add_action ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo $btn_add ?></a>
           <a href="<?php echo $export_action ?>" class="btn btn-success"><i class="fa fa-file-excel-o"></i> <?php echo $btn_export ?></a>
           <a href="<?php echo $sinkron_action ?>" onClick="return confirm('Are you sure?');" class="btn btn-warning"><i class="fa fa-refresh"></i> <?php echo $btn_sinkron ?></a>
         </div>
@@ -48,11 +50,12 @@
                 </tr>
               </thead>
               <tbody>
-                <?php $no = 1; foreach($get_all as $data){
+                <?php $no = 1;
+                foreach ($get_all as $data) {
                   // action
-                  $generateHPP = '<a href="'.base_url('admin/produk/generatehpp/'.$data->id_produk).'" onClick="return confirm(\'Are you sure for Generate HPP and Product Price ?\');" class="btn btn-sm btn-success"><i class="fa fa-money"></i></a>';
-                  $edit = '<a href="'.base_url('admin/produk/ubah/'.$data->id_produk).'" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
-                  $delete = '<a href="'.base_url('admin/produk/hapus/'.$data->id_produk).'" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
+                  $generateHPP = '<a href="' . base_url('admin/produk/generatehpp/' . $data->id_produk) . '" onClick="return confirm(\'Are you sure for Generate HPP and Product Price ?\');" class="btn btn-sm btn-success"><i class="fa fa-money"></i></a>';
+                  $edit = '<a href="' . base_url('admin/produk/ubah/' . $data->id_produk) . '" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
+                  $delete = '<a href="' . base_url('admin/produk/hapus/' . $data->id_produk) . '" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
                 ?>
                   <tr>
                     <td style="text-align: center"><?php echo $no++ ?></td>
@@ -63,18 +66,18 @@
                     </td>
                     <td style="text-align: center"><?php echo $data->nama_satuan ?></td>
                     <td style="text-align: center"><?php echo $data->qty_produk ?></td>
-                    <td style="text-align: center"><?php echo $data->hpp_produk ?></td> 
-                    <td style="text-align: center"><?php echo $data->harga_produk ?></td> 
+                    <td style="text-align: center"><?php echo $data->hpp_produk ?></td>
+                    <td style="text-align: center"><?php echo $data->harga_produk ?></td>
                     <td style="text-align: center">
-                      <?php 
-                        $hasil_propak = $this->lib_produk->get_propak_by_produk($data->id_produk);
-                        if ($hasil_propak == 1) {
-                          echo $generateHPP;
-                        }
-                      ?> 
-                      <?php echo $edit ?> 
+                      <?php
+                      $hasil_propak = $this->lib_produk->get_propak_by_produk($data->id_produk);
+                      if ($hasil_propak == 1) {
+                        echo $generateHPP;
+                      }
+                      ?>
+                      <?php echo $edit ?>
                       <?php echo $delete ?>
-                        
+
                     </td>
                     <td style="text-align: center">
                       <input type="checkbox" class="sub_chk" data-id="<?php echo $data->id_produk ?>">
@@ -120,207 +123,213 @@
   <script src="<?php echo base_url('assets/plugins/') ?>datatables/js/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url('assets/plugins/') ?>datatables-bs/js/dataTables.bootstrap.min.js"></script>
   <script>
-  $(document).ready(function () {
+    $(document).ready(function() {
       $('#master').on('click', function(e) {
-       if($(this).is(':checked',true))  
-       {
-          $(".sub_chk").prop('checked', true);  
-       } else {  
-          $(".sub_chk").prop('checked',false);  
-       }  
+        if ($(this).is(':checked', true)) {
+          $(".sub_chk").prop('checked', true);
+        } else {
+          $(".sub_chk").prop('checked', false);
+        }
       });
 
       $('#btn-generate-pilih').on('click', function(e) {
-          const Toast = Swal.mixin({
-            toast: false,
-            position: 'center',
-            showConfirmButton: false,
-            // confirmButtonColor: '#86ccca',
-            // timer: 3000,
-            timerProgressBar: false,
-            didOpen: (toast) => {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-          })
-          e.preventDefault();
+        const Toast = Swal.mixin({
+          toast: false,
+          position: 'center',
+          showConfirmButton: false,
+          // confirmButtonColor: '#86ccca',
+          // timer: 3000,
+          timerProgressBar: false,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+        e.preventDefault();
 
-          var allVals = [];  
-          $(".sub_chk:checked").each(function() {  
-              allVals.push($(this).attr('data-id'));
-          });  
+        var allVals = [];
+        $(".sub_chk:checked").each(function() {
+          allVals.push($(this).attr('data-id'));
+        });
 
-          if(allVals.length <=0)  
-          {  
-              alert("Data not selected!");  
-          }  else {  
-            var check = confirm("Are you sure you want to generate hpp and product price this row?");  
-            if(check == true){  
-              $("#modal-proses").modal('show');
-              var join_selected_values = allVals.join(","); 
-              var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+        if (allVals.length <= 0) {
+          alert("Data not selected!");
+        } else {
+          var check = confirm("Are you sure you want to generate hpp and product price this row?");
+          if (check == true) {
+            $("#modal-proses").modal('show');
+            var join_selected_values = allVals.join(",");
+            var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
               csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-              $.ajax({
-                  url: "<?php echo base_url()?>admin/produk/generatehpp_dipilih",
-                  type: 'POST',
-                  dataType: 'JSON', 
-                  data: {ids: join_selected_values, [csrfName]: csrfHash},
-                  success: function (data) {
-                    // console.log(data);
-                    if (data.sukses) {
-                      $("#modal-proses").modal('hide'); 
-                      Toast.fire({
-                        icon: 'success',
-                        title: 'Sukses!',
-                        text: data.sukses,
-                      }).then(function(){
-                        window.location.replace("<?php echo base_url()?>admin/produk");
-                      });
-                    }
-                    // console.log(data);
-                    // $(".sub_chk:checked").each(function() {  
-                    //     $(this).parents("tr").remove();
-                    // });
-                    // alert("Item Deleted successfully.");
-                  },  
-                  error: function (data) {
-                      console.log(data.responseText);
-                  }
-              });
-            }
-          } 
+            $.ajax({
+              url: "<?php echo base_url() ?>admin/produk/generatehpp_dipilih",
+              type: 'POST',
+              dataType: 'JSON',
+              data: {
+                ids: join_selected_values,
+                [csrfName]: csrfHash
+              },
+              success: function(data) {
+                // console.log(data);
+                if (data.sukses) {
+                  $("#modal-proses").modal('hide');
+                  Toast.fire({
+                    icon: 'success',
+                    title: 'Sukses!',
+                    text: data.sukses,
+                  }).then(function() {
+                    window.location.replace("<?php echo base_url() ?>admin/produk");
+                  });
+                }
+                // console.log(data);
+                // $(".sub_chk:checked").each(function() {  
+                //     $(this).parents("tr").remove();
+                // });
+                // alert("Item Deleted successfully.");
+              },
+              error: function(data) {
+                console.log(data.responseText);
+              }
+            });
+          }
+        }
       });
 
       $('#btn-sinkron-pilih').on('click', function(e) {
-          const Toast = Swal.mixin({
-            toast: false,
-            position: 'center',
-            showConfirmButton: false,
-            // confirmButtonColor: '#86ccca',
-            timer: 3000,
-            timerProgressBar: false,
-            didOpen: (toast) => {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-          })
-          e.preventDefault();
+        const Toast = Swal.mixin({
+          toast: false,
+          position: 'center',
+          showConfirmButton: false,
+          // confirmButtonColor: '#86ccca',
+          timer: 3000,
+          timerProgressBar: false,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+        e.preventDefault();
 
-          var allVals = [];  
-          $(".sub_chk:checked").each(function() {  
-              allVals.push($(this).attr('data-id'));
-          });  
+        var allVals = [];
+        $(".sub_chk:checked").each(function() {
+          allVals.push($(this).attr('data-id'));
+        });
 
-          if(allVals.length <=0)  
-          {  
-              alert("Data not selected!");  
-          }  else {  
-            $("#modal-proses").modal('show');
-            var join_selected_values = allVals.join(","); 
-            var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+        if (allVals.length <= 0) {
+          alert("Data not selected!");
+        } else {
+          $("#modal-proses").modal('show');
+          var join_selected_values = allVals.join(",");
+          var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
             csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-            $.ajax({
-                url: "<?php echo base_url()?>admin/produk/sinkron_dipilih",
-                type: 'POST',
-                dataType: 'JSON', 
-                data: {ids: join_selected_values, [csrfName]: csrfHash},
-                success: function (data) {
-                  // console.log(data);
-                  if (data.sukses) {
-                    $("#modal-proses").modal('hide'); 
-                    Toast.fire({
-                      icon: 'success',
-                      title: 'Sukses!',
-                      text: data.sukses,
-                    }).then(function(){
-                      window.location.replace("<?php echo base_url()?>admin/produk");
-                    });
-                  }
-                  // console.log(data);
-                  // $(".sub_chk:checked").each(function() {  
-                  //     $(this).parents("tr").remove();
-                  // });
-                  // alert("Item Deleted successfully.");
-                },  
-                error: function (data) {
-                    alert(data.responseText);
-                }
-            });
-          } 
+          $.ajax({
+            url: "<?php echo base_url() ?>admin/produk/sinkron_dipilih",
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+              ids: join_selected_values,
+              [csrfName]: csrfHash
+            },
+            success: function(data) {
+              // console.log(data);
+              if (data.sukses) {
+                $("#modal-proses").modal('hide');
+                Toast.fire({
+                  icon: 'success',
+                  title: 'Sukses!',
+                  text: data.sukses,
+                }).then(function() {
+                  window.location.replace("<?php echo base_url() ?>admin/produk");
+                });
+              }
+              // console.log(data);
+              // $(".sub_chk:checked").each(function() {  
+              //     $(this).parents("tr").remove();
+              // });
+              // alert("Item Deleted successfully.");
+            },
+            error: function(data) {
+              alert(data.responseText);
+            }
+          });
+        }
       });
 
       $('#btn-delete-pilih').on('click', function(e) {
-          const Toast = Swal.mixin({
-            toast: false,
-            position: 'center',
-            showConfirmButton: false,
-            // confirmButtonColor: '#86ccca',
-            timer: 3000,
-            timerProgressBar: false,
-            didOpen: (toast) => {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-          })
-          e.preventDefault();
+        const Toast = Swal.mixin({
+          toast: false,
+          position: 'center',
+          showConfirmButton: false,
+          // confirmButtonColor: '#86ccca',
+          timer: 3000,
+          timerProgressBar: false,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+        e.preventDefault();
 
-          var allVals = [];  
-          $(".sub_chk:checked").each(function() {  
-              allVals.push($(this).attr('data-id'));
-          });  
+        var allVals = [];
+        $(".sub_chk:checked").each(function() {
+          allVals.push($(this).attr('data-id'));
+        });
 
-          if(allVals.length <=0)  
-          {  
-              alert("Data not selected!");  
-          }  else {  
+        if (allVals.length <= 0) {
+          alert("Data not selected!");
+        } else {
 
-              var check = confirm("Are you sure you want to delete this row?");  
-              if(check == true){  
+          var check = confirm("Are you sure you want to delete this row?");
+          if (check == true) {
 
-                  var join_selected_values = allVals.join(","); 
-                  var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
-                  csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-                  $.ajax({
-                      url: "<?php echo base_url()?>admin/produk/hapus_dipilih",
-                      type: 'POST',
-                      dataType: 'JSON', 
-                      data: {ids: join_selected_values, [csrfName]: csrfHash},
-                      success: function (data) {
-                        // console.log(data);
-                        if (data.sukses) {
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Sukses!',
-                            text: data.sukses,
-                          }).then(function(){
-                            window.location.replace("<?php echo base_url()?>admin/produk");
-                          });
-                        }
-                        // console.log(data);
-                        // $(".sub_chk:checked").each(function() {  
-                        //     $(this).parents("tr").remove();
-                        // });
-                        // alert("Item Deleted successfully.");
-                      },  
-                      error: function (data) {
-                          alert(data.responseText);
-                      }
+            var join_selected_values = allVals.join(",");
+            var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
+              csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+            $.ajax({
+              url: "<?php echo base_url() ?>admin/produk/hapus_dipilih",
+              type: 'POST',
+              dataType: 'JSON',
+              data: {
+                ids: join_selected_values,
+                [csrfName]: csrfHash
+              },
+              success: function(data) {
+                // console.log(data);
+                if (data.sukses) {
+                  Toast.fire({
+                    icon: 'success',
+                    title: 'Sukses!',
+                    text: data.sukses,
+                  }).then(function() {
+                    window.location.replace("<?php echo base_url() ?>admin/produk");
                   });
-
-                // $.each(allVals, function( index, value ) {
-                //     $('table tr').filter("[data-row-id='" + value + "']").remove();
+                }
+                // console.log(data);
+                // $(".sub_chk:checked").each(function() {  
+                //     $(this).parents("tr").remove();
                 // });
-              }  
-          }  
+                // alert("Item Deleted successfully.");
+              },
+              error: function(data) {
+                alert(data.responseText);
+              }
+            });
+
+            // $.each(allVals, function( index, value ) {
+            //     $('table tr').filter("[data-row-id='" + value + "']").remove();
+            // });
+          }
+        }
       });
-  });
-  $(document).ready( function () {
-    $('#datatable').DataTable();
-  } );
+    });
+    $(document).ready(function() {
+      $('#datatable').DataTable();
+    });
   </script>
 
 </div>
 <!-- ./wrapper -->
 
 </body>
+
 </html>
