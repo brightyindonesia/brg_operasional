@@ -23,7 +23,7 @@ class Keluar extends CI_Controller {
 		parent::__construct();
 		$this->data['module'] = 'Penjualan Produk';
 
-	    $this->load->model(array('Bahan_kemas_model', 'Vendor_model', 'Venmasaccess_model', 'Produk_model', 'Toko_model', 'Tokproaccess_model', 'Kurir_model', 'Keluar_model', 'Keluar_sementara_model', 'Paket_model', 'Resi_model', 'Dashboard_model', 'Status_transaksi_model', 'Keyword_model', 'Resi_model', 'Retur_model'));
+	    $this->load->model(array('Bahan_kemas_model', 'Vendor_model', 'Venmasaccess_model', 'Produk_model', 'Toko_model', 'Tokproaccess_model', 'Kurir_model', 'Keluar_model', 'Keluar_sementara_model', 'Paket_model', 'Resi_model', 'Dashboard_model', 'Status_transaksi_model', 'Keyword_model', 'Resi_model', 'Retur_model', 'Membership_model'));
 
 	    $this->data['company_data']    					= $this->Company_model->company_profile();
 			$this->data['layout_template']    			= $this->Template_model->layout();
@@ -1315,7 +1315,7 @@ class Keluar extends CI_Controller {
 											'<td colspan="2">'.$val_detail->nama_produk.'</td>'.
 										'</tr>';
 						}
-			
+
             $row = array();
             $row['nomor_pesanan'] = $data->nomor_pesanan;
             $row['tanggal'] = date('d-m-Y', strtotime($data->tgl_penjualan));
@@ -1334,6 +1334,9 @@ class Keluar extends CI_Controller {
             $row['jumlah_diterima'] = $data->jumlah_diterima;
 			$row['total_qty'] = $data->total_qty;
 			$row['jumlah_pesanan'] = $data->jumlah_pesanan;
+			$row['tier'] = $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual) ? $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->tier : '';
+			// die(print_r($this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->x_poin));
+			$row['poin'] = $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual) ? $data->jumlah_pesanan * $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->x_poin : '';
 			$row['total_harga_jual'] = 'Rp. ' . number_format($data->total_harga_jual,0,",",".");
             if ($data->tgl_diterima == NULL) {
             	$row['tgl_diterima'] = "-";
@@ -5923,7 +5926,6 @@ class Keluar extends CI_Controller {
 		$qty_max = $this->input->get('qty_max');
 		$data['title']	= "Export Data Customer Insight Per Tanggal ".$start." - ".$end."_".date("H_i_s");
         $lists = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max);
-		// die(print_r($lists));
 		// PHPOffice
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
@@ -6053,6 +6055,30 @@ class Keluar extends CI_Controller {
 		$writer->save('php://output');
 
 		die();
+	}
+
+	public function dashboard_customer_insight() {
+		$this->data['page_title'] = 'Dashboard Insight Customer';
+
+		$start = (substr($this->input->get('periodik'), 0, 10));
+		$end = (substr($this->input->get('periodik'), 13, 24));
+
+		$this->data['jumlah_invoice'] = $this->input->get('periodik') ? $this->db->query("SELECT nomor_pesanan FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ?", array($start, $end))->num_rows() : $this->db->query("SELECT * FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m') = ".date('Y-m'))->num_rows();
+		$this->data['qty_harga'] = $this->input->get('periodik') ? $this->db->query("SELECT SUM(qty) AS qty, AVG(harga) AS total_harga FROM detail_penjualan INNER JOIN penjualan ON detail_penjualan.nomor_pesanan = penjualan.nomor_pesanan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ?", array($start, $end))->row() : $this->db->query("SELECT SUM(qty) AS qty, AVG(harga) AS total_harga FROM detail_penjualan INNER JOIN penjualan ON detail_penjualan.nomor_pesanan = penjualan.nomor_pesanan WHERE date_format(tgl_penjualan, '%Y-%m') = ?", array(date('Y-m')))->row();
+		$this->data['avg_order_number'] = $this->input->get('periodik') ? $this->db->query("SELECT AVG(qty) as avg_order_number FROM penjualan INNER JOIN detail_penjualan ON penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ?", array($start, $end))->row() : $this->db->query("SELECT AVG(qty) as avg_order_number FROM penjualan INNER JOIN detail_penjualan ON penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan WHERE date_format(tgl_penjualan, '%Y-%m') = ?", array(date('Y-m')))->row();
+		$this->data['jumlah_pembeli'] = $this->input->get('periodik') ? $this->db->query("SELECT DISTINCT hp_penerima FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ?", array($start, $end))->num_rows() : $this->db->query("SELECT DISTINCT nama_penerima,hp_penerima FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m') = ?", array(date('Y-m')))->num_rows();
+		$this->data['pembeli_repeat_order'] = $this->input->get('periodik') ? $this->db->query("SELECT nama_penerima,hp_penerima FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ? GROUP BY hp_penerima HAVING COUNT(hp_penerima) > 1", array($start, $end))->num_rows() : $this->db->query("SELECT nama_penerima,hp_penerima FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m') = ? GROUP BY hp_penerima HAVING COUNT(hp_penerima) > 1", array(date('Y-m')))->num_rows();
+		$this->data['pembeli_baru'] = $this->input->get('periodik') ? $this->db->query("SELECT COUNT(DISTINCT hp_penerima) as pembeli_baru FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m-%d') >= ? AND date_format(tgl_penjualan, '%Y-%m-%d') <= ? AND hp_penerima IN (SELECT hp_penerima FROM penjualan GROUP BY hp_penerima HAVING COUNT(*)=1)", array($start, $end))->row() : $this->db->query("SELECT COUNT(DISTINCT hp_penerima) as pembeli_baru FROM penjualan WHERE date_format(tgl_penjualan, '%Y-%m') = ? AND hp_penerima IN (SELECT hp_penerima FROM penjualan GROUP BY hp_penerima HAVING COUNT(*)=1)", array(date('Y-m')))->row();
+		// die(print_r($this->data['pembeli_baru']));
+		if($this->data['pembeli_repeat_order'] > 0 && $this->data['jumlah_pembeli'] > 0){
+			$this->data['repeat_order'] = ($this->data['pembeli_repeat_order'] / $this->data['jumlah_pembeli']);
+		} else {
+			$this->data['repeat_order'] = 0;
+		}
+
+		// $this->data['repeat_order'] = @($this->data['pembeli_repeat_order'] / $this->data['jumlah_pembeli']) === false ? 0 : ($this->data['pembeli_repeat_order'] / $this->data['jumlah_pembeli']);
+
+		$this->load->view('back/keluar/dashboard_insight', $this->data);
 	}
 
 }

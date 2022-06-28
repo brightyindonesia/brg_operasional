@@ -24,7 +24,7 @@
       } ?>
       <div id="message-validasi-diterima"></div>
       <div class="row">
-        <div class="col-sm-3">
+        <!-- <div class="col-sm-3">
 
 
           <div class="box box-primary no-border">
@@ -61,12 +61,12 @@
 
 
 
-        </div>
+        </div> -->
 
-        <div class="col-sm-9">
+        <div class="col-sm-12">
           <div class="nav-tabs-custom">
             <div class="active impor-table tab-pane" id="impor-table">
-              <?php include('tab_content/table_customer_insight.php'); ?>
+              <?php include('tab_content/table_membership_insight.php'); ?>
             </div>
           </div>
 
@@ -125,7 +125,7 @@
     )
 
     function refresh_table() {
-      $('#table-customer-insight').DataTable().ajax.reload();
+      $('#table-listing-membership').DataTable().ajax.reload();
       $('#table-penjualan-penjualan').DataTable().ajax.reload();
     }
 
@@ -162,32 +162,7 @@
 
     $(document).ready(function() {
 
-      $('#range-date').on('change', function() {
-        refresh_table();
-      });
-
-      $('#provinsi').on('change', function() {
-        refresh_table();
-      });
-
-      $('#kabupaten').on('change', function() {
-        refresh_table();
-      });
-
-      $('#belanja_max').on('change', function() {
-        refresh_table();
-      });
-
-      $('#belanja_min').on('change', function() {
-        refresh_table();
-      });
-
-      
-      $('#qty_min').on('change', function() {
-        refresh_table();
-      });
-
-      $('#qty_max').on('change', function() {
+      $('#tier').on('change', function() {
         refresh_table();
       });
 
@@ -212,7 +187,7 @@
 
       
 
-      var table_customer_insight = $('#table-customer-insight').DataTable({
+      var table_customer_insight = $('#table-listing-membership').DataTable({
         "iDisplayLength": 50,
         "deferRender": true,
         "processing": true,
@@ -221,25 +196,16 @@
         "autoWidth": false,
         "bAutoWidth": false,
         'ajax': {
-          'url': '<?php echo base_url() ?>admin/keluar/get_data_customer_insight',
+          'url': '<?php echo base_url() ?>admin/Membership/get_data_membership_listing',
           'data': function(d) {
 
-            d.periodik = $('#range-date').val();
-            d.provinsi = $('#provinsi').val();
-            d.kabupaten = $('#kabupaten').val();
-            d.belanja_min = $('#belanja_min').val();
-            d.belanja_max = $('#belanja_max').val();
-            d.qty_min = $('#qty_min').val();
-            d.qty_max = $('#qty_max').val();
+            d.tier = $('#tier').val();
             // dasbor_list_count();
             // dasbor_list_count_penjualan();
           }
         },
         'columns': [{
-            "className": 'details-control-impor',
-            "orderable": false,
-            "data": null,
-            "defaultContent": ''
+            data: 'no',
           },
           {
             data: "nama_penerima"
@@ -249,16 +215,10 @@
             data: "hp_penerima"
           },
           {
-            data: "total_qty"
-          },
-          {
-            data: "jumlah_pesanan"
+            data: "total_harga_jual"
           },
           {
             data: "poin"
-          },
-          {
-            data: "total_harga_jual"
           },
           // { data: "total_harga"},
 
@@ -280,7 +240,7 @@
       });
 
       // Add event listener for opening and closing details
-      $('#table-customer-insight').on('click', 'td.details-control-impor', function() {
+      $('#table-listing-membership').on('click', 'td.details-control-impor', function() {
         var tr = $(this).closest('tr');
         var row = table_customer_insight.row(tr);
 
