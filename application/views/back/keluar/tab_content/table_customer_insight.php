@@ -13,9 +13,8 @@
             <th width="27%" style="text-align: center">No. Hp</th>
             <th style="text-align: center">QTY</th>
             <th style="text-align: center">Frequency</th>
-            <th style="text-align: center">Poin</th>
             <th style="text-align: center">Total Belanja</th>
-
+            <th style="text-align: center">Terakhir Order</th>
           </tr>
         </thead>
       </table>

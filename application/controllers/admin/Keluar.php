@@ -1299,7 +1299,11 @@ class Keluar extends CI_Controller {
 		$belanja_max = $this->input->get('belanja_max');
 		$qty_min = $this->input->get('qty_min');
 		$qty_max = $this->input->get('qty_max');
-        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max);
+		$columnIndex = $this->input->get('order')[0]['column']; // Column index
+		$columnName = $this->input->get('columns')[$columnIndex]['data']; // Column name
+		$columnSortOrder = $this->input->get('order')[0]['dir'];
+		$searchValue = $this->input->get('search')['value'];
+        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $columnName, $columnSortOrder, $searchValue);
         $dataJSON = array();
         foreach ($list as $data) {
 			$get_detail_penjualan = $this->Keluar_model->get_detail_by_cust_data($data->nama_penerima, $data->hp_penerima, $start, $end);
@@ -1334,9 +1338,7 @@ class Keluar extends CI_Controller {
             $row['jumlah_diterima'] = $data->jumlah_diterima;
 			$row['total_qty'] = $data->total_qty;
 			$row['jumlah_pesanan'] = $data->jumlah_pesanan;
-			$row['tier'] = $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual) ? $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->tier : '';
-			// die(print_r($this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->x_poin));
-			$row['poin'] = $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual) ? $data->jumlah_pesanan * $this->Membership_model->getTierPoinByTotalOrder($data->total_harga_jual)->x_poin : '';
+			$row['tgl_terakhir_order'] = $data->tgl_terakhir_order;
 			$row['total_harga_jual'] = 'Rp. ' . number_format($data->total_harga_jual,0,",",".");
             if ($data->tgl_diterima == NULL) {
             	$row['tgl_diterima'] = "-";

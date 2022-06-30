@@ -6,6 +6,7 @@ class Membership extends CI_Controller{
   public function __construct()
   {
     parent::__construct();
+    date_default_timezone_set("Asia/Jakarta");
 
     $this->data['module'] = 'Membership';
 
@@ -64,23 +65,23 @@ class Membership extends CI_Controller{
         'type'          => 'number',
         'value'         => $this->form_validation->set_value('x_poin'),
       ];
-      $this->data['min_belanja'] = [
-        'name'          => 'min_belanja',
-        'id'            => 'min_belanja',
+      $this->data['min_poin'] = [
+        'name'          => 'min_poin',
+        'id'            => 'min_poin',
         'class'         => 'form-control',
         'autocomplete'  => 'off',
         'required'      => '',
         'type'          => 'number',
-        'value'         => $this->form_validation->set_value('min_belanja'),
+        'value'         => $this->form_validation->set_value('min_poin'),
       ];
-      $this->data['max_belanja'] = [
-        'name'          => 'max_belanja',
-        'id'            => 'max_belanja',
+      $this->data['max_poin'] = [
+        'name'          => 'max_poin',
+        'id'            => 'max_poin',
         'class'         => 'form-control',
         'autocomplete'  => 'off',
         'required'      => '',
         'type'          => 'number',
-        'value'         => $this->form_validation->set_value('max_belanja'),
+        'value'         => $this->form_validation->set_value('max_poin'),
       ];
 
     $this->load->view('back/membership/membership_add', $this->data);
@@ -90,8 +91,8 @@ class Membership extends CI_Controller{
   {
     $this->form_validation->set_rules('tier', 'Tier Name', 'trim|required');
     $this->form_validation->set_rules('x_poin', 'x Poin', 'trim|required');
-    $this->form_validation->set_rules('min_belanja', 'Min Belanja', 'trim|required');
-    $this->form_validation->set_rules('max_belanja', 'Max Belanja', 'trim|required');
+    $this->form_validation->set_rules('min_poin', 'Min Poin', 'trim|required');
+    $this->form_validation->set_rules('max_poin', 'Max Poin', 'trim|required');
 
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
@@ -104,8 +105,8 @@ class Membership extends CI_Controller{
       $data = array(
         'tier'     => $this->input->post('tier'),
         'x_poin' => $this->input->post('x_poin'),
-        'min_belanja' => $this->input->post('min_belanja'),
-        'max_belanja' => $this->input->post('max_belanja'),
+        'min_poin' => $this->input->post('min_poin'),
+        'max_poin' => $this->input->post('max_poin'),
       );
 
       $this->Membership_model->insert($data);
@@ -146,16 +147,16 @@ class Membership extends CI_Controller{
 	      'autocomplete'  => 'off',
 	      'required'      => '',
 	    ];
-        $this->data['min_belanja'] = [
-	      'name'          => 'min_belanja',
-	      'id'            => 'min_belanja',
+        $this->data['min_poin'] = [
+	      'name'          => 'min_poin',
+	      'id'            => 'min_poin',
 	      'class'         => 'form-control',
 	      'autocomplete'  => 'off',
 	      'required'      => '',
 	    ];
-        $this->data['max_belanja'] = [
-	      'name'          => 'max_belanja',
-	      'id'            => 'max_belanja',
+        $this->data['max_poin'] = [
+	      'name'          => 'max_poin',
+	      'id'            => 'max_poin',
 	      'class'         => 'form-control',
 	      'autocomplete'  => 'off',
 	      'required'      => '',
@@ -175,8 +176,8 @@ class Membership extends CI_Controller{
   {
     $this->form_validation->set_rules('tier', 'Tier Name', 'trim|required');
     $this->form_validation->set_rules('x_poin', 'x Poin', 'trim|required');
-    $this->form_validation->set_rules('min_belanja', 'Min Belanja', 'trim|required');
-    $this->form_validation->set_rules('max_belanja', 'Max Belanja', 'trim|required');
+    $this->form_validation->set_rules('min_poin', 'Min Poin', 'trim|required');
+    $this->form_validation->set_rules('max_poin', 'Max Poin', 'trim|required');
 
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
@@ -189,8 +190,8 @@ class Membership extends CI_Controller{
 			$data = array(
         'tier'     => $this->input->post('tier'),
         'x_poin' => $this->input->post('x_poin'),
-        'min_belanja' => $this->input->post('min_belanja'),
-        'max_belanja' => $this->input->post('max_belanja'),
+        'min_poin' => $this->input->post('min_poin'),
+        'max_poin' => $this->input->post('max_poin'),
       );
 
       $this->Membership_model->update($this->input->post('id_membership'),$data);
@@ -254,6 +255,7 @@ class Membership extends CI_Controller{
       $tiers[$key]['y'] = $this->Membership_model->get_count_membership_by_id($tahun, $tier->id_membership);
     }
     echo json_encode($tiers);
+    // print_r($this->Membership_model->get_count_membership_by_id($tahun, 2));
   }
 
   public function get_insight_membership()

@@ -731,9 +731,9 @@ class Keluar_model extends CI_Model
     return $this->db->get($this->table)->result();
   }
 
-  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max)
+  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $columnName, $columnSortOrder, $searchValue)
   {
-    $this->db->select('*, SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual');
+    $this->db->select('*, SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual, MAX(tgl_penjualan) as tgl_terakhir_order');
     $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
 
     // $this->db->where( array(  "tgl_penjualan >="   => $first,
@@ -763,6 +763,11 @@ class Keluar_model extends CI_Model
       $this->db->having('total_qty <=', $qty_max);
     }
 
+    if ($searchValue != '') {
+      $this->db->like('nama_penerima', $searchValue, 'both');
+      $this->db->or_like('hp_penerima', $searchValue, 'both');
+    }
+    $this->db->order_by($columnName, $columnSortOrder);
 
     $this->db->where(array(
       "date_format(tgl_penjualan, '%Y-%m-%d') >="   => $first,

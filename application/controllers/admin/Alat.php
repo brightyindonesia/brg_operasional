@@ -216,12 +216,28 @@ class Alat extends CI_Controller
 						$ocr = new TesseractOCR(base_url('uploads/ocr/' . $val_dataInfo['file_name']));
 						$ocr->executable('C:\Program Files\Tesseract-OCR\tesseract.exe');
 						$ocr->lang('eng');
-						$content = $ocr->run();
+						try {
+							$content = $ocr->run();
+						} catch (Exception $e) {
+							$msg  = array(
+								'validasi'	=> 'Cek kembali gambar yang anda input!'
+							);
+							echo json_encode($msg);
+							die;
+						}
 						$dataOCR[] = $content;
 					} else {
 						$ocr = new TesseractOCR('/home/brighty/public_html/uploads/ocr/' . $val_dataInfo['file_name']);
 						$ocr->lang('eng');
-						$content = $ocr->run();
+						try {
+							$content = $ocr->run();
+						} catch (Exception $e) {
+							$msg  = array(
+								'validasi'	=> 'Cek kembali gambar yang anda input!'
+							);
+							echo json_encode($msg);
+							die;
+						}
 						$dataOCR[] = $content;
 					}
 
@@ -327,6 +343,14 @@ class Alat extends CI_Controller
 							}
 						}
 					}
+				}
+				if(empty($nama) || empty($hp) || empty($resi)){
+					$msg  = array(
+						'validasi'	=> 'Cek kembali gambar yang anda input!'
+					);
+	
+					echo json_encode($msg);
+					die;
 				}
 
 				// echo print_r($store_nama_hp);

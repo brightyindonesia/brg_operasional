@@ -255,11 +255,11 @@
             data: "jumlah_pesanan"
           },
           {
-            data: "poin"
-          },
-          {
             data: "total_harga_jual"
           },
+          {
+            data: "tgl_terakhir_order"
+          }
           // { data: "total_harga"},
 
           // { data: "hapus"},

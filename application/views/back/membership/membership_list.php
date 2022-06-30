@@ -32,8 +32,8 @@
                   <th style="text-align: center">No</th>
                   <th style="text-align: center">Tier</th>
                   <th style="text-align: center">x Poin</th>
-                  <th style="text-align: center">Min Belanja</th>
-                  <th style="text-align: center">Max Belanja</th>
+                  <th style="text-align: center">Min Poin</th>
+                  <th style="text-align: center">Max Poin</th>
                   <th style="text-align: center">Action</th>
                 </tr>
               </thead>
@@ -47,8 +47,8 @@
                     <td style="text-align: center"><?php echo $no++ ?></td>
                     <td style="text-align: left"><?php echo $data->tier ?></td>
                     <td style="text-align: left"><?php echo $data->x_poin ?></td>
-                    <td style="text-align: left"><?php echo 'Rp. ' . number_format($data->min_belanja,0,",",".") ?></td>
-                    <td style="text-align: left"><?php echo 'Rp. ' . number_format($data->max_belanja,0,",",".") ?></td>
+                    <td style="text-align: left"><?php echo $data->min_poin ?></td>
+                    <td style="text-align: left"><?php echo $data->max_poin ?></td>
                     <td style="text-align: center"><?php echo $edit ?> <?php echo $delete ?></td>
                   </tr>
                 <?php } ?>
@@ -58,8 +58,8 @@
                   <th style="text-align: center">No</th>
                   <th style="text-align: center">Tier</th>
                   <th style="text-align: center">x Poin</th>
-                  <th style="text-align: center">Min Belanja</th>
-                  <th style="text-align: center">Max Belanja</th>
+                  <th style="text-align: center">Min Poin</th>
+                  <th style="text-align: center">Max Poin</th>
                   <th style="text-align: center">Action</th>
                 </tr>
               </tfoot>

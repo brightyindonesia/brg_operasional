@@ -1,5 +1,5 @@
-<?php
-defined("BASEPATH") or exit("No direct script access allowed");
+<?php date_default_timezone_set("Asia/Jakarta");
+defined("BASEPATH") or exit("No direct script access allowed"); 
 
 class Membership_model extends CI_Model
 {
@@ -9,12 +9,13 @@ class Membership_model extends CI_Model
 
     function get_all()
     {
+        $this->db->order_by('min_poin', 'ASC');
         return $this->db->get($this->table)->result();
     }
 
     function get_all_combobox()
     {
-        $this->db->order_by("tier");
+        $this->db->order_by("min_poin", 'ASC');
         $data = $this->db->get($this->table);
 
         if ($data->num_rows() > 0) {
@@ -54,18 +55,18 @@ class Membership_model extends CI_Model
         $this->db->delete($this->table);
     }
 
-    function getTierPoinByTotalOrder($total_order)
+    function getTierPoinByTotalPoin($total_order)
     {
         $this->db->select("tier, x_poin");
-        $this->db->where("min_belanja >=", $total_order);
-        $this->db->or_where("max_belanja >", $total_order);
+        $this->db->where("min_poin >=", $total_order);
+        $this->db->or_where("max_poin >", $total_order);
         $this->db->limit(1);
         return $this->db->get($this->table)->row();
     }
 
     function get_datatable_membership_insight($tier)
     {
-        $this->db->select("min_belanja, max_belanja");
+        $this->db->select("min_poin, max_poin");
         if ($tier != "") {
             $this->db->where("tier", $tier);
         }
@@ -90,8 +91,8 @@ class Membership_model extends CI_Model
                 ? $_GET["length"]
                 : 50;
 
-        $this->db->having("SUM(harga_jual) >=", $membership->min_belanja);
-        $this->db->having("SUM(harga_jual) <", $membership->max_belanja);
+        $this->db->having("(SUM(harga_jual)/10000) >=", $membership->min_poin);
+        $this->db->having("(SUM(harga_jual)/10000) <", $membership->max_poin);
 
         $this->db->group_by("nama_penerima, hp_penerima");
         $this->db->limit($length, $start);
@@ -107,11 +108,11 @@ class Membership_model extends CI_Model
             $row["hp_penerima"] = $data->hp_penerima;
             $row["total_harga_jual"] =
                 "Rp. " . number_format($data->total_harga_jual, 0, ",", ".");
-            $row["tier"] = $this->Membership_model->getTierPoinByTotalOrder(
-                $data->total_harga_jual
+            $row["tier"] = $this->Membership_model->getTierPoinByTotalPoin(
+                $data->total_harga_jual / 10000
             )
-                ? $this->Membership_model->getTierPoinByTotalOrder(
-                    $data->total_harga_jual
+                ? $this->Membership_model->getTierPoinByTotalPoin(
+                    $data->total_harga_jual / 10000
                 )->tier
                 : "";
             $row["poin"] = $data->total_harga_jual / 10000;
@@ -126,29 +127,34 @@ class Membership_model extends CI_Model
 
     function get_count_membership_by_id($year, $tier)
     {
-        $this->db->select("min_belanja, max_belanja");
+        $this->db->select("min_poin, max_poin");
         if ($tier != "") {
             $this->db->where($this->id, $tier);
         }
         $this->db->limit(1);
         $membership = $this->db->get($this->table)->row();
 
+        // $this->db->distinct();
+        // $this->db->select('hp_penerima');
         $this->db->join(
             "detail_penjualan",
             "penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan"
         );
 
-        $this->db->having("SUM(harga_jual) >=", $membership->min_belanja);
-        $this->db->having("SUM(harga_jual) <", $membership->max_belanja);
-        $this->db->where("YEAR(created)", $year);
-
         $this->db->group_by("nama_penerima, hp_penerima");
+        $this->db->having("(SUM(harga_jual)/10000) >=", $membership->min_poin);
+        $this->db->having("(SUM(harga_jual)/10000) <", $membership->max_poin);
+        $this->db->where("tgl_penjualan >=", date('Y-m-d', mktime(false, false, false, 1, 1, $year)));
+        $this->db->where("tgl_penjualan <=", date('Y-m-d',mktime(false, false, false, 12, 1, $year)));
+
+        // $q = $this->db->query("SELECT (SELECT COUNT(nomor_pesanan) FROM penjualan WHERE YEAR(tgl_penjualan) = $year) as total_count FROM `penjualan` JOIN `detail_penjualan` ON `penjualan`.`nomor_pesanan` = `detail_penjualan`.`nomor_pesanan` WHERE YEAR(tgl_penjualan) = $year GROUP BY nama_penerima, hp_penerima HAVING (SUM(harga_jual)/10000) >= $membership->min_poin AND (SUM(harga_jual)/10000) < $membership->max_poin")->row();
         return $this->db->get("penjualan")->num_rows();
+        // die(print_r($this->db->query("SELECT hp_penerima FROM penjualan WHERE tgl_penjualan >= '2023-1-1' AND tgl_penjualan <= '2023-12-31' GROUP BY nama_penerima, hp_penerima HAVING (SUM(harga_jual)/10000) >= 5 AND (SUM(harga_jual)/10000) < 100")->num_rows()));
     }
 
     function get_data_every_month_by_year($year, $tier)
     {
-        $this->db->select("min_belanja, max_belanja");
+        $this->db->select("min_poin, max_poin");
         if ($tier != "") {
             $this->db->where($this->id, $tier);
         }
@@ -156,25 +162,34 @@ class Membership_model extends CI_Model
         $membership = $this->db->get($this->table)->row();
 
         $data = [];
+        $i = 0;
         for ($m = 1; $m <= 12; $m++) {
-            $month = strtotime(date("F Y", gmmktime(0, 0, 0, $m, 1, $year)));
+            $month = mktime(false, false, false, $m, 1, $year);
             // echo $month. '<br>';
+            // $q = $this->db->query("SELECT (SELECT COUNT(nomor_pesanan) FROM penjualan WHERE YEAR(tgl_penjualan) = $year AND MONTH(tgl_penjualan) = $m) as total_count FROM `penjualan` JOIN `detail_penjualan` ON `penjualan`.`nomor_pesanan` = `detail_penjualan`.`nomor_pesanan` WHERE YEAR(tgl_penjualan) = $year AND MONTH(tgl_penjualan) = $m GROUP BY nama_penerima, hp_penerima HAVING (SUM(harga_jual)/10000) >= $membership->min_poin AND (SUM(harga_jual)/10000) < $membership->max_poin")->row();
+            // $this->db->distinct();
+            // $this->db->select('hp_penerima');
             $this->db->join(
                 "detail_penjualan",
                 "penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan"
             );
 
-            $this->db->having("SUM(harga_jual) >=", $membership->min_belanja);
-            $this->db->having("SUM(harga_jual) <", $membership->max_belanja);
-            $this->db->where("MONTH(created)", date('m', $month));
-            $this->db->where("YEAR(created)", $year);
-
+            // $this->db->where("MONTH(tgl_penjualan)", date('m', $month));
+            // $this->db->where("YEAR(tgl_penjualan)", date('Y', $month));
+            $this->db->where('DATE_FORMAT(tgl_penjualan, "%Y%m") = ', date('Ym', strtotime('01-' . date('m', $month) . '-' . $year)));
             $this->db->group_by("nama_penerima, hp_penerima");
+            // $this->db->group_by('MONTH(created), YEAR(created)');
+            $this->db->having("(SUM(harga_jual)/10000) >=", $membership->min_poin);
+            $this->db->having("(SUM(harga_jual)/10000) <", $membership->max_poin);
+
             // die(print_r($this->db->get("penjualan")->result()));
             // return $this->db->get("penjualan")->num_rows();
-            $data[(int)$m-1][] = $month * 1000;
-            $data[(int)$m-1][] = $this->db->get("penjualan")->num_rows();
+            $data[$i][] = $month * 1000;
+            $data[$i][] = $this->db->get("penjualan")->num_rows();
+            // $data[$i][] = $q ? (int) $q->total_count : 0;
+            $i++;
         }
+        // die(print_r($this->db->query('SELECT DISTINCT hp_penerima FROM penjualan WHERE MONTH(tgl_penjualan) = 1 AND YEAR(tgl_penjualan) = 2022 GROUP BY nama_penerima,hp_penerima HAVING (SUM(harga_jual)/10000) >= 5 AND (SUM(harga_jual)/10000) < 100')->num_rows()));
         return $data;
     }
 }

@@ -72,6 +72,12 @@
     <script src="<?php echo base_url('assets/plugins/highcharts/js/') ?>data.js"></script>
     <script src="<?php echo base_url('assets/plugins/highcharts/js/') ?>drilldown.js"></script>
     <script>
+        Highcharts.setOptions({
+            time: {
+                timezone: 'Asia/Jakarta'
+            }
+            });
+
         window.onload = function() {
                 $("#modal-proses").modal('show');
                 $.ajax({
@@ -90,26 +96,14 @@
                         title: {
                             text: 'Jumlah Member di tahun ' + tahun
                         },
-                        tooltip: {
-                            // pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                        },
-                        accessibility: {
-                            point: {
-                                valueSuffix: '%'
-                            }
-                        },
                         plotOptions: {
                             pie: {
                                 allowPointSelect: true,
                                 cursor: 'pointer',
-                                dataLabels: {
-                                    enabled: true,
-                                    // format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                                }
                             }
                         },
                         series: [{
-                            name: 'Brands',
+                            name: 'Jumlah',
                             colorByPoint: true,
                             data: data
                         }]
@@ -129,11 +123,6 @@
                         title: {
                             text: 'Statistik Member di tahun ' + tahun
                         },
-                        subtitle: {
-                            text: '* Jane\'s banana consumption is unknown',
-                            align: 'right',
-                            verticalAlign: 'bottom'
-                        },
                         legend: {
                             layout: 'vertical',
                             align: 'left',
@@ -146,9 +135,11 @@
                         },
                         xAxis: {
                             type: 'datetime',
-                            // tickInterval: 1000 * 3600 * 24 * 30, // 1 month
+                            tickInterval: 1000 * 3600 * 24 * 30, // 1 month
                             labels: {
-                                format: '{value:%b %Y}'
+                                formatter: function() {
+                                    return Highcharts.dateFormat('%b %Y', new Date(this.value));
+                                }
                             }
                         },
                         yAxis: {
@@ -250,7 +241,7 @@
                             },
                             xAxis: {
                                 type: 'datetime',
-                                // tickInterval: 1000 * 3600 * 24 * 30, // 1 month
+                                tickInterval: 1000 * 3600 * 24 * 30, // 1 month
                                 labels: {
                                     format: '{value:%b %Y}'
                                 }

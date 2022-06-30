@@ -30,11 +30,11 @@
             <div class="form-group"><label>x Poin (*)</label>
               <?php echo form_input($x_poin) ?>
             </div>
-            <div class="form-group"><label>Min Belanja (*)</label>
-              <?php echo form_input($min_belanja) ?>
+            <div class="form-group"><label>Min Poin (*)</label>
+              <?php echo form_input($min_poin) ?>
             </div>
-            <div class="form-group"><label>Max Belanja (*)</label>
-              <?php echo form_input($max_belanja) ?>
+            <div class="form-group"><label>Max Poin (*)</label>
+              <?php echo form_input($max_poin) ?>
             </div>
           </div>
           <div class="box-footer">

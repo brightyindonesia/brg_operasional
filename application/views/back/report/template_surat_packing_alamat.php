@@ -16,7 +16,7 @@
         // echo "<div style='margin-top:90px'></div>";
       }
   ?>
-    <table cellspacing="0" cellpadding="3" border="0" width="100%" style="font-size: 16px;font-weight: bold;vertical-align: text-top;margin-top:20px;margin-bottom:20px;padding: 0;">
+    <table cellspacing="0" cellpadding="3" border="0" width="100%" style="font-size: 16.4px;font-weight: bold;vertical-align: text-top;margin-top:20px;margin-bottom:20px;padding: 0;">
       <tr>
         <td valign="top" width="18%" style="border-top: 1px solid black;border-left: 1px solid black;">
           Nama Penerima
@@ -41,7 +41,7 @@
         </td>
 
         <td valign="top" style="border-right: 1px solid black;">
-          <?php echo $penerima->alamat_penerima ?>
+          <?= ucwords($penerima->alamat_penerima) ?>
         </td>
       </tr>
 

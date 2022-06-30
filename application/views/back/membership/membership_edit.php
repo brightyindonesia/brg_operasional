@@ -31,10 +31,10 @@
               <?php echo form_input($x_poin, $membership->x_poin) ?>
             </div>
             <div class="form-group"><label>Min Belanja (*)</label>
-              <?php echo form_input($min_belanja, $membership->min_belanja) ?>
+              <?php echo form_input($min_poin, $membership->min_poin) ?>
             </div>
             <div class="form-group"><label>Max Belanja (*)</label>
-              <?php echo form_input($max_belanja, $membership->max_belanja) ?>
+              <?php echo form_input($max_poin, $membership->max_poin) ?>
             </div>
           </div>
           <?php echo form_input($id_membership, $membership->id_membership) ?>
