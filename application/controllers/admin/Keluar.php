@@ -1290,8 +1290,9 @@ class Keluar extends CI_Controller {
 	    $this->load->view('back/keluar/customer_insight', $this->data);
 	}
 
-	function get_data_customer_insight()
-    {	$start = substr($this->input->get('periodik'), 0, 10);
+		function get_data_customer_insight()
+    {	
+        $start = substr($this->input->get('periodik'), 0, 10);
 		$end = substr($this->input->get('periodik'), 13, 24);
 		$provinsi = $this->input->get('provinsi');
 		$kabupaten = $this->input->get('kabupaten');
@@ -1299,11 +1300,13 @@ class Keluar extends CI_Controller {
 		$belanja_max = $this->input->get('belanja_max');
 		$qty_min = $this->input->get('qty_min');
 		$qty_max = $this->input->get('qty_max');
-		$columnIndex = $this->input->get('order')[0]['column']; // Column index
+		$freq_min = $this->input->get('freq_min');
+		$freq_max = $this->input->get('freq_max');
+				$columnIndex = $this->input->get('order')[0]['column']; // Column index
 		$columnName = $this->input->get('columns')[$columnIndex]['data']; // Column name
 		$columnSortOrder = $this->input->get('order')[0]['dir'];
 		$searchValue = $this->input->get('search')['value'];
-        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $columnName, $columnSortOrder, $searchValue);
+        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue);
         $dataJSON = array();
         foreach ($list as $data) {
 			$get_detail_penjualan = $this->Keluar_model->get_detail_by_cust_data($data->nama_penerima, $data->hp_penerima, $start, $end);
@@ -1319,7 +1322,7 @@ class Keluar extends CI_Controller {
 											'<td colspan="2">'.$val_detail->nama_produk.'</td>'.
 										'</tr>';
 						}
-
+			
             $row = array();
             $row['nomor_pesanan'] = $data->nomor_pesanan;
             $row['tanggal'] = date('d-m-Y', strtotime($data->tgl_penjualan));
@@ -1338,7 +1341,8 @@ class Keluar extends CI_Controller {
             $row['jumlah_diterima'] = $data->jumlah_diterima;
 			$row['total_qty'] = $data->total_qty;
 			$row['jumlah_pesanan'] = $data->jumlah_pesanan;
-			$row['tgl_terakhir_order'] = $data->tgl_terakhir_order;
+						$row['tgl_terakhir_order'] = $data->tgl_terakhir_order;
+
 			$row['total_harga_jual'] = 'Rp. ' . number_format($data->total_harga_jual,0,",",".");
             if ($data->tgl_diterima == NULL) {
             	$row['tgl_diterima'] = "-";
@@ -1350,8 +1354,8 @@ class Keluar extends CI_Controller {
         }
  
         $output = array(
-            "recordsTotal" => 10,
-            "recordsFiltered" => 10,
+             "recordsTotal" => $this->Keluar_model->count_all_customer_insight()->jml,
+            "recordsFiltered" =>  $this->Keluar_model->count_filter_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)->jml,
             "data" => $dataJSON,
         );
         //output dalam format JSON
@@ -5926,40 +5930,26 @@ class Keluar extends CI_Controller {
 		$belanja_max = $this->input->get('belanja_max');
 		$qty_min = $this->input->get('qty_min');
 		$qty_max = $this->input->get('qty_max');
+		$freq_min = $this->input->get('freq_min');
+		$freq_max = $this->input->get('freq_max');
 		$data['title']	= "Export Data Customer Insight Per Tanggal ".$start." - ".$end."_".date("H_i_s");
-        $lists = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max);
+        $lists = $this->Keluar_model->get_export_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max);
 		// PHPOffice
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 
-		$sheet->setCellValue('A1', 'nomor_pesanan');
-		$sheet->setCellValue('B1', 'nama_penerima');
-		$sheet->setCellValue('C1', 'hp_penerima');
-		$sheet->setCellValue('D1', 'qty');
-		$sheet->setCellValue('E1', 'frequency');
-		$sheet->setCellValue('F1', 'total_belanja');
-
+		$sheet->setCellValue('A1', 'nama_penerima');
+		$sheet->setCellValue('B1', 'hp_penerima');
+		$sheet->setCellValue('C1', 'qty');
+		$sheet->setCellValue('D1', 'frequency');
+		$sheet->setCellValue('E1', 'total_belanja');
+	$sheet->setCellValue('F1', 'tgl_terakhir_order');
         // set Row
         $rowCount = 2;
         foreach ($lists as $list) {
-        	// Nomor Pesanan
-	        if (is_numeric($list->nomor_pesanan)) {
-	          if (strlen($list->nomor_pesanan) < 15) {
-	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
-	            $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
-	          }else{
-	            $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-	            // The old way to force string. NumberFormat::FORMAT_TEXT is not
-	            // enough.
-	            // $formatted_value .= ' ';
-	            // $sheet->SetCellValue('A' . $rowCount, "'".$formatted_value);
-	            $sheet->setCellValueExplicit('A' . $rowCount, $list->nomor_pesanan, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-	          }
-	        }else{
-	          $sheet->getStyle('A' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-	          $sheet->SetCellValue('A' . $rowCount, $list->nomor_pesanan);
-	        }
-            $sheet->SetCellValue('B' . $rowCount, $list->nama_penerima);
+        	// Nama Penerima
+	      
+            $sheet->SetCellValue('A' . $rowCount, $list->nama_penerima);
 
 	        // Nomor HP
 	        if (is_numeric($list->hp_penerima)) {
@@ -5968,56 +5958,56 @@ class Keluar extends CI_Controller {
 	          	if ($firstCharacter == '0') {
 
 	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
-	          		$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-		            $sheet->setCellValueExplicit('C' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+	          		$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->setCellValueExplicit('B' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 	          	}else if ($firstCharacter == '6') {
 	          		// $sheet->getStyle('AD' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
 		           //  $sheet->SetCellValue('AD' . $rowCount, '+'.$list->hp_penerima);			          	
 
 		            $ceknoldi62 = substr($list->hp_penerima, 0, 3);
 		          	   if ($ceknoldi62 == '620') {
-		          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		          	   	$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 			            // enough.
 			            // $formatted_value .= ' ';
 			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
-			            $sheet->setCellValueExplicit('C' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+			            $sheet->setCellValueExplicit('B' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 		          	   }else{
-		          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		          	   	$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 			            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 			            // enough.
 			            // $formatted_value .= ' ';
 			            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
-			            $sheet->setCellValueExplicit('C' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+			            $sheet->setCellValueExplicit('B' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 		          	   }			
 	          	}
 	          }else{
 	          	$firstCharacter = substr($list->hp_penerima, 0, 1);
 	          	if ($firstCharacter == '0') {
 	          		$edit_no = substr_replace($list->hp_penerima,"62",0, 1);
-	          		$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          		$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 		            // enough.
 		            // $formatted_value .= ' ';
 		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
-		            $sheet->setCellValueExplicit('C' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		            $sheet->setCellValueExplicit('B' . $rowCount, $edit_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 	          	}else if ($firstCharacter == '6') {
 
 	          		$ceknoldi62 = substr($list->hp_penerima, 0, 3);
 	          	   if ($ceknoldi62 == '620') {
-	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          	   	$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 		            // enough.
 		            // $formatted_value .= ' ';
 		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
-		            $sheet->setCellValueExplicit('C' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		            $sheet->setCellValueExplicit('B' . $rowCount, substr_replace($list->hp_penerima,"62",0, 3), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 	          	   }else{
-	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+	          	   	$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
 		            // The old way to force string. NumberFormat::FORMAT_TEXT is not
 		            // enough.
 		            // $formatted_value .= ' ';
 		            // $sheet->SetCellValue('AD' . $rowCount, "'".$formatted_value);
-		            $sheet->setCellValueExplicit('C' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+		            $sheet->setCellValueExplicit('B' . $rowCount, $list->hp_penerima, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 	          	   }		          
 	          	}
 	          }
@@ -6025,23 +6015,24 @@ class Keluar extends CI_Controller {
 	          $firstCharacter = substr($list->hp_penerima, 0, 1);
 	          if ($firstCharacter == '0') {
 	          	  $edit_no = substr_replace($list->hp_penerima,"62",0, 1);	
-	      		  $sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-		          $sheet->SetCellValue('C' . $rowCount, $edit_no);
+	      		  $sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		          $sheet->SetCellValue('B' . $rowCount, $edit_no);
 	          }else if ($firstCharacter == '6') {
 	          	   $ceknoldi62 = substr($list->hp_penerima, 0, 3);
 	          	   if ($ceknoldi62 == '620') {
-		            $sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-		            $sheet->SetCellValue('C'.$rowCount, substr_replace($list->hp_penerima,"62",0, 3));	
+		            $sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+		            $sheet->SetCellValue('B'.$rowCount, substr_replace($list->hp_penerima,"62",0, 3));	
 	          	   }else{
-	          	   	$sheet->getStyle('C' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
-			        $sheet->SetCellValue('C'.$rowCount, $list->hp_penerima);	
+	          	   	$sheet->getStyle('B' . $rowCount)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+			        $sheet->SetCellValue('B'.$rowCount, $list->hp_penerima);	
 	          	   }		         		
 	          }
 	        }
 			
-			$sheet->SetCellValue('D' . $rowCount, $list->qty);
-			$sheet->SetCellValue('E' . $rowCount, $list->jumlah_pesanan);
-			$sheet->SetCellValue('F' . $rowCount, 'Rp. ' . number_format($list->total_harga_jual,0,",","."));
+			$sheet->SetCellValue('C' . $rowCount, $list->total_qty);
+			$sheet->SetCellValue('D' . $rowCount, $list->jumlah_pesanan);
+			$sheet->SetCellValue('E' . $rowCount, 'Rp. ' . number_format($list->total_harga_jual,0,",","."));
+			$sheet->SetCellValue('F' . $rowCount, $list->tgl_terakhir_order);
 
             $rowCount++;
         }

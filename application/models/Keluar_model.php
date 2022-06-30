@@ -731,7 +731,7 @@ class Keluar_model extends CI_Model
     return $this->db->get($this->table)->result();
   }
 
-  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $columnName, $columnSortOrder, $searchValue)
+  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue)
   {
     $this->db->select('*, SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual, MAX(tgl_penjualan) as tgl_terakhir_order');
     $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
@@ -762,28 +762,142 @@ class Keluar_model extends CI_Model
     if ($qty_max != '') {
       $this->db->having('total_qty <=', $qty_max);
     }
+    if ($freq_min != '') {
+      $this->db->having('jumlah_pesanan >=', $freq_min);
+    }
 
+    if ($freq_max != '') {
+      $this->db->having('jumlah_pesanan <=', $freq_max);
+    }
     if ($searchValue != '') {
       $this->db->like('nama_penerima', $searchValue, 'both');
       $this->db->or_like('hp_penerima', $searchValue, 'both');
     }
     $this->db->order_by($columnName, $columnSortOrder);
+    
+    $this->db->where(array(
+      "date_format(tgl_penjualan, '%Y-%m-%d') >="   => $first,
+      "date_format(tgl_penjualan, '%Y-%m-%d') <="   => $last
+    ));
+
+    $this->db->group_by('nama_penerima, hp_penerima');
+    $this->db->limit($_GET['length'], $_GET['start']);
+    $this->db->order_by('nama_penerima', 'asc');
+
+    return $this->db->get($this->table)->result();
+  }
+
+  public function count_filter_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)
+  {
+    $this->db->select('COUNT(penjualan.nomor_pesanan) OVER() as jml, , SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual');
+    $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
+
+    // $this->db->where( array(  "tgl_penjualan >="   => $first,
+    //                           "tgl_penjualan <="   => $last
+    // ));
+    if ($provinsi != '') {
+      $this->db->where('penjualan.provinsi', $provinsi);
+    }
+
+    if ($kabupaten != 0 && $kabupaten != '') {
+      $this->db->where('penjualan.kabupaten', $kabupaten);
+    }
+
+    if ($belanja_min != '') {
+      $this->db->having('total_harga_jual >=', $belanja_min);
+    }
+
+    if ($belanja_max != '') {
+      $this->db->having('total_harga_jual <=', $belanja_max);
+    }
+
+    if ($qty_min != '') {
+      $this->db->having('total_qty >=', $qty_min);
+    }
+
+    if ($qty_max != '') {
+      $this->db->having('total_qty <=', $qty_max);
+    }
+    if ($freq_min != '') {
+      $this->db->having('jumlah_pesanan >=', $freq_min);
+    }
+
+    if ($freq_max != '') {
+      $this->db->having('jumlah_pesanan <=', $freq_max);
+    }
 
     $this->db->where(array(
       "date_format(tgl_penjualan, '%Y-%m-%d') >="   => $first,
       "date_format(tgl_penjualan, '%Y-%m-%d') <="   => $last
     ));
 
-    $start = isset($_GET['start']) && $_GET['start'] != null ? $_GET['start'] : 0;
-    $length = isset($_GET['length']) && $_GET['length'] != null ? $_GET['length'] : 50;
+    $this->db->group_by('nama_penerima, hp_penerima');
+
+
+    return $this->db->get($this->table)->row();
+  }
+
+  public function count_all_customer_insight()
+  {
+    $this->db->select('COUNT(penjualan.nomor_pesanan) OVER() as jml');
+
+    $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
+
 
     $this->db->group_by('nama_penerima, hp_penerima');
-    $this->db->limit($length, $start);
-    $this->db->order_by('total_qty', 'desc');
+
+    return $this->db->get($this->table)->row();
+  }
+
+  public function get_export_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)
+  {
+    $this->db->select('*, SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual, MAX(tgl_penjualan) as tgl_terakhir_order');
+    $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
+
+    // $this->db->where( array(  "tgl_penjualan >="   => $first,
+    //                           "tgl_penjualan <="   => $last
+    // ));
+    if ($provinsi != '') {
+      $this->db->where('penjualan.provinsi', $provinsi);
+    }
+
+    if ($kabupaten != 0 && $kabupaten != '') {
+      $this->db->where('penjualan.kabupaten', $kabupaten);
+    }
+
+    if ($belanja_min != '') {
+      $this->db->having('total_harga_jual >=', $belanja_min);
+    }
+
+    if ($belanja_max != '') {
+      $this->db->having('total_harga_jual <=', $belanja_max);
+    }
+
+    if ($qty_min != '') {
+      $this->db->having('total_qty >=', $qty_min);
+    }
+
+    if ($qty_max != '') {
+      $this->db->having('total_qty <=', $qty_max);
+    }
+    if ($freq_min != '') {
+      $this->db->having('jumlah_pesanan >=', $freq_min);
+    }
+
+    if ($freq_max != '') {
+      $this->db->having('jumlah_pesanan <=', $freq_max);
+    }
+
+    $this->db->where(array(
+      "date_format(tgl_penjualan, '%Y-%m-%d') >="   => $first,
+      "date_format(tgl_penjualan, '%Y-%m-%d') <="   => $last
+    ));
+
+    $this->db->group_by('nama_penerima, hp_penerima');
+    $this->db->order_by('nama_penerima', 'asc');
 
     return $this->db->get($this->table)->result();
   }
-
   function get_dasbor_list($trigger, $status, $kurir, $toko, $resi, $first, $last)
   {
     $this->db->order_by('tgl_penjualan', 'desc');

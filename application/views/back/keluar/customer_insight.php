@@ -40,16 +40,23 @@
 
                   <div class="form-group"><label>Total Belanja</label>
                     <div class="row">
-                      <div class="col-lg-6 col-md-12"><input type="number" name="belanja_min" id="belanja_min" class="form-control float-left" placeholder="Minimum Total Belanja"></div>
-                      <div class="col-lg-6 col-md-12"><input type="number" name="belanja_max" id="belanja_max" class="form-control float-right" placeholder="Maximum Total Belanja"></div>
+                      <div class="col-lg-6 col-md-12"><input type="number" name="belanja_min" id="belanja_min" class="form-control float-left" placeholder="Minimum Belanja"></div>
+                      <div class="col-lg-6 col-md-12"><input type="number" name="belanja_max" id="belanja_max" class="form-control float-right" placeholder="Maximum Belanja"></div>
                     </div>
                   </div>
                   <div class="form-group"><label>Quantity</label>
-                  <div class="row">
-                    <div class="col-lg-6 col-md-12"><input type="number" name="qty_min" id="qty_min" class="form-control float-left" placeholder="Minimum Total Quantity"></div>
-                      <div class="col-lg-6 col-md-12"><input type="number" name="qty_max" id="qty_max" class="form-control float-right" placeholder="Maximum Total Quantity"></div>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-12"><input type="number" name="qty_min" id="qty_min" class="form-control float-left" placeholder="Minimum Quantity"></div>
+                      <div class="col-lg-6 col-md-12"><input type="number" name="qty_max" id="qty_max" class="form-control float-right" placeholder="Maximum Quantity"></div>
+                    </div>
                   </div>
+                  <div class="form-group"><label>Frequency</label>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-12"><input type="number" name="freq_min" id="freq_min" class="form-control float-left" placeholder="Minimum Frequency"></div>
+                      <div class="col-lg-6 col-md-12"><input type="number" name="freq_max" id="freq_max" class="form-control float-right" placeholder="Maximum Frequency"></div>
+                    </div>
                   </div>
+
                   <div class="form-group"><label>Pilih Tanggal</label>
                     <input type="text" name="periodik" class="form-control float-right" id="range-date">
                   </div>
@@ -129,33 +136,21 @@
       $('#table-penjualan-penjualan').DataTable().ajax.reload();
     }
 
+    function export_customer_insight(trigger) {
+      provinsi = $('#provinsi').val() ? $('#provinsi').val() : '';
+      kabupaten = $('#kabupaten').val() ? $('#kabupaten').val() : '';
+      belanja_max = $('#belanja_max').val() ? $('#belanja_max').val() : '';
+      belanja_min = $('#belanja_min').val() ? $('#belanja_min').val() : '';
+      qty_min = $('#qty_min').val() ? $('#qty_min').val() : '';
+      qty_max = $('#qty_max').val() ? $('#qty_max').val() : '';
+      freq_min = $('#freq_min').val() ? $('#freq_min').val() : '';
+      freq_max = $('#freq_max').val() ? $('#freq_max').val() : '';
+      periodik = $('#range-date').val() ? $('#range-date').val() : '';
 
-    function export_penjualan(trigger) {
-      var kurir = document.getElementById("kurir").value;
-      var toko = document.getElementById("toko").value;
-      var resi = document.getElementById("resi").value;
-      var status = document.getElementById("status").value;
-      var periodik = document.getElementById("range-date").value;
+      window.open(`<?= base_url('admin/keluar/export_customer_insight') ?>?provinsi=${provinsi}&kabupaten=${kabupaten}&belanja_max=${belanja_max}&belanja_min=${belanja_min}&qty_min=${qty_min}&qty_max=${qty_max}&freq_min=${freq_min}&freq_max=${freq_max}&periodik=${periodik}`, '_self');
 
-      if (resi == '') {
-        resi = 'null';
-      }
-
-      window.open("<?php echo base_url() ?>admin/keluar/export_keluar_penjualan/" + trigger + "/" + kurir + "/" + toko + "/" + resi + "/" + status + "/" + periodik, +"_self");
     }
 
-    function export_customer_insight(trigger) {
-        provinsi = $('#provinsi').val() ? $('#provinsi').val() : '';
-        kabupaten = $('#kabupaten').val() ? $('#kabupaten').val() : '';
-        belanja_max = $('#belanja_max').val() ? $('#belanja_max').val() : '';
-        belanja_min = $('#belanja_min').val() ? $('#belanja_min').val() : '';
-        qty_min = $('#qty_min').val() ? $('#qty_min').val() : '';
-        qty_max = $('#qty_max').val() ? $('#qty_max').val() : '';
-        periodik = $('#range-date').val() ? $('#range-date').val() : '';
-
-        window.open(`<?= base_url('admin/keluar/export_customer_insight') ?>?provinsi=${provinsi}&kabupaten=${kabupaten}&belanja_max=${belanja_max}&belanja_min=${belanja_min}&qty_min=${qty_min}&qty_max=${qty_max}&periodik=${periodik}`, '_self');
-        
-      }
 
 
 
@@ -182,12 +177,21 @@
         refresh_table();
       });
 
-      
+
       $('#qty_min').on('change', function() {
         refresh_table();
       });
 
       $('#qty_max').on('change', function() {
+        refresh_table();
+      });
+
+
+      $('#freq_min').on('change', function() {
+        refresh_table();
+      });
+
+      $('#freq_max').on('change', function() {
         refresh_table();
       });
 
@@ -210,8 +214,6 @@
 
       }
 
-      
-
       var table_customer_insight = $('#table-customer-insight').DataTable({
         "iDisplayLength": 50,
         "deferRender": true,
@@ -231,6 +233,8 @@
             d.belanja_max = $('#belanja_max').val();
             d.qty_min = $('#qty_min').val();
             d.qty_max = $('#qty_max').val();
+            d.freq_min = $('#freq_min').val();
+            d.freq_max = $('#freq_max').val();
             // dasbor_list_count();
             // dasbor_list_count_penjualan();
           }
