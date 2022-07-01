@@ -56,6 +56,8 @@ header("Pragma: no-cache");
   <link rel="shortcut icon" href="<?php echo base_url('assets/images/company/'.$company_data->company_photo_thumb) ?>" />
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="<?php echo base_url('assets/plugins/') ?>bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+  <!-- style.css -->
+  <link rel="stylesheet" href="<?php echo base_url('assets/template/back/') ?>dist/css/style.css">
   <!-- v2 tesseract -->
   <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
   <style type="text/css">

@@ -60,6 +60,9 @@
                   <div class="form-group"><label>Pilih Tanggal</label>
                     <input type="text" name="periodik" class="form-control float-right" id="range-date">
                   </div>
+                  <div class="form-group"><label>Pilih Tanggal Terahir Order</label>
+                    <input type="text" name="terakhir_order" class="form-control float-right" id="range-date-order">
+                  </div>
                 </div>
               </div>
             </div>
@@ -131,6 +134,34 @@
       }
     )
 
+    $('#range-date-order').daterangepicker({
+        ranges: {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+          'This Years': [moment().startOf('years'), moment().endOf('years')],
+          'Last Years': [moment().subtract(1, 'years').startOf('years'), moment().subtract(1, 'years').endOf('years')],
+        },
+        startDate: moment(),
+        endDate: moment(),
+        // startDate: moment().subtract(29, 'days'),
+        // endDate  : moment(),
+        autoUpdateInput: false,
+
+        locale: {
+          format: 'YYYY-MM-DD'
+        }
+      },
+      
+
+      // function(start, end) {
+      //   // $('#range-date-full span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'))
+      // }
+    )
+
     function refresh_table() {
       $('#table-customer-insight').DataTable().ajax.reload();
       $('#table-penjualan-penjualan').DataTable().ajax.reload();
@@ -146,6 +177,7 @@
       freq_min = $('#freq_min').val() ? $('#freq_min').val() : '';
       freq_max = $('#freq_max').val() ? $('#freq_max').val() : '';
       periodik = $('#range-date').val() ? $('#range-date').val() : '';
+      terakhir_order = $('#range-date-order').val() ? $('#range-date-order').val() : '';
 
       window.open(`<?= base_url('admin/keluar/export_customer_insight') ?>?provinsi=${provinsi}&kabupaten=${kabupaten}&belanja_max=${belanja_max}&belanja_min=${belanja_min}&qty_min=${qty_min}&qty_max=${qty_max}&freq_min=${freq_min}&freq_max=${freq_max}&periodik=${periodik}`, '_self');
 
@@ -159,6 +191,11 @@
 
       $('#range-date').on('change', function() {
         refresh_table();
+      });
+
+      $('#range-date-order').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        refresh_table()
       });
 
       $('#provinsi').on('change', function() {
@@ -235,6 +272,8 @@
             d.qty_max = $('#qty_max').val();
             d.freq_min = $('#freq_min').val();
             d.freq_max = $('#freq_max').val();
+            d.terakhir_order = $('#range-date-order').val();
+
             // dasbor_list_count();
             // dasbor_list_count_penjualan();
           }

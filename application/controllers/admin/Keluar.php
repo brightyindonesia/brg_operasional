@@ -1294,6 +1294,8 @@ class Keluar extends CI_Controller {
     {	
         $start = substr($this->input->get('periodik'), 0, 10);
 		$end = substr($this->input->get('periodik'), 13, 24);
+		$start_order = substr($this->input->get('terakhir_order'), 0, 10);
+		$end_order = substr($this->input->get('terakhir_order'), 13, 24);
 		$provinsi = $this->input->get('provinsi');
 		$kabupaten = $this->input->get('kabupaten');
 		$belanja_min = $this->input->get('belanja_min');
@@ -1306,7 +1308,7 @@ class Keluar extends CI_Controller {
 		$columnName = $this->input->get('columns')[$columnIndex]['data']; // Column name
 		$columnSortOrder = $this->input->get('order')[0]['dir'];
 		$searchValue = $this->input->get('search')['value'];
-        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue);
+        $list = $this->Keluar_model->get_datatable_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue, $start_order, $end_order);
         $dataJSON = array();
         foreach ($list as $data) {
 			$get_detail_penjualan = $this->Keluar_model->get_detail_by_cust_data($data->nama_penerima, $data->hp_penerima, $start, $end);

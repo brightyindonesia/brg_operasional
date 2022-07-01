@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
+* {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+.main-sidebar * {
+    color: #666;
+}
+.skin-black .main-header .navbar {
+    background-color: #448aff;
+    color: white;
+}
+.skin-black .main-header .navbar>.sidebar-toggle {
+    border: none;
+    color: white;
+}
+.skin-black .main-header .navbar>.sidebar-toggle:hover {
+    background-color: #448aff;
+    color: white;
+}
+
+.skin-black .main-header .navbar .navbar-custom-menu .navbar-nav>li>a, .skin-black .main-header .navbar .navbar-right>li>a {
+    color: white;
+    border: none;
+}
+.skin-black .main-header .navbar .navbar-custom-menu .navbar-nav>li>a, .skin-black .main-header .navbar .navbar-right>li>a:hover {
+    background-color: #448aff;
+    color: white;
+}
+.skin-black .main-header .logo {
+    background-color: #448aff;
+    color: white;
+    border: none;
+}
+.skin-black .main-header .logo:hover {
+    background-color: #448aff;
+    color: white;
+}
+.skin-black .wrapper, .skin-black .main-sidebar, .skin-black .left-side {
+    background-color: white;
+    color: black;
+}
+.skin-black .sidebar-menu .treeview-menu>li.active>a, .skin-black .sidebar-menu .treeview-menu>li>a:hover {
+    color: #666 !important;
+}
+.skin-black .sidebar a:hover {
+    color: #666 !important;
+}
+.skin-black .sidebar-menu>li>a:hover {
+    background-color: #448aff;
+    color: white;
+}
+.skin-black .sidebar-menu>li.header {
+    color: #666;
+    background: #f5f5f5;
+}
+.skin-black .sidebar-menu>li:hover>a, .skin-black .sidebar-menu>li.active>a, .skin-black .sidebar-menu>li.menu-open>a {
+    background-color: white;
+    color: #666;
+}
+.skin-black .user-panel>.info, .skin-black .user-panel>.info>a {
+    color: #666;
+}
+.skin-black .main-header .navbar .nav>li>a:hover, .skin-black .main-header .navbar .nav>li>a:active, .skin-black .main-header .navbar .nav>li>a:focus, .skin-black .main-header .navbar .nav .open>a, .skin-black .main-header .navbar .nav .open>a:hover, .skin-black .main-header .navbar .nav .open>a:focus, .skin-black .main-header .navbar .nav>.active>a {
+    background-color: #448aff;
+}
+.skin-black .sidebar-menu>li>.treeview-menu {
+    background-color: #f5f5f5;
+}
