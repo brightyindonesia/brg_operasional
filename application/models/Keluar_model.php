@@ -731,7 +731,7 @@ class Keluar_model extends CI_Model
     return $this->db->get($this->table)->result();
   }
 
-  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue, $start_order, $end_order)
+  function get_datatable_customer_insight($first, $last, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max, $columnName, $columnSortOrder, $searchValue, $start_order, $end_order, $avg_order_min, $avg_order_max)
   {
     $this->db->select('*, SUM(QTY) as total_qty, COUNT(penjualan.nomor_pesanan) as jumlah_pesanan, SUM(harga_jual) as total_harga_jual, MAX(tgl_penjualan) as tgl_terakhir_order');
     $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
@@ -785,6 +785,14 @@ class Keluar_model extends CI_Model
         "max(tgl_penjualan) >="   => $start_order,
         "max(tgl_penjualan) <="   => $end_order
       ));
+    }
+
+    if ($avg_order_min != '') {
+      $this->db->having('(jumlah_pesanan/total_qty) >=', $avg_order_min);
+    }
+
+    if ($avg_order_max != '') {
+      $this->db->having('(jumlah_pesanan/total_qty) <=', $avg_order_max);
     }
 
     

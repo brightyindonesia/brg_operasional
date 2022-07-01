@@ -56,6 +56,12 @@
                       <div class="col-lg-6 col-md-12"><input type="number" name="freq_max" id="freq_max" class="form-control float-right" placeholder="Maximum Frequency"></div>
                     </div>
                   </div>
+                  <div class="form-group"><label>Avg. Order</label>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-12"><input type="number" name="avg_order_min" id="avg_order_min" class="form-control float-left" placeholder="Minimum Order"></div>
+                      <div class="col-lg-6 col-md-12"><input type="number" name="avg_order_max" id="avg_order_max" class="form-control float-right" placeholder="Maximum Order"></div>
+                    </div>
+                  </div>
 
                   <div class="form-group"><label>Pilih Tanggal</label>
                     <input type="text" name="periodik" class="form-control float-right" id="range-date">
@@ -152,7 +158,8 @@
         autoUpdateInput: false,
 
         locale: {
-          format: 'YYYY-MM-DD'
+          format: 'YYYY-MM-DD',
+          cancelLabel: 'Clear'
         }
       },
       
@@ -161,6 +168,12 @@
       //   // $('#range-date-full span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'))
       // }
     )
+
+    $('#range-date-order').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+        refresh_table();
+    });
+
 
     function refresh_table() {
       $('#table-customer-insight').DataTable().ajax.reload();
@@ -176,6 +189,8 @@
       qty_max = $('#qty_max').val() ? $('#qty_max').val() : '';
       freq_min = $('#freq_min').val() ? $('#freq_min').val() : '';
       freq_max = $('#freq_max').val() ? $('#freq_max').val() : '';
+      avg_order_min = $('#avg_order_min').val() ? $('#avg_order_min').val() : '';
+      avg_order_max = $('#avg_order_max').val() ? $('#avg_order_max').val() : '';
       periodik = $('#range-date').val() ? $('#range-date').val() : '';
       terakhir_order = $('#range-date-order').val() ? $('#range-date-order').val() : '';
 
@@ -232,6 +247,14 @@
         refresh_table();
       });
 
+      $('#avg_order_min').on('change', function() {
+        refresh_table();
+      });
+
+      $('#avg_order_max').on('change', function() {
+        refresh_table();
+      });
+
       // $('#btn-pilih').click(function(){
       //     var kurir = $('#kurir').val();
       //     if (kurir != '') {
@@ -272,6 +295,8 @@
             d.qty_max = $('#qty_max').val();
             d.freq_min = $('#freq_min').val();
             d.freq_max = $('#freq_max').val();
+            d.avg_order_min = $('#avg_order_min').val();
+            d.avg_order_max = $('#avg_order_max').val();
             d.terakhir_order = $('#range-date-order').val();
 
             // dasbor_list_count();
@@ -296,6 +321,9 @@
           },
           {
             data: "jumlah_pesanan"
+          },
+          {
+            data: "avg_order"
           },
           {
             data: "total_harga_jual"
