@@ -17,7 +17,8 @@
 		"thiagoalessio/tesseract_ocr": "^2.12",
 		"spatie/pdf-to-image": "^1.2",
 		"org_heigl/ghostscript": "^2.3",
-		"guzzlehttp/guzzle": "^7.0"
+		"guzzlehttp/guzzle": "^7.0",
+		"calcinai/php-imagick": "^0.1.2"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

@@ -680,6 +680,7 @@ class Keyword extends CI_Controller {
             $row['action'] = $action;
             $row['detail'] = $detail;
             $row['select'] = $select;
+			$row['status'] = $data->status ? '<a href="'.base_url('admin/keyword/ubah_status/'.$data->id_keyword_produk).'" class="btn btn-success">Active</a>' : '<a href="'.base_url('admin/keyword/ubah_status/'.$data->id_keyword_produk).'" class="btn btn-danger">Inactive</a>';
  
             $dataJSON[] = $row;
         }
@@ -1976,6 +1977,16 @@ class Keyword extends CI_Controller {
 		$writer->save('php://output');
 
 		die();
+	}
+	
+	function ubah_status($id) {
+		$keyword = $this->Keyword_model->get_produk_by_id($id);
+		$data = array(
+			'status' => $keyword->status == 1 ? 0 : 1
+		);
+		$this->Keyword_model->update_produk($id, $data);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Status berhasil diubah</div>');
+		redirect('admin/keyword/produk');
 	}
 }
 

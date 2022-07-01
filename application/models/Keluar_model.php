@@ -844,7 +844,7 @@ class Keluar_model extends CI_Model
     $this->db->join('detail_penjualan', 'penjualan.nomor_pesanan = detail_penjualan.nomor_pesanan');
 
 
-    $this->db->group_by('nama_penerima, hp_penerima');
+    $this->db->group_by('penjualan.nama_penerima, penjualan.hp_penerima');
 
     return $this->db->get($this->table)->row();
   }

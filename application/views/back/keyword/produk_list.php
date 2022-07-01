@@ -80,6 +80,7 @@
                     <tr>
                       <th style="text-align: center">#</th>
                       <th style="text-align: center">Nama Produk</th>
+                      <th style="text-align: center">Status</th>
                       <th style="text-align: center">Action</th>
                       <th width="1%" style="text-align: center">
                         <input type="checkbox" id="master">
@@ -273,6 +274,7 @@
                 "defaultContent":  ''
             },
             { data: "produk"},
+            { data: "status"},
             { data: "action"},
             { data: "select"},
             // { data: "hapus"},

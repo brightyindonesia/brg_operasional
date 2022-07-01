@@ -7,5 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'org\\bovigo\\vfs' => array($vendorDir . '/mikey179/vfsstream/src/main/php'),
+    'Imagick' => array($vendorDir . '/calcinai/php-imagick/src'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
 );

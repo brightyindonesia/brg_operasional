@@ -182,6 +182,13 @@ class ComposerStaticInit7811e5770078bcd36594dc33c1e27ef2
                 0 => __DIR__ . '/..' . '/mikey179/vfsstream/src/main/php',
             ),
         ),
+        'I' => 
+        array (
+            'Imagick' => 
+            array (
+                0 => __DIR__ . '/..' . '/calcinai/php-imagick/src',
+            ),
+        ),
         'H' => 
         array (
             'HTMLPurifier' => 

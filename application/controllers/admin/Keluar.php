@@ -1354,8 +1354,8 @@ class Keluar extends CI_Controller {
         }
  
         $output = array(
-             "recordsTotal" => $this->Keluar_model->count_all_customer_insight()->jml,
-            "recordsFiltered" =>  $this->Keluar_model->count_filter_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)->jml,
+             "recordsTotal" => !empty($this->Keluar_model->count_all_customer_insight()) ? $this->Keluar_model->count_all_customer_insight()->jml : 0,
+            "recordsFiltered" =>  !empty($this->Keluar_model->count_filter_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)) ? $this->Keluar_model->count_filter_customer_insight($start, $end, $provinsi, $kabupaten, $belanja_min, $belanja_max, $qty_min, $qty_max, $freq_min, $freq_max)->jml : 0,
             "data" => $dataJSON,
         );
         //output dalam format JSON

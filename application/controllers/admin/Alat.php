@@ -190,7 +190,7 @@ class Alat extends CI_Controller
 		$resi = '';
 		$indeks = 0;
 		if (!empty($_FILES)) {
-			if (count($_FILES['photo']['name']) <= 50) {
+			if (count($_FILES['photo']['name']) <= 55) {
 				foreach ($_FILES['photo']['name'] as $value) {
 					$_FILES['photo']['name'] = $files['photo']['name'][$indeks];
 					$_FILES['photo']['type'] = $files['photo']['type'][$indeks];
@@ -391,7 +391,7 @@ class Alat extends CI_Controller
 		$resi = '';
 		$ex_jpg = explode(",", $this->input->post('jpg'));
 
-		if (count($ex_jpg) <= 50) {
+		if (count($ex_jpg) <= 55) {
 			foreach ($ex_jpg as $val_jpg) {
 				// Mendeteksi OS yang digunakan
 				if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -399,12 +399,16 @@ class Alat extends CI_Controller
 					$ocr->executable('C:\Program Files\Tesseract-OCR\tesseract.exe');
 					$ocr->lang('eng');
 					$content = $ocr->run();
-					$dataOCR[] = $content;
+					if(preg_match('/Penerima/i', $content)){
+						$dataOCR[] = $content;
+					}
 				} else {
 					$ocr = new TesseractOCR('/home/brighty/public_html/uploads/hasil_convertpdf/' . $val_jpg);
 					$ocr->lang('eng');
 					$content = $ocr->run();
-					$dataOCR[] = $content;
+					if(preg_match('/Penerima/i', $content)){
+						$dataOCR[] = $content;
+					}
 				}
 
 				// Hapus Gambar Apabila sudah di CONVERT ke TEXT
@@ -470,7 +474,7 @@ class Alat extends CI_Controller
 			);
 
 			echo json_encode($msg);
-		} elseif (count($ex_jpg) > 50) {
+		} elseif (count($ex_jpg) > 55) {
 			$msg  = array(
 				'validasi'	=> 'Batas Gambar yang bisa diconvert hanya 50!'
 			);
@@ -804,7 +808,7 @@ class Alat extends CI_Controller
 				$image->setImageCompressionQuality(100);
 				// -flatten option, this is necessary for images with transparency, it will produce white background for transparent regions
 				$image = $image->flattenImages();
-				$image->writeImage($_SERVER['DOCUMENT_ROOT'] . "/hadi/uploads/hasil_convertpdf/" . "Hasil_" . $pdf_data['raw_name'] . "_" . $i . '.jpg');
+				$image->writeImage($_SERVER['DOCUMENT_ROOT'] . "/brg_operasional/uploads/hasil_convertpdf/" . "Hasil_" . $pdf_data['raw_name'] . "_" . $i . '.jpg');
 			}
 
 
@@ -819,8 +823,8 @@ class Alat extends CI_Controller
 			// Simpan ke Array nama file PDF dan JPG
 			$val_jpg = '';
 
-			for ($i = 1; $i <= $jumlah_page; $i++) {
-				if ($i == $jumlah_page) {
+			for ($i = 0; $i < $jumlah_page; $i++) {
+				if ($i == $jumlah_page-1) {
 					$val_jpg .= "Hasil_" . $pdf_data['raw_name'] . "_" . $i . ".jpg";
 				} else {
 					$val_jpg .= "Hasil_" . $pdf_data['raw_name'] . "_" . $i . ".jpg,";
