@@ -179,7 +179,7 @@
                   title: 'Sukses!',
                   text: data.sukses,
                 }).then(function() {
-                  window.open("<?php echo base_url() ?>admin/alat/compress_convertpdf/" + data.pdf + "/" + data.jpg + "");
+                  window.open("<?php echo base_url() ?>admin/alat/compress_convertpdf/" + data.file_name + "/" + data.pdf + "/" + data.jpg + "");
                 });
               }
             } else if (option == 'yes') {

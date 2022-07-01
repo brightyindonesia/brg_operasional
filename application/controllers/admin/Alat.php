@@ -841,7 +841,8 @@ class Alat extends CI_Controller
 			$msg  = array(
 				'sukses'	=> 'PDF berhasil di Convert ke JPG!',
 				'jpg'		=> $val_jpg,
-				'pdf'		=> $pdf_data['raw_name']
+				'pdf'		=> $pdf_data['raw_name'],
+				'file_name' => pathinfo($_FILES['pdf']['name'], PATHINFO_FILENAME)
 			);
 
 			echo json_encode($msg);
@@ -869,12 +870,12 @@ class Alat extends CI_Controller
 		}
 	}
 
-	public function compress_convertpdf($pdf, $jpg)
+	public function compress_convertpdf($file_name, $pdf, $jpg)
 	{
 		$ex_jpg = explode(",", $jpg);
 
 		$zip = new ZipArchive();
-		$zip_name = "Kompres_" . $pdf . ".zip"; // Zip name
+		$zip_name = "Kompres_" . $file_name . ".zip"; // Zip name
 		$zip->open($zip_name,  ZipArchive::CREATE);
 		foreach ($ex_jpg as $val_jpg) {
 			$path = "./uploads/hasil_convertpdf/" . $val_jpg;
