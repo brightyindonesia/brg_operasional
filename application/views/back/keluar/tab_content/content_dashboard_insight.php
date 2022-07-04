@@ -6,7 +6,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Jumlah Invoice</span>
-        <span class="info-box-number" id="jumlah-invoice"> <?= $jumlah_invoice ?> </span>
+        <span class="info-box-number" id="jumlah-invoice"> <?= number_format($jumlah_invoice,0,',','.')  ?> </span>
       </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Jumlah Qty</span>
-        <span class="info-box-number" id="jumlah-qty"> <?=$qty_harga->qty ? $qty_harga->qty : 0?> </span>
+        <span class="info-box-number" id="jumlah-qty"> <?=$qty_harga->qty ? number_format($qty_harga->qty,0,',','.') : 0?> </span>
       </div>
     </div>
   </div>
@@ -29,7 +29,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Avg. Order Value</span>
-        <span class="info-box-number" id="avg-order-value"> <?=$qty_harga->total_harga ? $qty_harga->total_harga : 0 ?> </span>
+        <span class="info-box-number" id="avg-order-value"> Rp. <?=$qty_harga->total_harga ? number_format($qty_harga->total_harga,0,',','.') : 0 ?> </span>
       </div>
     </div>
 </div>
@@ -41,7 +41,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Avg. Order Number</span>
-        <span class="info-box-number" id="avg_order_number"> <?= $avg_order_number->avg_order_number ? $avg_order_number->avg_order_number : 0 ?> </span>
+        <span class="info-box-number" id="avg_order_number"> <?= $avg_order_number->avg_order_number ? round($avg_order_number->avg_order_number,2) : 0 ?> </span>
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Jumlah Pembeli</span>
-        <span class="info-box-number" id="jumlah-pembeli"> <?= $jumlah_pembeli ? $jumlah_pembeli : 0 ?> </span>
+        <span class="info-box-number" id="jumlah-pembeli"> <?= $jumlah_pembeli ? number_format($jumlah_pembeli,0,',','.') : 0 ?> </span>
       </div>
     </div>
   </div>
@@ -63,7 +63,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Pembeli Baru</span>
-        <span class="info-box-number" id="jumlah-pembeli"> <?= $pembeli_baru ? $pembeli_baru->pembeli_baru : 0 ?> </span>
+        <span class="info-box-number" id="jumlah-pembeli"> <?= $pembeli_baru ? number_format($pembeli_baru,0,',','.') : 0 ?> </span>
       </div>
     </div>
   </div>
@@ -85,7 +85,7 @@
       </span>
       <div class="info-box-content">
         <span class="info-box-text">Repeat Order</span>
-        <span class="info-box-number" id="jumlah-pembeli"> <?= $repeat_order ? $repeat_order : 0 ?> </span>
+        <span class="info-box-number" id="jumlah-pembeli"> <?= $repeat_order ? round($repeat_order, 2) : 0 ?>% </span>
       </div>
     </div>
   </div>
