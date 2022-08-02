@@ -220,6 +220,32 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="">TTD Finance (*)</label>
+                    <select name="finance" id="finance" class="form-control" required>
+                      <option disabled>-- Pilih -- </option>
+                      <option value="Leni Wahyuni" <?= $request->finance == "Leni Wahyuni" ? 'selected' : '' ?>>Leni Wahyuni</option>
+                      <option value="Melinda Nur Wijayanti" <?= $request->finance == "Melinda Nur Wijayanti" ? 'selected' : '' ?>>Melinda Nur Wijayanti</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="">TTD FAT Manager</label>
+                    <select name="fat_manager" id="fat_manager" class="form-control">
+                      <option value="">-- Pilih -- </option>
+                      <option value="Setia Wardhana" <?= $request->fat_manager == "Setia Wardhana" ? 'selected' : '' ?>>Setia Wardhana</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="">TTD CEO</label>
+                    <select name="ceo" id="ceo" class="form-control">
+                      <option value="">-- Pilih -- </option>
+                      <option value="M. Hadiyatullah" <?= $request->ceo == "M. Hadiyatullah" ? 'selected' : '' ?>>M. Hadiyatullah</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
           </div>
           <div class="box-footer">
             <button type="submit" id="request-ubah" name="button" class="btn btn-success"><i class="fa fa-save"></i> <?php echo $btn_submit ?></button>
@@ -318,6 +344,10 @@
       var panjangArray = dt_id.length;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
       csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+      var finance = document.getElementById('finance').value;
+      var fat_manager = document.getElementById('fat_manager').value;
+      var ceo = document.getElementById('ceo').value;
       // alert(panjangArray);
       if (vendor == '' && penerima == '' && sku == '' && dt_id == '' && dt_qty == '' && dt_harga == '' && dt_jumlah == '' && dt_diskon == '' && dt_pajak == '') {
         Toast.fire({
@@ -344,6 +374,11 @@
           icon: 'error',
           title: 'Terjadi Kesalahan!. Nomor Pesanan harus diisi!'
         });
+      } else if(finance == ''){
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. TTD Finance harus diisi!'
+        });
       }else if(dt_id == '' || dt_qty == '' || dt_harga == '' || dt_jumlah == ''){
         Toast.fire({
           icon: 'error',
@@ -354,7 +389,7 @@
           url:"<?php echo base_url()?>admin/masuk/request_edit_proses",
           method:"post",
           dataType: 'JSON', 
-          data:{vendor:vendor, penerima:penerima, sku: sku, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash},
+          data:{vendor:vendor, penerima:penerima, sku: sku, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash, finance: finance, fat_manager: fat_manager, ceo: ceo},
           success:function(data)  {  
             // alert(data);
             if (data.validasi) {

@@ -69,6 +69,10 @@
                   <div class="form-group"><label>Harga Ongkos Kirim</label>
                     <?php echo form_input($ongkir) ?>
                   </div>
+
+                  <div class="form-group"><label>Tip</label>
+                    <?php echo form_input($tip) ?>
+                  </div>
               </div>
 
               <div class="col-sm-6">
@@ -205,6 +209,32 @@
                         </tr>
                       </tfoot>
                     </table>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="">TTD Finance (*)</label>
+                    <select name="finance" id="finance" class="form-control" required>
+                      <option selected disabled>-- Pilih -- </option>
+                      <option value="Leni Wahyuni">Leni Wahyuni</option>
+                      <option value="Melinda Nur Wijayanti">Melinda Nur Wijayanti</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="">TTD FAT Manager</label>
+                    <select name="fat_manager" id="fat_manager" class="form-control">
+                      <option value="">-- Pilih -- </option>
+                      <option value="Setia Wardhana">Setia Wardhana</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="">TTD CEO</label>
+                    <select name="ceo" id="ceo" class="form-control">
+                      <option value="">-- Pilih -- </option>
+                      <option value="M. Hadiyatullah">M. Hadiyatullah</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -400,6 +430,11 @@
       var panjangArray = dt_id.length;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
       csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+      var finance = document.getElementById('finance').value;
+      var fat_manager = document.getElementById('fat_manager').value;
+      var ceo = document.getElementById('ceo').value;
+
       // alert(panjangArray);
       if (vendor == '' && penerima == '' && kategori == '' && sku == '' && dt_id == '' && dt_qty == '' && dt_harga == '' && dt_jumlah == '' && dt_diskon == '' && dt_pajak == '') {
         Toast.fire({
@@ -431,6 +466,11 @@
           icon: 'error',
           title: 'Terjadi Kesalahan!. Nomor Pesanan harus diisi!'
         });
+      }else if(finance == ''){
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. TTD Finance harus diisi!'
+        });
       }else if(dt_id == '' || dt_qty == '' || dt_harga == '' || dt_jumlah == ''){
         Toast.fire({
           icon: 'error',
@@ -441,7 +481,7 @@
           url:"<?php echo base_url()?>admin/masuk/request_proses",
           method:"post",
           dataType: 'JSON', 
-          data:{vendor:vendor, sku: sku, penerima : penerima, kategori: kategori, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash},
+          data:{vendor:vendor, sku: sku, penerima : penerima, kategori: kategori, ongkir: ongkir, remarks: remarks, nomor_request: nomor_request, dt_id: JS_id, dt_qty: JS_qty, dt_harga: JS_harga, dt_jml: JS_jumlah, dt_diskon: JS_diskon, dt_pajak: JS_pajak, length: panjangArray, [csrfName]: csrfHash, finance: finance, fat_manager: fat_manager, ceo: ceo},
           success:function(data)  {  
             // alert(data);
             if (data.validasi) {

@@ -41,7 +41,11 @@
                   </div>
 
                   <div class="form-group"><label>Harga Ongkos Kirim</label>
-                    <?php echo form_input($ongkir) ?>
+                    <?php echo form_input($ongkir, $request->ongkir) ?>
+                  </div>
+
+                  <div class="form-group"><label>Tip</label>
+                    <?php echo form_input($tip, $request->tip) ?>
                   </div>
               </div>
 

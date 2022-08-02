@@ -17,6 +17,7 @@
   $typeL = pathinfo($pathL, PATHINFO_EXTENSION);
   $dataL = file_get_contents($pathL);
   $base64L = 'data:image/' . $typeL . ';base64,' . base64_encode($dataL);
+  $tip = $purchase->tip_po != 0 ? 1 : 0;
 
   $TTDpathL = base_url() . "assets/images/company/ttd_yuki.jpg";
   $TTDtypeL = pathinfo($TTDpathL, PATHINFO_EXTENSION);
@@ -32,6 +33,8 @@
       </td>
 
       <td valign="top" colspan="2">
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Nomor Dokumen: TE-001-01-0<?= 1 + $tip + $count_bahan_kemas + $count_log ?></p>
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top:5px;padding: 0;">Tanggal Berlaku: <?= date("d/m/Y") ?></p>
         <p align="right" style="font-size: 24px;color:#009eae;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;">PURCHASE ORDER</p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Hari, Tanggal: <?php echo $hariIndo . ", " . date('d F Y', strtotime($purchase->tgl_po)) ?></p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 5px;padding: 0;"><?php echo $purchase->no_po ?></p>
@@ -158,6 +161,20 @@
         <?php echo rupiah($purchase->total_pajak_po) ?>
       </td>
     </tr>
+    <?php
+    if ($purchase->tip_po != 0) {
+    ?>
+      <tr>
+        <td align="right" colspan="7" style="border-bottom:0;border-top:0;border-left:0;font-size: 12px;">
+          Tip
+        </td>
+        <td align="right" style="border-top: 1px solid black;border-bottom: 1px solid black;border-right: 1px solid black;border-left: 1px solid black;font-size: 12px;">
+          <?php echo rupiah($purchase->tip_po) ?>
+        </td>
+      </tr>
+    <?php
+    }
+    ?>
     <tr>
       <td align="right" colspan="7" style="border-bottom:0;border-top:0;border-left:0;font-size: 12px;">
         Ongkos Kirim
@@ -206,8 +223,11 @@
       </td>
     </tr>
     <tr>
-      <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;"><img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="80px"></p>
+    <td valign="top" colspan="2" style="font-size: 12px;">
+        &nbsp;
+        <br>
+        &nbsp;
+        <br> &nbsp;<br>&nbsp;<br>
       </td>
 
       <td valign="top" colspan="2" style="font-size: 12px;">
@@ -220,8 +240,7 @@
         <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Procurement</p>
       </td>
       <td valign="top" colspan="2" style="font-size: 12px;">
-
-        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(Luni Wahyuni)</u></p>
+        <p align="right" style="vertical-align: text-top;<?= $purchase->finance != "Leni Wahyuni" ? "margin-right:10px" : "margin-right:35px" ?>;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(<?= $purchase->finance ?>)</u></p>
         <p align="right" style="vertical-align: text-top;margin-right:52px;margin-bottom:0px;margin-top:0px;padding: 0;">Finance</p>
       </td>
     </tr>
@@ -230,7 +249,7 @@
   <table cellspacing="0" cellpadding="0" style="margin-top: 10px;" border="0" width="100%">
     <tr>
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">Mengetahui,</p>
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>">Mengetahui,</p>
         <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
         <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
         <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
@@ -238,7 +257,7 @@
       </td>
 
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="right" style="vertical-align: text-top;margin-right:55px;margin-bottom:0px;margin-top:0px;padding: 0;">Menyetujui,</p>
+        <p align="right" style="vertical-align: text-top;margin-right:55px;margin-bottom:0px;margin-top:0px;padding: 0;<?= $purchase->ceo != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>">Menyetujui,</p>
         <!-- <p align="right" style="vertical-align: text-top;margin:0;padding: 0;">Bekasi, <?php echo date("d-m-Y") ?></p>
         <p style="vertical-align: text-top;margin:0;padding: 0;">Hormat Kami,</p>
         <img style="vertical-align: text-top;margin:0;padding: 0;" src="<?php echo $TTDbase64L; ?>" width="100px">
@@ -258,13 +277,13 @@
       </td>
     </tr>
     <tr>
-      <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;"><u>(Setia Wardhani)</u></p>
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;">FAT Manager</p>
+      <td valign="top" colspan="2" style="font-size: 12px;opacity: 0">
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>"><u>(Setia Wardhani)</u></p>
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>">FAT Manager</p>
       </td>
       <td valign="top" colspan="2" style="font-size: 12px;">
-        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;"><u>(M. Hadiyatullah)</u></p>
-        <p align="right" style="vertical-align: text-top;margin:0px;margin-right:22px;padding: 0;">Chief Executive Officer</p>
+        <p align="right" style="vertical-align: text-top;margin-right:35px;margin-bottom:0px;margin-top:0px;padding: 0;<?= $purchase->ceo != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>"><u>(M. Hadiyatullah)</u></p>
+        <p align="right" style="vertical-align: text-top;margin:0px;margin-right:22px;padding: 0;<?= $purchase->ceo != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>">Chief Executive Officer</p>
       </td>
     </tr>
   </table>

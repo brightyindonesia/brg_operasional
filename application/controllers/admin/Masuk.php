@@ -213,6 +213,13 @@ class Masuk extends CI_Controller {
 	      'required'      => ''
 	    ];
 
+		$this->data['tip'] = [
+			'name'          => 'tip',
+			'id'            => 'tip',
+			'class'         => 'form-control',
+			'required'      => ''
+		  ];
+
 	    $this->data['vendor'] = [
 	    	'class'         => 'form-control select2bs4',
 	    	'id'            => 'vendor',
@@ -276,6 +283,7 @@ class Masuk extends CI_Controller {
 		$sku = $i->post('sku');
 		$remarks = $i->post('remarks');
 		$ongkir = intval($i->post('ongkir'));
+		$tip = intval($i->post('tip'));
 		$no_request = $i->post('nomor_request');
 		$dt_id = $i->post('dt_id');
 		$dt_qty = $i->post('dt_qty');
@@ -290,6 +298,11 @@ class Masuk extends CI_Controller {
 		$decode_jumlah = json_decode($dt_jumlah, TRUE);
 		$decode_diskon = json_decode($dt_diskon, TRUE);
 		$decode_pajak = json_decode($dt_pajak, TRUE);
+
+		$finance = $i->post('finance');
+		$fat_manager = $i->post('fat_manager');
+		$ceo = $i->post('ceo');
+
 		
 		for ($y=0; $y < $len; $y++)
         {
@@ -312,6 +325,12 @@ class Masuk extends CI_Controller {
         	$cari_kategori = $this->Kategori_po_model->get_by_id($kategori);
         	$cari_sku = $this->Sku_model->get_by_id($sku);
         	$new_no_req    = $no_request."/".$cari_kategori->kode_kategori_po."/".$cari_sku->kode_sku;
+			$this->db->insert('ttd_po', [
+				'no_po'			=> str_replace("RFQ", "PO", $new_no_req),
+				'finance' 		=> $finance,
+				'fat_manager' 	=> $fat_manager,
+				'ceo' 			=> $ceo
+			]);
         	$data = array(	'no_request'		=> $new_no_req,
         					'id_kategori_po'	=> $kategori,
 			        		'id_users' 			=> $this->session->userdata('id_users'),
@@ -320,6 +339,7 @@ class Masuk extends CI_Controller {
 							'id_sku'	 		=> $sku,
 							'remarks'	 		=> $remarks,
 							'ongkir'			=> $ongkir,
+							'tip'				=> $tip,
 							'total_diskon'		=> $total_diskon,
 							'total_pajak' 		=> $total_pajak,
 							'total_harga'		=> $total_harga,
@@ -470,6 +490,28 @@ class Masuk extends CI_Controller {
 		$decode_jumlah = json_decode($dt_jumlah, TRUE);
 		$decode_diskon = json_decode($dt_diskon, TRUE);
 		$decode_pajak = json_decode($dt_pajak, TRUE);
+
+		$finance = $i->post('finance');
+		$fat_manager = $i->post('fat_manager');
+		$ceo = $i->post('ceo');
+
+		$ttd = $this->Request_model->get_ttd_by_id($no_request);
+		if(!isset($ttd))
+		{
+			$this->Request_model->add_ttd(['no_po' => str_replace("RFQ", "PO", $no_request), 'finance' => $finance, 'fat_manager' => $fat_manager, 'ceo' => $ceo]);
+		} else {
+			if ($ttd->ceo != $ceo || $ttd->fat_manager != $fat_manager) {
+				$this->db->insert('log_po', [
+					'no_po' => str_replace("RFQ", "PO", $no_request),
+					'isi' => "Update data pada tanggal ".date('Y-m-d H:i:s')."",
+				]);
+			}
+		}
+		$this->db->update('ttd_po', [
+			'finance' => $finance,
+			'fat_manager' => $fat_manager,
+			'ceo' => $ceo,
+		], ['no_po' => $ttd->no_po]);
 		
 		for ($y=0; $y < $len; $y++)
         {
@@ -567,7 +609,7 @@ class Masuk extends CI_Controller {
 		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['request']->id_penerima);	
 		$this->data['daftar_bahan_kemas']	= $this->Request_model->get_detail_by_id(base64_decode($id));
 
-		// echo print_r($this->data['request'])
+		die(print_r($this->data['request']));
 		$html = $this->load->view('back/report/template_rfq_bahan_kemas', $this->data, TRUE);
 		$filename = 'CETAK_RFQ_BAHAN_KEMAS_'.date('d_M_y');
 		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
@@ -623,6 +665,12 @@ class Masuk extends CI_Controller {
 			$this->data['ongkir'] = [
 			'name'          => 'ongkir',
 			'id'            => 'ongkir',
+			'class'         => 'form-control'
+			];
+
+			$this->data['tip'] = [
+			'name'          => 'tip',
+			'id'            => 'tip',
 			'class'         => 'form-control'
 			];
 
@@ -694,6 +742,7 @@ class Masuk extends CI_Controller {
 		$sku = $i->post('sku');
 		$remarks = $i->post('remarks');
 		$ongkir = intval($i->post('ongkir'));
+		$tip = intval($i->post('tip'));
 		$no_request = $i->post('nomor_request');
 		$dt_id = $i->post('dt_id');
 		$dt_qty = $i->post('dt_qty');
@@ -731,6 +780,7 @@ class Masuk extends CI_Controller {
 						'id_sku'	 					=> $sku,
 						'remarks_po' 					=> $remarks,
 						'ongkir_po'						=> $ongkir,
+						'tip_po'						=> $tip,
 						'total_diskon_po'				=> $total_diskon,
 						'total_pajak_po'				=> $total_pajak,
 						'total_harga_po'				=> $total_harga,
@@ -1150,6 +1200,9 @@ class Masuk extends CI_Controller {
 		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['purchase']->id_penerima);	
 		$this->data['daftar_bahan_kemas']	= $this->Po_model->get_detail_by_id(base64_decode($id));
 
+		$this->data['count_bahan_kemas']	= $this->Po_model->get_count_detail_by_id(base64_decode($id)) == 1 ? 0 : $this->Po_model->get_count_detail_by_id(base64_decode($id))-1;
+		$this->data['count_log']			= $this->Po_model->get_count_log(base64_decode($id));
+		// dd($this->data['count_bahan_kemas']);
 		// echo print_r($this->data['request'])
 		$html = $this->load->view('back/report/template_po_bahan_kemas', $this->data, TRUE);
 		$filename = 'CETAK_PO_BAHAN_KEMAS_'.date('d_M_y');
