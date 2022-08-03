@@ -344,11 +344,11 @@ class Alat extends CI_Controller
 						}
 					}
 				}
-				if(empty($nama) || empty($hp) || empty($resi)){
+				if (empty($nama) || empty($hp) || empty($resi)) {
 					$msg  = array(
 						'validasi'	=> 'Cek kembali gambar yang anda input!'
 					);
-	
+
 					echo json_encode($msg);
 					die;
 				}
@@ -399,14 +399,14 @@ class Alat extends CI_Controller
 					$ocr->executable('C:\Program Files\Tesseract-OCR\tesseract.exe');
 					$ocr->lang('eng');
 					$content = $ocr->run();
-					if(preg_match('/Penerima/i', $content)){
+					if (preg_match('/Penerima/i', $content)) {
 						$dataOCR[] = $content;
 					}
 				} else {
 					$ocr = new TesseractOCR('/home/brighty/public_html/uploads/hasil_convertpdf/' . $val_jpg);
 					$ocr->lang('eng');
 					$content = $ocr->run();
-					if(preg_match('/Penerima/i', $content)){
+					if (preg_match('/Penerima/i', $content)) {
 						$dataOCR[] = $content;
 					}
 				}
@@ -777,7 +777,6 @@ class Alat extends CI_Controller
 		$i = $this->input;
 		$config['upload_path']          = './uploads/pdf/';
 		$config['allowed_types']        = 'pdf';
-		$config['file_name']			= 'Convert_PDF_To_Image_' . date('Y_m_d_') . time();
 		$config['max_size']             = 10000;
 		$this->load->library('upload', $config);
 		if (!$this->upload->do_upload('pdf')) {
@@ -808,7 +807,7 @@ class Alat extends CI_Controller
 				$image->setImageCompressionQuality(100);
 				// -flatten option, this is necessary for images with transparency, it will produce white background for transparent regions
 				$image = $image->flattenImages();
-				$image->writeImage($_SERVER['DOCUMENT_ROOT'] . "/brg_operasional/uploads/hasil_convertpdf/" . "Hasil_" . $pdf_data['raw_name'] . "_" . $i . '.jpg');
+				$image->writeImage($_SERVER['DOCUMENT_ROOT'] . "/uploads/hasil_convertpdf/" . "Hasil_" . $pdf_data['raw_name'] . "_" . $i . '.jpg');
 			}
 
 
@@ -824,7 +823,7 @@ class Alat extends CI_Controller
 			$val_jpg = '';
 
 			for ($i = 0; $i < $jumlah_page; $i++) {
-				if ($i == $jumlah_page-1) {
+				if ($i == $jumlah_page - 1) {
 					$val_jpg .= "Hasil_" . $pdf_data['raw_name'] . "_" . $i . ".jpg";
 				} else {
 					$val_jpg .= "Hasil_" . $pdf_data['raw_name'] . "_" . $i . ".jpg,";

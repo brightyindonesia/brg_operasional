@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Sku_model extends CI_Model {
+class Sku_model extends CI_Model
+{
 
   public $table = 'sku';
   public $id    = 'id_sku';
@@ -17,10 +18,23 @@ class Sku_model extends CI_Model {
     $this->db->order_by('nama_sku');
     $data = $this->db->get($this->table);
 
-    if($data->num_rows() > 0)
-    {
-      foreach($data->result_array() as $row)
-      {
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
+        $result[''] = '- Pilih SKU -';
+        $result[$row['id_sku']] = $row['nama_sku'];
+      }
+      return $result;
+    }
+  }
+
+  function get_all_combobox_unique()
+  {
+    $this->db->where("kode_sku NOT LIKE 'PAKET%'");
+    $this->db->order_by('nama_sku');
+    $data = $this->db->get($this->table);
+
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
         $result[''] = '- Pilih SKU -';
         $result[$row['id_sku']] = $row['nama_sku'];
       }
@@ -34,10 +48,8 @@ class Sku_model extends CI_Model {
     $this->db->where_in($this->id, $id);
     $data = $this->db->get($this->table);
 
-    if($data->num_rows() > 0)
-    {
-      foreach($data->result_array() as $row)
-      {
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
         $result['semua'] = '- Semua Data -';
         $result[$row['id_sku']] = $row['nama_sku'];
       }
@@ -66,7 +78,7 @@ class Sku_model extends CI_Model {
     $this->db->replace($this->table, $data);
   }
 
-  function update($id,$data)
+  function update($id, $data)
   {
     $this->db->where($this->id, $id);
     $this->db->update($this->table, $data);
@@ -83,7 +95,6 @@ class Sku_model extends CI_Model {
     $this->db->where_in($this->id, explode(",", $id));
     $this->db->delete($this->table);
   }
-
 }
 
 /* End of file Sku_model.php */

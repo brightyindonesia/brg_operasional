@@ -5,6 +5,9 @@ class Usertype_model extends CI_Model{
 
   public $table = 'usertype';
   public $id    = 'id_usertype';
+  public $table_user = 'users';
+  public $id_user    = 'id_users';
+
   public $order = 'DESC';
 
   function get_all()
@@ -32,6 +35,12 @@ class Usertype_model extends CI_Model{
   {
     $this->db->where($this->id, $id);
     return $this->db->get($this->table)->row();
+  }
+
+  function get_user_by_id($id)
+  {
+    $this->db->where($this->id_user, $id);
+    return $this->db->get($this->table_user)->row();
   }
 
   function total_rows()

@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Auth_model extends CI_Model{
+class Auth_model extends CI_Model
+{
 
   public $table = 'users';
   public $id    = 'id_users';
@@ -21,10 +22,8 @@ class Auth_model extends CI_Model{
     $this->db->order_by('name');
     $data = $this->db->get($this->table);
 
-    if($data->num_rows() > 0)
-    {
-      foreach($data->result_array() as $row)
-      {
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
         $result[''] = '- Pilih PIC -';
         $result[$row['id_users']] = $row['name'];
       }
@@ -38,10 +37,8 @@ class Auth_model extends CI_Model{
     $this->db->order_by('name');
     $data = $this->db->get($this->table);
 
-    if($data->num_rows() > 0)
-    {
-      foreach($data->result_array() as $row)
-      {
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
         $result['semua'] = '- Semua PIC -';
         $result[$row['id_users']] = $row['name'];
       }
@@ -49,15 +46,30 @@ class Auth_model extends CI_Model{
     }
   }
 
+  function get_warehouse_all_combobox()
+  {
+    $this->db->where_in('usertype', array(4, 10));
+    $this->db->order_by('name');
+    $data = $this->db->get($this->table);
+
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
+        $result['semua'] = '- Pilih User -';
+        $result[$row['id_users']] = $row['name'];
+      }
+      return $result;
+    }
+  }
+
+
+
   function get_all_combobox()
   {
     $this->db->order_by('name');
     $data = $this->db->get($this->table);
 
-    if($data->num_rows() > 0)
-    {
-      foreach($data->result_array() as $row)
-      {
+    if ($data->num_rows() > 0) {
+      foreach ($data->result_array() as $row) {
         $result[''] = '- Please Choose Users';
         $result[$row['id_users']] = $row['name'];
       }
@@ -102,13 +114,13 @@ class Auth_model extends CI_Model{
     $this->db->insert($this->table, $data);
   }
 
-  function update($id,$data)
+  function update($id, $data)
   {
     $this->db->where($this->id, $id);
     $this->db->update($this->table, $data);
   }
 
-  function update_by_email($id,$data)
+  function update_by_email($id, $data)
   {
     $this->db->where('email', $id);
     $this->db->update($this->table, $data);
@@ -126,13 +138,13 @@ class Auth_model extends CI_Model{
     return $this->db->get($this->table)->row();
   }
 
-  function update_by_code_forgotten($id,$data)
+  function update_by_code_forgotten($id, $data)
   {
     $this->db->where('code_forgotten', $id);
     $this->db->update($this->table, $data);
   }
 
-  function soft_delete($id,$data)
+  function soft_delete($id, $data)
   {
     $this->db->where($this->id, $id);
     $this->db->update($this->table, $data);
@@ -144,7 +156,7 @@ class Auth_model extends CI_Model{
     $this->db->delete($this->table);
   }
 
-  function lock_account($id,$data)
+  function lock_account($id, $data)
   {
     $this->db->where('username', $id);
     $this->db->update($this->table, $data);
@@ -212,5 +224,4 @@ class Auth_model extends CI_Model{
     $this->db->where('username', $id);
     $this->db->delete('login_attempts');
   }
-
 }

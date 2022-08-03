@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 require_once APPPATH . 'third_party/Spout/Autoloader/autoload.php';
 
@@ -9,7 +9,8 @@ use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Surat extends CI_Controller {
+class Surat extends CI_Controller
+{
 
 	public function __construct()
 	{
@@ -17,119 +18,123 @@ class Surat extends CI_Controller {
 		$this->data['module'] = 'Travel Document';
 		$this->data['module_pl'] = 'Packing Document';
 
-	    $this->load->model(array('Surat_model', 'Penerima_model'));
+		$this->load->model(array('Surat_model', 'Penerima_model', 'Auth_model', 'Usertype_model', 'Sku_model', 'Po_model'));
 
-	    $this->data['company_data']    				= $this->Company_model->company_profile();
+		$this->data['company_data']    				= $this->Company_model->company_profile();
 		$this->data['layout_template']    			= $this->Template_model->layout();
-	    $this->data['skins_template']     			= $this->Template_model->skins();
+		$this->data['skins_template']     			= $this->Template_model->skins();
 
-	    $this->data['btn_submit'] 		= 'Save';
-	    $this->data['btn_reset'] 		= 'Reset';
-	    $this->data['btn_add']    		= 'Add New Data';
-	    $this->data['add_action'] 	 	= base_url('admin/surat/surat_jalan_tambah');
-	    $this->data['btn_add_pl'] 		= 'Add New Data';
-	    $this->data['add_action_pl']	= base_url('admin/surat/surat_packing_tambah');
+		$this->data['btn_submit'] 		= 'Save';
+		$this->data['btn_reset'] 		= 'Reset';
+		$this->data['btn_add']    		= 'Add New Data';
+		$this->data['add_action'] 	 	= base_url('admin/surat/surat_jalan_tambah');
+		$this->data['btn_add_pl'] 		= 'Add New Data';
+		$this->data['add_action_pl']	= base_url('admin/surat/surat_packing_tambah');
+		$this->data['btn_add_tb']    		= 'Add New Data';
+		$this->data['add_action_tb'] 	 	= base_url('admin/surat/surat_terima_barang_tambah');
 		$this->data['import_sj_action'] = base_url('assets/template/excel/format_detail_surat_jalan.xlsx');
 		$this->data['import_pl_action'] = base_url('assets/template/excel/format_detail_surat_packing.xlsx');
-	    $this->data['btn_import']    	= 'Format Data Import';
+		$this->data['btn_import']    	= 'Format Data Import';
 
 
-	    is_login();
+		is_login();
 
-	    if($this->uri->segment(1) != NULL){
-	      menuaccess_check();
-	    }
-	    elseif($this->uri->segment(2) != NULL){
-	      submenuaccess_check();
-	    }
+		if ($this->uri->segment(1) != NULL) {
+			menuaccess_check();
+		} elseif ($this->uri->segment(2) != NULL) {
+			submenuaccess_check();
+		}
 	}
 
 	// Surat Jalan
 	public function get_data_surat_jalan()
 	{
 		$i = 1;
-        $list = $this->Surat_model->get_datatables_surat_jalan();
-        $dataJSON = array();
-        foreach ($list as $data) {
-        	$action = '<a href="'.base_url('admin/surat/surat_jalan_print/'.base64_encode($data->no_surat_jalan)).'" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a>';
-        	$action .= ' <a href="'.base_url('admin/surat/surat_jalan_ubah/'.base64_encode($data->no_surat_jalan)).'" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
-          	$action .= ' <a href="'.base_url('admin/surat/surat_jalan_hapus/'.base64_encode($data->no_surat_jalan)).'" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
+		$list = $this->Surat_model->get_datatables_surat_jalan();
+		$dataJSON = array();
+		foreach ($list as $data) {
+			$action = '<a href="' . base_url('admin/surat/surat_jalan_print/' . base64_encode($data->no_surat_jalan)) . '" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a>';
+			$action .= ' <a href="' . base_url('admin/surat/surat_jalan_ubah/' . base64_encode($data->no_surat_jalan)) . '" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
+			$action .= ' <a href="' . base_url('admin/surat/surat_jalan_hapus/' . base64_encode($data->no_surat_jalan)) . '" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
 
-   			$row = array();
-            $row['no'] = $i;
-            $row['tanggal'] = date('d F Y', strtotime($data->tgl_surat_jalan));
-            $row['nomor_jalan'] = $data->no_surat_jalan;
-            $row['kepada'] = $data->kepada_surat_jalan;
-            $row['keterangan'] = $data->keterangan_surat_jalan;
-            $row['nama_penerima'] = $data->nama_penerima;
-            $row['nama_surat_jalan'] = $data->nama_surat_jalan;
-            $row['alamat_penerima'] = $data->alamat_penerima;
-            $row['created'] = $data->created_surat_jalan;
-            $row['action'] = $action;
- 
-            $dataJSON[] = $row;
+			$row = array();
+			$row['no'] = $i;
+			$row['tanggal'] = date('d F Y', strtotime($data->tgl_surat_jalan));
+			$row['nomor_jalan'] = $data->no_surat_jalan;
+			$row['kepada'] = $data->kepada_surat_jalan;
+			$row['keterangan'] = $data->keterangan_surat_jalan;
+			$row['nama_penerima'] = $data->nama_penerima;
+			$row['nama_surat_jalan'] = $data->nama_surat_jalan;
+			$row['alamat_penerima'] = $data->alamat_penerima;
+			$row['created'] = $data->created_surat_jalan;
+			$row['action'] = $action;
 
-            $i++;
-        }
- 
-        $output = array(
-            "recordsTotal" => $this->Surat_model->count_all_surat_jalan(),
-            "recordsFiltered" => $this->Surat_model->count_filtered_surat_jalan(),
-            "data" => $dataJSON,
-        );
-        //output dalam format JSON
-        echo json_encode($output);
+			$dataJSON[] = $row;
+
+			$i++;
+		}
+
+		$output = array(
+			"recordsTotal" => $this->Surat_model->count_all_surat_jalan(),
+			"recordsFiltered" => $this->Surat_model->count_filtered_surat_jalan(),
+			"data" => $dataJSON,
+		);
+		//output dalam format JSON
+		echo json_encode($output);
 	}
 
-	function dasbor_list_count(){
+	function dasbor_list_count()
+	{
 		$penerima	= $this->input->post('penerima');
 		$start 		= substr($this->input->post('periodik'), 0, 10);
 		$end 		= substr($this->input->post('periodik'), 13, 24);
 		$data      = $this->Surat_model->get_dasbor_list($penerima, $start, $end);
-    	if (isset($data)) {	
-        	$msg = array(	'total'		=> $data->total
-        			);
-        	echo json_encode($msg); 
-    	}else {
-    		$msg = array(	'validasi'	=> validation_errors()
-        			);
-        	echo json_encode($msg);
-    	}
-    }
+		if (isset($data)) {
+			$msg = array(
+				'total'		=> $data->total
+			);
+			echo json_encode($msg);
+		} else {
+			$msg = array(
+				'validasi'	=> validation_errors()
+			);
+			echo json_encode($msg);
+		}
+	}
 
-    function surat_jalan()
-    {
-    	is_read();    
+	function surat_jalan()
+	{
+		is_read();
 
-	    $this->data['page_title'] = $this->data['module'].' List';
+		$this->data['page_title'] = $this->data['module'] . ' List';
 
-	    $this->data['get_all_penerima'] = $this->Penerima_model->get_all_penerima_list();
+		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_penerima_list();
 
-	    // $this->data['get_all'] = $this->Keluar_model->get_all();
-	    $this->data['penerima'] = [
-	    	'class'         => 'form-control select2bs4',
-	    	'id'            => 'penerima',
-	      	'required'      => '',
-	      	'style' 		=> 'width:100%'
-	    ];
+		// $this->data['get_all'] = $this->Keluar_model->get_all();
+		$this->data['penerima'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'penerima',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
 
-	    $this->load->view('back/surat/surat_jalan_list', $this->data);
-    }
+		$this->load->view('back/surat/surat_jalan_list', $this->data);
+	}
 
-    function surat_jalan_tambah()
-    {
-    	is_create();
+	function surat_jalan_tambah()
+	{
+		is_create();
 
-    	// generate nomor surat jalan
+		// generate nomor surat jalan
 
-    	date_default_timezone_set("Asia/Jakarta");
-		$date= date("Y-m-d");
+		date_default_timezone_set("Asia/Jakarta");
+		$date = date("Y-m-d");
 		$tahun = substr($date, 2, 2);
 		$tahun_full = substr($date, 0, 4);
 		$bulan = substr($date, 5, 2);
 		$tanggal = substr($date, 8, 2);
 		// $teks = "BR/SJ/".$tanggal.$bulan.$tahun."/";
-		$teks = "BR/SJ/".$tahun_full."/";
+		$teks = "BR/SJ/" . $tahun_full . "/";
 		$ambil_nomor = $this->Surat_model->cari_nomor_sj($teks);
 		// echo print_r(json_encode($ambil_nomor));
 		// $hitung = count($ambil_nomor);
@@ -152,179 +157,185 @@ class Surat extends CI_Controller {
 
 			// PERTAHUN
 			if ($tahun_full == $ambil_tahun_full) {
-				$ambil_no++;	
-				$no_surat = "BR/SJ/".$tahun_full."/".$tanggal.$bulan.$tahun."/".sprintf("%04s", $ambil_no);
-			}else{
-				$no_surat = "BR/SJ/".$tahun_full."/".$tanggal.$bulan.$tahun."/"."0001";
+				$ambil_no++;
+				$no_surat = "BR/SJ/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . sprintf("%04s", $ambil_no);
+			} else {
+				$no_surat = "BR/SJ/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . "0001";
 			}
-		}else{
-			$no_surat = "BR/SJ/".$tahun_full."/".$tanggal.$bulan.$tahun."/"."0001";
+		} else {
+			$no_surat = "BR/SJ/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . "0001";
 		}
 
 
-    	$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
+		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
 
-    	// echo print_r($this->data['daftar_bahan_kemas']);
-    	$this->data['page_title'] = 'Create Data '.$this->data['module'];
-    	$this->data['action']     = 'admin/surat/proses_surat_jalan_tambah';
-    	$this->data['nomor_surat_jalan'] = [
-    		'name' 			=> 'nomor_surat_jalan', 
-		    'id'            => 'nomor-surat-jalan',
-	        'class'         => 'form-control',
+		// echo print_r($this->data['daftar_bahan_kemas']);
+		$this->data['page_title'] = 'Create Data ' . $this->data['module'];
+		$this->data['action']     = 'admin/surat/proses_surat_jalan_tambah';
+		$this->data['nomor_surat_jalan'] = [
+			'name' 			=> 'nomor_surat_jalan',
+			'id'            => 'nomor-surat-jalan',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
 			'value' 		=> $no_surat,
-		    'required'      => '',
-		    'readonly' 		=> '' 
-  		];
+			'required'      => '',
+			'readonly' 		=> ''
+		];
 
-  		$this->data['nama_surat_jalan'] = [
-    		'name' 			=> 'nama_surat_jalan',
-    		'id'            => 'nama-surat-jalan', 
-	        'class'         => 'form-control',
+		$this->data['nama_surat_jalan'] = [
+			'name' 			=> 'nama_surat_jalan',
+			'id'            => 'nama-surat-jalan',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
-		    'required'      => ''
-  		];
+			'required'      => ''
+		];
 
-  		$this->data['kepada_surat_jalan'] = [
-	        'name' 			=> 'kepada_surat_jalan', 
-	        'id'            => 'kepada-surat-jalan',
-	        'class'         => 'form-control',
+		$this->data['kepada_surat_jalan'] = [
+			'name' 			=> 'kepada_surat_jalan',
+			'id'            => 'kepada-surat-jalan',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
-		    'required'      => ''
-  		];
+			'required'      => ''
+		];
 
-  		$this->data['keterangan'] = [
-	      'name'          => 'keterangan',
-	      'id'            => 'keterangan',
-	      'class'         => 'form-control',
-	      'autocomplete'  => 'off'
-	    ];
+		$this->data['keterangan'] = [
+			'name'          => 'keterangan',
+			'id'            => 'keterangan',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off'
+		];
 
-  		$this->data['penerima'] = [
-	    	'class'         => 'form-control select2bs4',
-	    	'id'            => 'penerima',
-	      	'required'      => '',
-	      	'style' 		=> 'width:100%'
-	    ];
+		$this->data['penerima'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'penerima',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
 
-	    $this->load->view('back/surat/surat_jalan_add', $this->data);
-    }
+		$this->load->view('back/surat/surat_jalan_add', $this->data);
+	}
 
-    function proses_surat_jalan_tambah()
-    {
-    	$this->form_validation->set_rules('nama_surat_jalan', 'Nama Surat Jalan', 'required|trim|max_length[255]',
-			array(	'required' 		=> '%s harus diisi!',
-					'max_length'	=> '%s maksimal 255 karakter'
+	function proses_surat_jalan_tambah()
+	{
+		$this->form_validation->set_rules(
+			'nama_surat_jalan',
+			'Nama Surat Jalan',
+			'required|trim|max_length[255]',
+			array(
+				'required' 		=> '%s harus diisi!',
+				'max_length'	=> '%s maksimal 255 karakter'
 			)
 		);
 
-		$this->form_validation->set_rules('kepada_surat_jalan', 'Kepada Penerima', 'required|trim|max_length[255]',
-			array(	'required' 		=> '%s harus diisi!',
-					'max_length'	=> '%s maksimal 255 karakter'
+		$this->form_validation->set_rules(
+			'kepada_surat_jalan',
+			'Kepada Penerima',
+			'required|trim|max_length[255]',
+			array(
+				'required' 		=> '%s harus diisi!',
+				'max_length'	=> '%s maksimal 255 karakter'
 			)
 		);
 
-	    $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
-	    if($this->form_validation->run() === FALSE)
-	    {
-	      $this->surat_jalan_tambah();
-	    }
-	    else
-	    {
-	      	date_default_timezone_set("Asia/Jakarta");
-		    $now = date('Y-m-d H:i:s');
+		if ($this->form_validation->run() === FALSE) {
+			$this->surat_jalan_tambah();
+		} else {
+			date_default_timezone_set("Asia/Jakarta");
+			$now = date('Y-m-d H:i:s');
 
-	    	$nomor_surat 		= $this->input->post('nomor_surat_jalan');
-	    	$nama_surat  		= $this->input->post('nama_surat_jalan');
-	    	$tgl_surat   		= $this->input->post('periodik');
-	    	$kepada_surat   	= $this->input->post('kepada_surat_jalan');
-	    	$keterangan_surat   = $this->input->post('keterangan');
-	    	$id_penerima   		= $this->input->post('penerima');
+			$nomor_surat 		= $this->input->post('nomor_surat_jalan');
+			$nama_surat  		= $this->input->post('nama_surat_jalan');
+			$tgl_surat   		= $this->input->post('periodik');
+			$kepada_surat   	= $this->input->post('kepada_surat_jalan');
+			$keterangan_surat   = $this->input->post('keterangan');
+			$id_penerima   		= $this->input->post('penerima');
 
-	    	$dataSurat = array( 'no_surat_jalan' 			=> $nomor_surat,
-	    						'nama_surat_jalan' 			=> $nama_surat,
-	    						'tgl_surat_jalan' 			=> $tgl_surat,
-	    						'kepada_surat_jalan' 		=> $kepada_surat,
-	    						'keterangan_surat_jalan' 	=> $keterangan_surat,
-	    						'id_penerima' 				=> $id_penerima,
-	    						'created_surat_jalan'		=> $now,
-	    				 );
+			$dataSurat = array(
+				'no_surat_jalan' 			=> $nomor_surat,
+				'nama_surat_jalan' 			=> $nama_surat,
+				'tgl_surat_jalan' 			=> $tgl_surat,
+				'kepada_surat_jalan' 		=> $kepada_surat,
+				'keterangan_surat_jalan' 	=> $keterangan_surat,
+				'id_penerima' 				=> $id_penerima,
+				'created_surat_jalan'		=> $now,
+			);
 
-	    	$this->Surat_model->insert($dataSurat);
+			$this->Surat_model->insert($dataSurat);
 
-	    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data saved successfully</div>');
-			redirect('admin/surat/surat_jalan_ubah/'.base64_encode($nomor_surat));
-	    }
-    }
+			$this->session->set_flashdata('message', '<div class="alert alert-success">Data saved successfully</div>');
+			redirect('admin/surat/surat_jalan_ubah/' . base64_encode($nomor_surat));
+		}
+	}
 
-    function surat_jalan_ubah($id)
-    {
-    	$this->data['cek_surat'] = $this->Surat_model->get_surat_jalan_by_id_row(base64_decode($id));
-    	$this->data['barang'] = $this->Surat_model->get_detail_surat_jalan_by_nomor($this->data['cek_surat']->no_surat_jalan);
+	function surat_jalan_ubah($id)
+	{
+		$this->data['cek_surat'] = $this->Surat_model->get_surat_jalan_by_id_row(base64_decode($id));
+		$this->data['barang'] = $this->Surat_model->get_detail_surat_jalan_by_nomor($this->data['cek_surat']->no_surat_jalan);
 
-    	if ($this->data['cek_surat']) {
-    		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();	
+		if ($this->data['cek_surat']) {
+			$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
 
-    		$this->data['page_title'] = 'Edit Data '.$this->data['module'];
-	    	$this->data['action']     = 'admin/surat/proses_surat_jalan_ubah';
-	    	$this->data['nomor_surat_jalan'] = [
-	    		'name' 			=> 'nomor_surat_jalan', 
-			    'id'            => 'nomor-surat-jalan',
-		        'class'         => 'form-control',
+			$this->data['page_title'] = 'Edit Data ' . $this->data['module'];
+			$this->data['action']     = 'admin/surat/proses_surat_jalan_ubah';
+			$this->data['nomor_surat_jalan'] = [
+				'name' 			=> 'nomor_surat_jalan',
+				'id'            => 'nomor-surat-jalan',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
 				'value' 		=> $this->data['cek_surat']->no_surat_jalan,
-			    'required'      => '',
-			    'readonly' 		=> '' 
-	  		];
+				'required'      => '',
+				'readonly' 		=> ''
+			];
 
-	  		$this->data['nama_surat_jalan'] = [
-	    		'name' 			=> 'nama_surat_jalan',
-	    		'id'            => 'nama-surat-jalan', 
-		        'class'         => 'form-control',
+			$this->data['nama_surat_jalan'] = [
+				'name' 			=> 'nama_surat_jalan',
+				'id'            => 'nama-surat-jalan',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
-			    'required'      => ''
-	  		];
+				'required'      => ''
+			];
 
-	  		$this->data['kepada_surat_jalan'] = [
-		        'name' 			=> 'kepada_surat_jalan', 
-		        'id'            => 'kepada-surat-jalan',
-		        'class'         => 'form-control',
+			$this->data['kepada_surat_jalan'] = [
+				'name' 			=> 'kepada_surat_jalan',
+				'id'            => 'kepada-surat-jalan',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
-			    'required'      => ''
-	  		];
+				'required'      => ''
+			];
 
-	  		$this->data['keterangan'] = [
-		      'name'          => 'keterangan',
-		      'id'            => 'keterangan',
-		      'class'         => 'form-control',
-		      'autocomplete'  => 'off'
-		    ];
+			$this->data['keterangan'] = [
+				'name'          => 'keterangan',
+				'id'            => 'keterangan',
+				'class'         => 'form-control',
+				'autocomplete'  => 'off'
+			];
 
-	  		$this->data['penerima'] = [
-		    	'class'         => 'form-control select2bs4',
-		    	'id'            => 'penerima',
-		      	'required'      => '',
-		      	'style' 		=> 'width:100%'
-		    ];
+			$this->data['penerima'] = [
+				'class'         => 'form-control select2bs4',
+				'id'            => 'penerima',
+				'required'      => '',
+				'style' 		=> 'width:100%'
+			];
 
-		    $this->load->view('back/surat/surat_jalan_edit', $this->data);
-    	}else{
-    		$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
-	    	redirect('admin/surat_jalan');
-    	}
-    }
+			$this->load->view('back/surat/surat_jalan_edit', $this->data);
+		} else {
+			$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
+			redirect('admin/surat_jalan');
+		}
+	}
 
-    function proses_surat_jalan_ubah()
-    {
-    	$i = $this->input;
-    	$len = $i->post('length');
+	function proses_surat_jalan_ubah()
+	{
+		$i = $this->input;
+		$len = $i->post('length');
 		$nomor_surat = $i->post('nomor_surat');
 		$nama_surat = $i->post('nama_surat');
 		$tgl_surat = $i->post('date');
 		$kepada_surat = $i->post('kepada_surat');
 		$keterangan = $i->post('keterangan');
-		$penerima = intval($i->post('penerima')); 
+		$penerima = intval($i->post('penerima'));
 		$dt_kode = $i->post('dt_kode');
 		$dt_nama = $i->post('dt_nama');
 		$dt_satuan = $i->post('dt_satuan');
@@ -342,76 +353,79 @@ class Surat extends CI_Controller {
 
 		if ($cek_detail) {
 			$this->Surat_model->delete_detail_by_nomor($nomor_surat);
-			$UpdateSurat = array( 'no_surat_jalan' 			=> $nomor_surat,
-	    						  'nama_surat_jalan' 		=> $nama_surat,
-	    						  'tgl_surat_jalan' 		=> $tgl_surat,
-	    						  'kepada_surat_jalan' 		=> $kepada_surat,
-	    						  'keterangan_surat_jalan' 	=> $keterangan,
-	    						  'id_penerima' 			=> $penerima,
+			$UpdateSurat = array(
+				'no_surat_jalan' 			=> $nomor_surat,
+				'nama_surat_jalan' 		=> $nama_surat,
+				'tgl_surat_jalan' 		=> $tgl_surat,
+				'kepada_surat_jalan' 		=> $kepada_surat,
+				'keterangan_surat_jalan' 	=> $keterangan,
+				'id_penerima' 			=> $penerima,
 			);
 
 			$this->Surat_model->update($nomor_surat, $UpdateSurat);
 
-			for ($n=0; $n < $len; $n++)
-	        {
-	        	$InsertDetail = array( 'no_surat_jalan' 				=> $nomor_surat,
-	        						   'kode_barang_surat_jalan' 		=> $decode_kode[$n],
-	        						   'nama_barang_surat_jalan' 		=> $decode_nama[$n],
-	        						   'jumlah_barang_surat_jalan' 		=> $decode_qty[$n],
-	        						   'satuan_barang_surat_jalan' 		=> $decode_satuan[$n],
-	        						   'keterangan_barang_surat_jalan' 	=> $decode_keterangan[$n],
-	        	);
+			for ($n = 0; $n < $len; $n++) {
+				$InsertDetail = array(
+					'no_surat_jalan' 				=> $nomor_surat,
+					'kode_barang_surat_jalan' 		=> $decode_kode[$n],
+					'nama_barang_surat_jalan' 		=> $decode_nama[$n],
+					'jumlah_barang_surat_jalan' 		=> $decode_qty[$n],
+					'satuan_barang_surat_jalan' 		=> $decode_satuan[$n],
+					'keterangan_barang_surat_jalan' 	=> $decode_keterangan[$n],
+				);
 
-	        	$this->Surat_model->insert_detail($InsertDetail);
-	        }			
-			
-			$pesan = "Berhasil diubah!";	
-        	$msg = array(	'sukses'	=> $pesan,
-        					'nomor'		=> base64_encode($nomor_surat),
-        			);
-        	echo json_encode($msg);
-		}else{
-			$UpdateSurat = array( 'no_surat_jalan' 			=> $nomor_surat,
-	    						  'nama_surat_jalan' 		=> $nama_surat,
-	    						  'tgl_surat_jalan' 		=> $tgl_surat,
-	    						  'kepada_surat_jalan' 		=> $kepada_surat,
-	    						  'keterangan_surat_jalan' 	=> $keterangan,
-	    						  'id_penerima' 			=> $penerima,
-		   	);
+				$this->Surat_model->insert_detail($InsertDetail);
+			}
+
+			$pesan = "Berhasil diubah!";
+			$msg = array(
+				'sukses'	=> $pesan,
+				'nomor'		=> base64_encode($nomor_surat),
+			);
+			echo json_encode($msg);
+		} else {
+			$UpdateSurat = array(
+				'no_surat_jalan' 			=> $nomor_surat,
+				'nama_surat_jalan' 		=> $nama_surat,
+				'tgl_surat_jalan' 		=> $tgl_surat,
+				'kepada_surat_jalan' 		=> $kepada_surat,
+				'keterangan_surat_jalan' 	=> $keterangan,
+				'id_penerima' 			=> $penerima,
+			);
 
 			$this->Surat_model->update($nomor_surat, $UpdateSurat);
 
-			for ($n=0; $n < $len; $n++)
-	        {
-	        	$InsertDetail = array( 'no_surat_jalan' 				=> $nomor_surat,
-	        						   'kode_barang_surat_jalan' 		=> $decode_kode[$n],
-	        						   'nama_barang_surat_jalan' 		=> $decode_nama[$n],
-	        						   'jumlah_barang_surat_jalan' 		=> $decode_qty[$n],
-	        						   'satuan_barang_surat_jalan' 		=> $decode_satuan[$n],
-	        						   'keterangan_barang_surat_jalan' 	=> $decode_keterangan[$n],
-	        	);
+			for ($n = 0; $n < $len; $n++) {
+				$InsertDetail = array(
+					'no_surat_jalan' 				=> $nomor_surat,
+					'kode_barang_surat_jalan' 		=> $decode_kode[$n],
+					'nama_barang_surat_jalan' 		=> $decode_nama[$n],
+					'jumlah_barang_surat_jalan' 		=> $decode_qty[$n],
+					'satuan_barang_surat_jalan' 		=> $decode_satuan[$n],
+					'keterangan_barang_surat_jalan' 	=> $decode_keterangan[$n],
+				);
 
-	        	$this->Surat_model->insert_detail($InsertDetail);
-	        }			
-			
-			$pesan = "Berhasil diubah!";	
-        	$msg = array(	'sukses'	=> $pesan,
-        					'nomor'		=> base64_encode($nomor_surat),
-        			);
-        	echo json_encode($msg);
+				$this->Surat_model->insert_detail($InsertDetail);
+			}
+
+			$pesan = "Berhasil diubah!";
+			$msg = array(
+				'sukses'	=> $pesan,
+				'nomor'		=> base64_encode($nomor_surat),
+			);
+			echo json_encode($msg);
 		}
+	}
 
-    }
-
-    function surat_jalan_print($id)
+	function surat_jalan_print($id)
 	{
 		$this->data['surat_jalan']   		= $this->Surat_model->get_surat_jalan_by_id_row(base64_decode($id));
-		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_jalan']->id_penerima);	
+		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_jalan']->id_penerima);
 		$this->data['detail_surat_jalan']	= $this->Surat_model->get_detail_surat_jalan_by_nomor(base64_decode($id));
 
 		// echo print_r($this->data['request'])
 		$html = $this->load->view('back/report/template_surat_jalan', $this->data, TRUE);
-		$filename = 'CETAK_'.$this->data['surat_jalan']->nama_surat_jalan.'_'.date('d_M_y');
+		$filename = 'CETAK_' . $this->data['surat_jalan']->nama_surat_jalan . '_' . date('d_M_y');
 		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
 	}
 
@@ -420,25 +434,25 @@ class Surat extends CI_Controller {
 		$this->data['surat_jalan']   = $this->Surat_model->get_surat_jalan_by_id_row(base64_decode($id));
 		if ($this->data['surat_jalan']) {
 			$this->Surat_model->delete_detail_by_nomor($this->data['surat_jalan']->no_surat_jalan);
-			$this->Surat_model->delete($this->data['surat_jalan']->no_surat_jalan);			
+			$this->Surat_model->delete($this->data['surat_jalan']->no_surat_jalan);
 
-	    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
-		    redirect('admin/surat/surat_jalan');
-		}else{
+			$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
+			redirect('admin/surat/surat_jalan');
+		} else {
 			$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
-	    	redirect('admin/surat_jalan');
+			redirect('admin/surat_jalan');
 		}
 	}
 
-    function surat_jalan_detail_hapus_all($id)
-    {
-    	$this->Surat_model->delete_detail_by_nomor(base64_decode($id));
+	function surat_jalan_detail_hapus_all($id)
+	{
+		$this->Surat_model->delete_detail_by_nomor(base64_decode($id));
 
-    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
-	    redirect('admin/surat/surat_jalan_ubah/'.$id);
-    }
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
+		redirect('admin/surat/surat_jalan_ubah/' . $id);
+	}
 
-    function detail_surat_jalan_ubah()
+	function detail_surat_jalan_ubah()
 	{
 		$i = $this->input;
 
@@ -453,52 +467,346 @@ class Surat extends CI_Controller {
 		if ($pilihan == 'simpan') {
 			$cek_detail = $this->Surat_model->get_detail_surat_jalan_by_id_row($id);
 			if ($cek_detail) {
-				$updateData = array( 'kode_barang_surat_jalan'		 => $kode,
-									 'nama_barang_surat_jalan'		 => $nama,	
-									 'jumlah_barang_surat_jalan'	 => $jumlah,	
-									 'satuan_barang_surat_jalan'	 => $satuan,	
-									 'keterangan_barang_surat_jalan' => $keterangan,	
-									 'nama_barang_surat_jalan' => $nama,	
+				$updateData = array(
+					'kode_barang_surat_jalan'		 => $kode,
+					'nama_barang_surat_jalan'		 => $nama,
+					'jumlah_barang_surat_jalan'	 => $jumlah,
+					'satuan_barang_surat_jalan'	 => $satuan,
+					'keterangan_barang_surat_jalan' => $keterangan,
+					'nama_barang_surat_jalan' => $nama,
 
-				);	
+				);
 
 				// echo print_r($updateData);
-				$this->Surat_model->update_detail($id,$cek_detail->no_surat_jalan,$updateData);
-				$pesan = "Berhasil diubah!";	
-	        	$msg = array(	'sukses'	=> $pesan,
-	        					'nomor'		=> base64_encode($cek_detail->no_surat_jalan),
-	        			);
-	        	echo json_encode($msg);
-			}	
-		}elseif ($pilihan == 'hapus'){
+				$this->Surat_model->update_detail($id, $cek_detail->no_surat_jalan, $updateData);
+				$pesan = "Berhasil diubah!";
+				$msg = array(
+					'sukses'	=> $pesan,
+					'nomor'		=> base64_encode($cek_detail->no_surat_jalan),
+				);
+				echo json_encode($msg);
+			}
+		} elseif ($pilihan == 'hapus') {
 			$cek_detail = $this->Surat_model->get_detail_surat_jalan_by_id_row($id);
 			if ($cek_detail) {
 				// echo print_r($updateData);
 				$this->Surat_model->delete_detail_by_id($id);
-				$pesan = "Berhasil dihapus!";	
-	        	$msg = array(	'sukses'	=> $pesan,
-	        					'nomor'		=> base64_encode($cek_detail->no_surat_jalan),
-	        			);
-	        	echo json_encode($msg);
+				$pesan = "Berhasil dihapus!";
+				$msg = array(
+					'sukses'	=> $pesan,
+					'nomor'		=> base64_encode($cek_detail->no_surat_jalan),
+				);
+				echo json_encode($msg);
 			}
 		}
 	}
+
+	// Surat Terima Barang
+	public function get_data_surat_terima_barang()
+	{
+		$i = 1;
+		$list = $this->Surat_model->get_datatables_surat_terima_barang();
+		$dataJSON = array();
+		foreach ($list as $data) {
+			$action = '<a href="' . base_url('admin/surat/surat_terima_barang_print/' . base64_encode($data->nomor_surat_terima_barang)) . '" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a>';
+			// $action .= ' <a href="' . base_url('admin/surat/surat_jalan_ubah/' . base64_encode($data->id_surat_terima_barang)) . '" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
+			$action .= ' <a href="' . base_url('admin/surat/surat_terima_barang_hapus/' . base64_encode($data->nomor_surat_terima_barang)) . '" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
+
+			$row = array();
+			$row['no'] = $i;
+			$row['tanggal'] = date('d F Y', strtotime($data->tgl_terima_surat_terima_barang));
+			$row['nomor_surat_terima_barang'] = $data->nomor_surat_terima_barang;
+			$row['nama_surat_terima_barang'] = $data->nama_surat_terima_barang;
+			$row['action'] = $action;
+
+			$dataJSON[] = $row;
+
+			$i++;
+		}
+
+		$output = array(
+			"recordsTotal" => $this->Surat_model->count_all_surat_terima_barang(),
+			"recordsFiltered" => $this->Surat_model->count_filtered_surat_terima_barang(),
+			"data" => $dataJSON,
+		);
+		//output dalam format JSON
+		echo json_encode($output);
+	}
+
+	function surat_terima_barang()
+	{
+		is_read();
+
+		$this->data['page_title'] = $this->data['module'] . ' List';
+
+		$this->data['get_all_warehouse'] = $this->Auth_model->get_warehouse_all_combobox();
+
+		// $this->data['get_all'] = $this->Keluar_model->get_all();
+		$this->data['warehouse'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'warehouse',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
+
+		$this->load->view('back/surat/surat_terima_barang_list', $this->data);
+	}
+
+	function dasbor_list_count_terima_barang()
+	{
+
+		$data      = $this->Surat_model->count_filtered_surat_terima_barang();
+		if (isset($data)) {
+			$msg = array(
+				'total'		=> $data
+			);
+			echo json_encode($msg);
+		} else {
+			$msg = array(
+				'validasi'	=> validation_errors()
+			);
+			echo json_encode($msg);
+		}
+	}
+
+
+	function surat_terima_barang_tambah()
+	{
+		is_create();
+		$this->load->helper('date_helper');
+		// generate nomor surat terima barang
+
+		date_default_timezone_set("Asia/Jakarta");
+		$date = date("Y-m-d");
+		$tahun = substr($date, 2, 2);
+		$tahun_full = substr($date, 0, 4);
+		$bulan = numberToRomanRepresentation(substr($date, 5, 2));
+		$tanggal = substr($date, 8, 2);
+		// $teks = "BR/SJ/".$tanggal.$bulan.$tahun."/";
+		$ambil_nomor = $this->Surat_model->count_total_surat_terima_barang();
+		// echo print_r(json_encode($ambil_nomor));
+		// $hitung = count($ambil_nomor);
+		// echo $ambil_nomor->nomor_pesanan;
+		if (empty($ambil_nomor)) $ambil_nomor = 0;
+		$no_surat = '/' . sprintf("%02d", ($ambil_nomor + 1)) . "/" . $tanggal . '-' . $bulan . '-' .  $tahun_full;
+
+
+		$this->data['get_all_warehouse'] = $this->Auth_model->get_warehouse_all_combobox();
+		$this->data['get_satuan_produk'] = $this->Sku_model->get_all_combobox_unique();
+		$this->data['get_po_list'] = $this->Po_model->get_all_po_list();
+		$this->data['get_penerima_list'] = $this->Surat_model->get_all_penerima_surat_terima_list();
+
+
+		// echo print_r($this->data['daftar_bahan_kemas']);
+		$this->data['page_title'] = 'Create Data ' . $this->data['module'];
+		$this->data['action']     = 'admin/surat/proses_surat_jalan_terima_barang';
+		$this->data['nomor_surat_template'] = $no_surat;
+		$this->data['nomor_surat_terima_barang'] = [
+			'name' 			=> 'nomor_surat_terima_barang',
+			'id'            => 'in_nomor_surat_terima_barang',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off',
+			'required'      => '',
+			'readonly' 		=> ''
+		];
+
+		$this->data['nama_surat_terima_barang'] = [
+			'name' 			=> 'nama_surat_terima_barang',
+			'id'            => 'in_nama_surat_terima_barang',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off',
+			'required'      => ''
+		];
+		$this->data['nomor_surat_jalan'] = [
+			'name' 			=> 'nomor_surat_jalan',
+			'id'            => 'in_nomor_surat_jalan',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off',
+			'required'      => ''
+		];
+
+
+		$this->data['nama_pengirim'] = [
+			'name'          => 'nama_pengirim',
+			'id'            => 'in_nama_pengirim',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off',
+		];
+
+
+		$this->data['nama_penerima'] = [
+			'class'         => 'form-control select2bs45',
+			'id'            => 'in_nama_penerima',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
+
+		$this->data['warehouse'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'in_warehouse',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
+
+		$this->data['pic_qc'] = [
+			'class'         => 'form-control select2bs42',
+			'id'            => 'in_pic_qc',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
+
+		$this->data['kode_po'] = [
+			'class'         => 'form-control select2bs44',
+			'id'            => 'in_kode_po',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
+
+
+		$this->data['nama_barang'] = [
+			'class'         => 'form-control select2bs43',
+			'id'            => 'in_nama_barang',
+			'style' 		=> 'width:100%'
+		];
+
+		$this->load->view('back/surat/surat_terima_barang_add', $this->data);
+	}
+
+	function proses_surat_terima_barang()
+	{
+		date_default_timezone_set("Asia/Jakarta");
+		$now = date('Y-m-d H:i:s');
+
+		$nomor_surat_terima 		= $this->input->post('nomor_surat_terima');
+		$nomor_surat_jalan  		= $this->input->post('nomor_surat_jalan');
+		$kode_po   		= $this->input->post('kode_po');
+		$nama_surat   	= $this->input->post('nama_surat');
+		$warehouse   = $this->input->post('warehouse');
+		$periodik_kirim   		= $this->input->post('periodik_kirim');
+		$nama_pengirim   		= $this->input->post('nama_pengirim');
+		$periodik_terima   		= $this->input->post('periodik_terima');
+		$nama_penerima   		= $this->input->post('nama_penerima');
+		$dt_pic_qc   		= $this->input->post('dt_pic_qc');
+		$dt_nama_barang   		= $this->input->post('dt_nama_barang');
+		$dt_kode_barang   		= $this->input->post('dt_kode_barang');
+		$dt_qty   		= $this->input->post('dt_qty');
+		$dt_koli_karton   		= $this->input->post('dt_koli_karton');
+		$dt_jumlah_barang_qc   		= $this->input->post('dt_jumlah_barang_qc');
+		$dt_tgl_selesai_qc   		= $this->input->post('dt_tgl_selesai_qc');
+		$dt_keterangan_qc   		= $this->input->post('dt_keterangan_qc');
+		$len   		= $this->input->post('length');
+
+		$decode_pic_qc = json_decode($dt_pic_qc, TRUE);
+		$decode_nama_barang = json_decode($dt_nama_barang, TRUE);
+		$decode_kode_barang = json_decode($dt_kode_barang, TRUE);
+		$decode_qty = json_decode($dt_qty, TRUE);
+		$decode_koli_karton = json_decode($dt_koli_karton, TRUE);
+		$decode_jumlah_barang_qc = json_decode($dt_jumlah_barang_qc, TRUE);
+		$decode_tgl_selesai_qc = json_decode($dt_tgl_selesai_qc, TRUE);
+		$decode_keterangan_qc = json_decode($dt_keterangan_qc, TRUE);
+
+		$dataSurat = array(
+			'nomor_surat_terima_barang ' 			=> $nomor_surat_terima,
+			'no_surat_jalan' 			=> $nomor_surat_jalan,
+			'no_po' 			=> $kode_po,
+			'nama_surat_terima_barang' 		=> $nama_surat,
+			'id_warehouse_surat_terima_barang' 	=> $warehouse,
+			'tgl_kirim_surat_terima_barang' 				=> $periodik_kirim,
+			'nama_pengirim_surat_terima_barang' 				=> $nama_pengirim,
+			'tgl_terima_surat_terima_barang' 				=> $periodik_terima,
+			'nama_penerima_surat_terima_barang' 				=> $nama_penerima,
+			'created_surat_terima_barang'		=> $now,
+		);
+
+		$this->Surat_model->insert_terima($dataSurat);
+		write_log();
+
+		for ($n = 0; $n < $len; $n++) {
+
+			if (preg_match('/BR/i', $decode_kode_barang[$n])) {
+				$kategori = "BRIGHTY";
+			} else if (preg_match('/CR/i', $decode_kode_barang[$n])) {
+				$kategori = "CIARA";
+			} else if (preg_match('/AHA/i', $decode_kode_barang[$n])) {
+				$kategori = "AHA";
+			} else {
+				$kategori = "Code Not Found";
+			}
+
+			$dataDetail[$n] = array(
+				'no_surat_terima_barang '	=> $nomor_surat_terima,
+				'id_pic_surat_terima_barang' 	=> $decode_pic_qc[$n],
+				'nama_barang_surat_jalan'			=> $decode_nama_barang[$n],
+				'kode_barang_surat_terima_barang' 		=> $decode_kode_barang[$n],
+				'kategori_barang_surat_terima_barang' => $kategori,
+				'qty_barang_surat_terima_barang'	 		=> $decode_qty[$n],
+				'koli_karton_surat_terima_barang'	 		=> $decode_koli_karton[$n],
+				'jumlah_qc_surat_terima_barang'	 		=> $decode_jumlah_barang_qc[$n],
+				'tgl_selesai_qc_surat_terima_barang'	 		=> $decode_tgl_selesai_qc[$n],
+				'keterangan_barang_surat_terima_barang'	 		=> $decode_keterangan_qc[$n],
+			);
+
+
+			$this->Surat_model->insert_detail_terima($dataDetail[$n]);
+
+			write_log();
+		}
+
+		$pesan = "Berhasil disimpan!";
+		$msg = array(
+			'sukses'	=> $pesan
+		);
+		echo json_encode($msg);
+	}
+
+
+	function surat_terima_barang_print($id)
+	{
+		$this->data['surat_terima_barang']   		= $this->Surat_model->get_surat_terima_barang_by_nomor(base64_decode($id));
+		$this->data['detail_surat_terima_barang']	= $this->Surat_model->get_detail_surat_terima_barang_by_nomor(base64_decode($id));
+
+		$this->data['warehouse']				= $this->Usertype_model->get_user_by_id($this->data['surat_terima_barang']->id_warehouse_surat_terima_barang)->name;
+		$this->data['pic_qc']				= $this->Usertype_model->get_user_by_id($this->data['detail_surat_terima_barang'][0]->id_pic_surat_terima_barang)->name;
+
+		$this->load->view('back/report/template_surat_terima', $this->data);
+		$html = $this->load->view('back/report/template_surat_terima', $this->data, TRUE);
+		$filename = 'CETAK_' . $this->data['surat_terima_barang']->nama_surat_terima_barang . '_' . date('d_M_y');
+		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
+	}
+
+	function surat_terima_barang_hapus($id)
+	{
+		$this->data['surat_terima_barang']   = $this->Surat_model->get_surat_terima_barang_by_nomor(base64_decode($id));
+
+		if ($this->data['surat_terima_barang']) {
+			$this->Surat_model->delete_surat_terima_detail_by_nomor(base64_decode($id));
+			$this->Surat_model->delete_surat_terima(base64_decode($id));
+
+			$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
+			redirect('admin/surat/surat_terima_barang');
+		} else {
+			$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
+			redirect('admin/surat_terima_barang');
+		}
+	}
+
+
 
 	public function proses_impor_sj()
 	{
 		$config['upload_path'] 		= './uploads/';
 		$config['allowed_types'] 	= 'xlsx|xls';
-		$config['file_name']			= 'doc'.time();	
+		$config['file_name']			= 'doc' . time();
 		// $config['max_size']  = '100';
 		// $config['max_width']  = '1024';
 		// $config['max_height']  = '768';
-		
+
 		$this->load->library('upload', $config);
 		if ($this->upload->do_upload('import_data')) {
 			$file 		= $this->upload->data();
 			$reader 	= ReaderEntityFactory::createXLSXReader();
 
-			$reader->open('uploads/'.$file['file_name']);
+			$reader->open('uploads/' . $file['file_name']);
 			$nomor 	   	= $this->input->post('nomor');
 			$numSheet 	= 0;
 			$jumlah 	= 0;
@@ -509,52 +817,55 @@ class Surat extends CI_Controller {
 						if ($numRow == 1) {
 							if ($row->getCellAtIndex(0) != 'kode_barang_surat_jalan' || $row->getCellAtIndex(1) != 'nama_barang_surat_jalan' || $row->getCellAtIndex(2) != 'jumlah_barang_surat_jalan' || $row->getCellAtIndex(3) != 'satuan_barang_surat_jalan' || $row->getCellAtIndex(4) != 'keterangan_barang_surat_jalan') {
 								$reader->close();
-								unlink('uploads/'.$file['file_name']);
+								unlink('uploads/' . $file['file_name']);
 
-								$msg = array(	'validasi'		=> 'Data import tidak sesuai!',
-				    			);
-						    	echo json_encode($msg);
+								$msg = array(
+									'validasi'		=> 'Data import tidak sesuai!',
+								);
+								echo json_encode($msg);
 							}
 						}
 
 						if ($numRow > 1) {
 							$cells 	   = $row->getCells();
-							
-							$dataDetailSJ 	= array(	'no_surat_jalan'				=> $nomor,
-														'kode_barang_surat_jalan' 		=> $row->getCellAtIndex(0),
-														'nama_barang_surat_jalan' 		=> $row->getCellAtIndex(1),
-														'jumlah_barang_surat_jalan' 	=> $row->getCellAtIndex(2),
-														'satuan_barang_surat_jalan' 	=> $row->getCellAtIndex(3),
-														'keterangan_barang_surat_jalan' => $row->getCellAtIndex(4),
-													);
+
+							$dataDetailSJ 	= array(
+								'no_surat_jalan'				=> $nomor,
+								'kode_barang_surat_jalan' 		=> $row->getCellAtIndex(0),
+								'nama_barang_surat_jalan' 		=> $row->getCellAtIndex(1),
+								'jumlah_barang_surat_jalan' 	=> $row->getCellAtIndex(2),
+								'satuan_barang_surat_jalan' 	=> $row->getCellAtIndex(3),
+								'keterangan_barang_surat_jalan' => $row->getCellAtIndex(4),
+							);
 
 							$this->Surat_model->insert_detail($dataDetailSJ);
 
 							write_log();
-
 						}
 						$numRow++;
 						$jumlah++;
 					}
 					$reader->close();
-					unlink('uploads/'.$file['file_name']);
+					unlink('uploads/' . $file['file_name']);
 
-					$msg = array(	'sukses'	=> $jumlah.' Data imported successfully',
-									'nomor'		=> base64_encode($nomor)
-			    			);
-			    	echo json_encode($msg);
+					$msg = array(
+						'sukses'	=> $jumlah . ' Data imported successfully',
+						'nomor'		=> base64_encode($nomor)
+					);
+					echo json_encode($msg);
 					// $this->session->set_flashdata('message', '<div class="alert alert-success">'.$jumlah.' Data imported successfully</div>');
 					// redirect('admin/surat/surat_packing_ubah/'.base64_encode($nomor));
 				}
 				$numSheet++;
 			}
-		}else{
+		} else {
 			// $error = array('error' => $this->upload->display_errors());
 			// $this->session->set_flashdata('message', '<div class="alert alert-danger">'.$this->upload->display_errors().'</div>')
-			
-			$msg = array(	'validasi'	=> 'Terjadi Kesalahan!',
-	    			);
-	    	echo json_encode($msg);
+
+			$msg = array(
+				'validasi'	=> 'Terjadi Kesalahan!',
+			);
+			echo json_encode($msg);
 			// $error = array('error' => $this->upload->display_errors());
 			// $this->session->set_flashdata('message', '<div class="alert alert-danger">'.$this->upload->display_errors().'</div>');
 			// redirect('admin/surat/surat_packing_ubah/'.base64_encode($nomor));
@@ -566,7 +877,7 @@ class Surat extends CI_Controller {
 	{
 		$surat_jalan = $this->Surat_model->get_surat_jalan_by_id_row(base64_decode($nomor));
 		$detail_surat_jalan = $this->Surat_model->get_detail_surat_jalan_by_nomor(base64_decode($nomor));
-		$title = "Export Data Surat Jalan_".date("H_i_s");
+		$title = "Export Data Surat Jalan_" . date("H_i_s");
 
 		// PHPOffice
 
@@ -599,117 +910,120 @@ class Surat extends CI_Controller {
 		$sheet->mergeCells('E4:K4');
 		$sheet->setCellValue('E4', 'Keterangan');
 		// set Row
-        $rowCount = 5;
-        foreach ($detail_surat_jalan as $list) {
-            $sheet->SetCellValue('A' . $rowCount, $list->kode_barang_surat_jalan);
-            $sheet->SetCellValue('B' . $rowCount, $list->nama_barang_surat_jalan);
-            $sheet->SetCellValue('C' . $rowCount, $list->jumlah_barang_surat_jalan);
-            $sheet->SetCellValue('D' . $rowCount, $list->satuan_barang_surat_jalan);
-			$sheet->mergeCells('E' . $rowCount.':K'.$rowCount);
-            $sheet->SetCellValue('E' . $rowCount, $list->keterangan_barang_surat_jalan);
-            $rowCount++;
-        }	
+		$rowCount = 5;
+		foreach ($detail_surat_jalan as $list) {
+			$sheet->SetCellValue('A' . $rowCount, $list->kode_barang_surat_jalan);
+			$sheet->SetCellValue('B' . $rowCount, $list->nama_barang_surat_jalan);
+			$sheet->SetCellValue('C' . $rowCount, $list->jumlah_barang_surat_jalan);
+			$sheet->SetCellValue('D' . $rowCount, $list->satuan_barang_surat_jalan);
+			$sheet->mergeCells('E' . $rowCount . ':K' . $rowCount);
+			$sheet->SetCellValue('E' . $rowCount, $list->keterangan_barang_surat_jalan);
+			$rowCount++;
+		}
 
 		$writer = new Xlsx($spreadsheet);
-			
+
 		header('Content-Type: application/vnd.ms-excel');
-		header("Content-Transfer-Encoding: Binary"); 
-		header('Content-Disposition: attachment;filename="'. $title .'.xlsx"');
+		header("Content-Transfer-Encoding: Binary");
+		header('Content-Disposition: attachment;filename="' . $title . '.xlsx"');
 		header("Pragma: no-cache");
 		header("Expires: 0");
 
 		$writer->save('php://output');
 
-		die();	
+		die();
 	}
 
-    // Surat Packing
+	// Surat Packing
 	public function get_data_surat_packing()
 	{
 		$i = 1;
-        $list = $this->Surat_model->get_datatables_surat_packing();
-        $dataJSON = array();
-        foreach ($list as $data) {
-        	$action = '<a href="'.base_url('admin/surat/surat_packing_print/'.base64_encode($data->no_surat_packing)).'" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a> ';
-        	$action .= ' <a href="'.base_url('admin/surat/surat_packing_print_alamat/'.base64_encode($data->no_surat_packing)).'" class="btn btn-sm btn-info"><i class="fa fa-id-card-o"></i></a>';
-        	$action .= ' <a href="'.base_url('admin/surat/surat_packing_ubah/'.base64_encode($data->no_surat_packing)).'" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
-          	$action .= ' <a href="'.base_url('admin/surat/surat_packing_hapus/'.base64_encode($data->no_surat_packing)).'" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
+		$list = $this->Surat_model->get_datatables_surat_packing();
+		$dataJSON = array();
+		foreach ($list as $data) {
+			$action = '<a href="' . base_url('admin/surat/surat_packing_print/' . base64_encode($data->no_surat_packing)) . '" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a> ';
+			$action .= ' <a href="' . base_url('admin/surat/surat_packing_print_alamat/' . base64_encode($data->no_surat_packing)) . '" class="btn btn-sm btn-info"><i class="fa fa-id-card-o"></i></a>';
+			$action .= ' <a href="' . base_url('admin/surat/surat_packing_ubah/' . base64_encode($data->no_surat_packing)) . '" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
+			$action .= ' <a href="' . base_url('admin/surat/surat_packing_hapus/' . base64_encode($data->no_surat_packing)) . '" onClick="return confirm(\'Are you sure?\');" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
 
-   			$row = array();
-            $row['no'] = $i;
-            $row['tanggal'] = date('d F Y', strtotime($data->tgl_surat_packing));
-            $row['nomor_jalan'] = $data->no_surat_packing;
-            $row['kepada'] = $data->kepada_surat_packing;
-            $row['keterangan'] = $data->keterangan_surat_packing;
-            $row['nama_penerima'] = $data->nama_penerima;
-            $row['nama_surat_jalan'] = $data->nama_surat_packing;
-            $row['alamat_penerima'] = $data->alamat_penerima;
-            $row['created'] = $data->created_surat_packing;
-            $row['action'] = $action;
- 
-            $dataJSON[] = $row;
+			$row = array();
+			$row['no'] = $i;
+			$row['tanggal'] = date('d F Y', strtotime($data->tgl_surat_packing));
+			$row['nomor_jalan'] = $data->no_surat_packing;
+			$row['kepada'] = $data->kepada_surat_packing;
+			$row['keterangan'] = $data->keterangan_surat_packing;
+			$row['nama_penerima'] = $data->nama_penerima;
+			$row['nama_surat_jalan'] = $data->nama_surat_packing;
+			$row['alamat_penerima'] = $data->alamat_penerima;
+			$row['created'] = $data->created_surat_packing;
+			$row['action'] = $action;
 
-            $i++;
-        }
- 
-        $output = array(
-            "recordsTotal" => $this->Surat_model->count_all_surat_packing(),
-            "recordsFiltered" => $this->Surat_model->count_filtered_surat_packing(),
-            "data" => $dataJSON,
-        );
-        //output dalam format JSON
-        echo json_encode($output);
+			$dataJSON[] = $row;
+
+			$i++;
+		}
+
+		$output = array(
+			"recordsTotal" => $this->Surat_model->count_all_surat_packing(),
+			"recordsFiltered" => $this->Surat_model->count_filtered_surat_packing(),
+			"data" => $dataJSON,
+		);
+		//output dalam format JSON
+		echo json_encode($output);
 	}
 
-	function dasbor_list_count_packing(){
+	function dasbor_list_count_packing()
+	{
 		$penerima	= $this->input->post('penerima');
 		$start 		= substr($this->input->post('periodik'), 0, 10);
 		$end 		= substr($this->input->post('periodik'), 13, 24);
 		$data      = $this->Surat_model->get_dasbor_list_packing($penerima, $start, $end);
-    	if (isset($data)) {	
-        	$msg = array(	'total'		=> $data->total
-        			);
-        	echo json_encode($msg); 
-    	}else {
-    		$msg = array(	'validasi'	=> validation_errors()
-        			);
-        	echo json_encode($msg);
-    	}
-    }
+		if (isset($data)) {
+			$msg = array(
+				'total'		=> $data->total
+			);
+			echo json_encode($msg);
+		} else {
+			$msg = array(
+				'validasi'	=> validation_errors()
+			);
+			echo json_encode($msg);
+		}
+	}
 
-    function surat_packing()
-    {
-    	is_read();    
+	function surat_packing()
+	{
+		is_read();
 
-	    $this->data['page_title'] = $this->data['module_pl'].' List';
+		$this->data['page_title'] = $this->data['module_pl'] . ' List';
 
-	    $this->data['get_all_penerima'] = $this->Penerima_model->get_all_penerima_list();
+		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_penerima_list();
 
-	    // $this->data['get_all'] = $this->Keluar_model->get_all();
-	    $this->data['penerima'] = [
-	    	'class'         => 'form-control select2bs4',
-	    	'id'            => 'penerima',
-	      	'required'      => '',
-	      	'style' 		=> 'width:100%'
-	    ];
+		// $this->data['get_all'] = $this->Keluar_model->get_all();
+		$this->data['penerima'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'penerima',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
 
-	    $this->load->view('back/surat/surat_packing_list', $this->data);
-    }
+		$this->load->view('back/surat/surat_packing_list', $this->data);
+	}
 
-    function surat_packing_tambah()
-    {
-    	is_create();
+	function surat_packing_tambah()
+	{
+		is_create();
 
-    	// generate nomor surat jalan
+		// generate nomor surat jalan
 
-    	date_default_timezone_set("Asia/Jakarta");
-		$date= date("Y-m-d");
+		date_default_timezone_set("Asia/Jakarta");
+		$date = date("Y-m-d");
 		$tahun = substr($date, 2, 2);
 		$tahun_full = substr($date, 0, 4);
 		$bulan = substr($date, 5, 2);
 		$tanggal = substr($date, 8, 2);
 		// $teks = "BR/PL/".$tanggal.$bulan.$tahun."/";
-		$teks = "BR/PL/".$tahun_full."/";
+		$teks = "BR/PL/" . $tahun_full . "/";
 		$ambil_nomor = $this->Surat_model->cari_nomor_sp($teks);
 		// echo print_r(json_encode($ambil_nomor));
 		// $hitung = count($ambil_nomor);
@@ -732,179 +1046,185 @@ class Surat extends CI_Controller {
 
 			// PERTAHUN
 			if ($tahun_full == $ambil_tahun_full) {
-				$ambil_no++;	
-				$no_surat = "BR/PL/".$tahun_full."/".$tanggal.$bulan.$tahun."/".sprintf("%04s", $ambil_no);
-			}else{
-				$no_surat = "BR/PL/".$tahun_full."/".$tanggal.$bulan.$tahun."/"."0001";
+				$ambil_no++;
+				$no_surat = "BR/PL/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . sprintf("%04s", $ambil_no);
+			} else {
+				$no_surat = "BR/PL/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . "0001";
 			}
-		}else{
-			$no_surat = "BR/PL/".$tahun_full."/".$tanggal.$bulan.$tahun."/"."0001";
+		} else {
+			$no_surat = "BR/PL/" . $tahun_full . "/" . $tanggal . $bulan . $tahun . "/" . "0001";
 		}
 
 
-    	$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
+		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
 
-    	// echo print_r($this->data['daftar_bahan_kemas']);
-    	$this->data['page_title'] = 'Create Data '.$this->data['module_pl'];
-    	$this->data['action']     = 'admin/surat/proses_surat_packing_tambah';
-    	$this->data['nomor_surat_packing'] = [
-    		'name' 			=> 'nomor_surat_packing', 
-		    'id'            => 'nomor-surat-packing',
-	        'class'         => 'form-control',
+		// echo print_r($this->data['daftar_bahan_kemas']);
+		$this->data['page_title'] = 'Create Data ' . $this->data['module_pl'];
+		$this->data['action']     = 'admin/surat/proses_surat_packing_tambah';
+		$this->data['nomor_surat_packing'] = [
+			'name' 			=> 'nomor_surat_packing',
+			'id'            => 'nomor-surat-packing',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
 			'value' 		=> $no_surat,
-		    'required'      => '',
-		    'readonly' 		=> '' 
-  		];
+			'required'      => '',
+			'readonly' 		=> ''
+		];
 
-  		$this->data['nama_surat_packing'] = [
-    		'name' 			=> 'nama_surat_packing',
-    		'id'            => 'nama-surat-packing', 
-	        'class'         => 'form-control',
+		$this->data['nama_surat_packing'] = [
+			'name' 			=> 'nama_surat_packing',
+			'id'            => 'nama-surat-packing',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
-		    'required'      => ''
-  		];
+			'required'      => ''
+		];
 
-  		$this->data['kepada_surat_packing'] = [
-	        'name' 			=> 'kepada_surat_packing', 
-	        'id'            => 'kepada-surat-packing',
-	        'class'         => 'form-control',
+		$this->data['kepada_surat_packing'] = [
+			'name' 			=> 'kepada_surat_packing',
+			'id'            => 'kepada-surat-packing',
+			'class'         => 'form-control',
 			'autocomplete'  => 'off',
-		    'required'      => ''
-  		];
+			'required'      => ''
+		];
 
-  		$this->data['keterangan'] = [
-	      'name'          => 'keterangan',
-	      'id'            => 'keterangan',
-	      'class'         => 'form-control',
-	      'autocomplete'  => 'off'
-	    ];
+		$this->data['keterangan'] = [
+			'name'          => 'keterangan',
+			'id'            => 'keterangan',
+			'class'         => 'form-control',
+			'autocomplete'  => 'off'
+		];
 
-  		$this->data['penerima'] = [
-	    	'class'         => 'form-control select2bs4',
-	    	'id'            => 'penerima',
-	      	'required'      => '',
-	      	'style' 		=> 'width:100%'
-	    ];
+		$this->data['penerima'] = [
+			'class'         => 'form-control select2bs4',
+			'id'            => 'penerima',
+			'required'      => '',
+			'style' 		=> 'width:100%'
+		];
 
-	    $this->load->view('back/surat/surat_packing_add', $this->data);
-    }
+		$this->load->view('back/surat/surat_packing_add', $this->data);
+	}
 
-    function proses_surat_packing_tambah()
-    {
-    	$this->form_validation->set_rules('nama_surat_packing', 'Nama Surat Packing', 'required|trim|max_length[255]',
-			array(	'required' 		=> '%s harus diisi!',
-					'max_length'	=> '%s maksimal 255 karakter'
+	function proses_surat_packing_tambah()
+	{
+		$this->form_validation->set_rules(
+			'nama_surat_packing',
+			'Nama Surat Packing',
+			'required|trim|max_length[255]',
+			array(
+				'required' 		=> '%s harus diisi!',
+				'max_length'	=> '%s maksimal 255 karakter'
 			)
 		);
 
-		$this->form_validation->set_rules('kepada_surat_packing', 'Kepada Penerima', 'required|trim|max_length[255]',
-			array(	'required' 		=> '%s harus diisi!',
-					'max_length'	=> '%s maksimal 255 karakter'
+		$this->form_validation->set_rules(
+			'kepada_surat_packing',
+			'Kepada Penerima',
+			'required|trim|max_length[255]',
+			array(
+				'required' 		=> '%s harus diisi!',
+				'max_length'	=> '%s maksimal 255 karakter'
 			)
 		);
 
-	    $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 
-	    if($this->form_validation->run() === FALSE)
-	    {
-	      $this->surat_packing_tambah();
-	    }
-	    else
-	    {
-	      	date_default_timezone_set("Asia/Jakarta");
-		    $now = date('Y-m-d H:i:s');
+		if ($this->form_validation->run() === FALSE) {
+			$this->surat_packing_tambah();
+		} else {
+			date_default_timezone_set("Asia/Jakarta");
+			$now = date('Y-m-d H:i:s');
 
-	    	$nomor_surat 		= $this->input->post('nomor_surat_packing');
-	    	$nama_surat  		= $this->input->post('nama_surat_packing');
-	    	$tgl_surat   		= $this->input->post('periodik');
-	    	$kepada_surat   	= $this->input->post('kepada_surat_packing');
-	    	$keterangan_surat   = $this->input->post('keterangan');
-	    	$id_penerima   		= $this->input->post('penerima');
+			$nomor_surat 		= $this->input->post('nomor_surat_packing');
+			$nama_surat  		= $this->input->post('nama_surat_packing');
+			$tgl_surat   		= $this->input->post('periodik');
+			$kepada_surat   	= $this->input->post('kepada_surat_packing');
+			$keterangan_surat   = $this->input->post('keterangan');
+			$id_penerima   		= $this->input->post('penerima');
 
-	    	$dataSurat = array( 'no_surat_packing' 			=> $nomor_surat,
-	    						'nama_surat_packing' 		=> $nama_surat,
-	    						'tgl_surat_packing' 		=> $tgl_surat,
-	    						'kepada_surat_packing' 		=> $kepada_surat,
-	    						'keterangan_surat_packing' 	=> $keterangan_surat,
-	    						'id_penerima' 				=> $id_penerima,
-	    						'created_surat_packing'		=> $now,
-	    				 );
+			$dataSurat = array(
+				'no_surat_packing' 			=> $nomor_surat,
+				'nama_surat_packing' 		=> $nama_surat,
+				'tgl_surat_packing' 		=> $tgl_surat,
+				'kepada_surat_packing' 		=> $kepada_surat,
+				'keterangan_surat_packing' 	=> $keterangan_surat,
+				'id_penerima' 				=> $id_penerima,
+				'created_surat_packing'		=> $now,
+			);
 
-	    	$this->Surat_model->insert_packing($dataSurat);
+			$this->Surat_model->insert_packing($dataSurat);
 
-	    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data saved successfully</div>');
-			redirect('admin/surat/surat_packing_ubah/'.base64_encode($nomor_surat));
-	    }
-    }
+			$this->session->set_flashdata('message', '<div class="alert alert-success">Data saved successfully</div>');
+			redirect('admin/surat/surat_packing_ubah/' . base64_encode($nomor_surat));
+		}
+	}
 
-    function surat_packing_ubah($id)
-    {
-    	$this->data['cek_surat'] = $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($id));
-    	$this->data['barang'] = $this->Surat_model->get_detail_surat_packing_by_nomor_packing($this->data['cek_surat']->no_surat_packing);
+	function surat_packing_ubah($id)
+	{
+		$this->data['cek_surat'] = $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($id));
+		$this->data['barang'] = $this->Surat_model->get_detail_surat_packing_by_nomor_packing($this->data['cek_surat']->no_surat_packing);
 
-    	if ($this->data['cek_surat']) {
-    		$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();	
+		if ($this->data['cek_surat']) {
+			$this->data['get_all_penerima'] = $this->Penerima_model->get_all_combobox();
 
-    		$this->data['page_title'] = 'Edit Data '.$this->data['module_pl'];
-	    	$this->data['action']     = 'admin/surat/proses_surat_packing_ubah';
-	    	$this->data['nomor_surat_packing'] = [
-	    		'name' 			=> 'nomor_surat_packing', 
-			    'id'            => 'nomor-surat-packing',
-		        'class'         => 'form-control',
+			$this->data['page_title'] = 'Edit Data ' . $this->data['module_pl'];
+			$this->data['action']     = 'admin/surat/proses_surat_packing_ubah';
+			$this->data['nomor_surat_packing'] = [
+				'name' 			=> 'nomor_surat_packing',
+				'id'            => 'nomor-surat-packing',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
 				'value' 		=> $this->data['cek_surat']->no_surat_packing,
-			    'required'      => '',
-			    'readonly' 		=> '' 
-	  		];
+				'required'      => '',
+				'readonly' 		=> ''
+			];
 
-	  		$this->data['nama_surat_packing'] = [
-	    		'name' 			=> 'nama_surat_packing',
-	    		'id'            => 'nama-surat-packing', 
-		        'class'         => 'form-control',
+			$this->data['nama_surat_packing'] = [
+				'name' 			=> 'nama_surat_packing',
+				'id'            => 'nama-surat-packing',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
-			    'required'      => ''
-	  		];
+				'required'      => ''
+			];
 
-	  		$this->data['kepada_surat_packing'] = [
-		        'name' 			=> 'kepada_surat_packing', 
-		        'id'            => 'kepada-surat-packing',
-		        'class'         => 'form-control',
+			$this->data['kepada_surat_packing'] = [
+				'name' 			=> 'kepada_surat_packing',
+				'id'            => 'kepada-surat-packing',
+				'class'         => 'form-control',
 				'autocomplete'  => 'off',
-			    'required'      => ''
-	  		];
+				'required'      => ''
+			];
 
-	  		$this->data['keterangan'] = [
-		      'name'          => 'keterangan',
-		      'id'            => 'keterangan',
-		      'class'         => 'form-control',
-		      'autocomplete'  => 'off'
-		    ];
+			$this->data['keterangan'] = [
+				'name'          => 'keterangan',
+				'id'            => 'keterangan',
+				'class'         => 'form-control',
+				'autocomplete'  => 'off'
+			];
 
-	  		$this->data['penerima'] = [
-		    	'class'         => 'form-control select2bs4',
-		    	'id'            => 'penerima',
-		      	'required'      => '',
-		      	'style' 		=> 'width:100%'
-		    ];
+			$this->data['penerima'] = [
+				'class'         => 'form-control select2bs4',
+				'id'            => 'penerima',
+				'required'      => '',
+				'style' 		=> 'width:100%'
+			];
 
-		    $this->load->view('back/surat/surat_packing_edit', $this->data);
-    	}else{
-    		$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
-	    	redirect('admin/surat_packing');
-    	}
-    }
+			$this->load->view('back/surat/surat_packing_edit', $this->data);
+		} else {
+			$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
+			redirect('admin/surat_packing');
+		}
+	}
 
-    function proses_surat_packing_ubah()
-    {
-    	$i = $this->input;
-    	$len = $i->post('length');
+	function proses_surat_packing_ubah()
+	{
+		$i = $this->input;
+		$len = $i->post('length');
 		$nomor_surat = $i->post('nomor_surat');
 		$nama_surat = $i->post('nama_surat');
 		$tgl_surat = $i->post('date');
 		$kepada_surat = $i->post('kepada_surat');
 		$keterangan = $i->post('keterangan');
-		$penerima = intval($i->post('penerima')); 
+		$penerima = intval($i->post('penerima'));
 		$dt_kode = $i->post('dt_kode');
 		$dt_nama = $i->post('dt_nama');
 		$dt_satuan = $i->post('dt_satuan');
@@ -922,90 +1242,93 @@ class Surat extends CI_Controller {
 
 		if ($cek_detail) {
 			$this->Surat_model->delete_detail_by_nomor_packing($nomor_surat);
-			$UpdateSurat = array( 'no_surat_packing' 		=> $nomor_surat,
-	    						  'nama_surat_packing' 		=> $nama_surat,
-	    						  'tgl_surat_packing' 		=> $tgl_surat,
-	    						  'kepada_surat_packing'	=> $kepada_surat,
-	    						  'keterangan_surat_packing'=> $keterangan,
-	    						  'id_penerima' 			=> $penerima,
+			$UpdateSurat = array(
+				'no_surat_packing' 		=> $nomor_surat,
+				'nama_surat_packing' 		=> $nama_surat,
+				'tgl_surat_packing' 		=> $tgl_surat,
+				'kepada_surat_packing'	=> $kepada_surat,
+				'keterangan_surat_packing' => $keterangan,
+				'id_penerima' 			=> $penerima,
 			);
 
 			$this->Surat_model->update_packing($nomor_surat, $UpdateSurat);
 
-			for ($n=0; $n < $len; $n++)
-	        {
-	        	$InsertDetail = array( 'no_surat_packing' 				=> $nomor_surat,
-	        						   'kode_barang_surat_packing' 		=> $decode_kode[$n],
-	        						   'nama_barang_surat_packing' 		=> $decode_nama[$n],
-	        						   'jumlah_barang_surat_packing' 	=> $decode_qty[$n],
-	        						   'satuan_barang_surat_packing' 	=> $decode_satuan[$n],
-	        						   'keterangan_barang_surat_packing'=> $decode_keterangan[$n],
-	        	);
+			for ($n = 0; $n < $len; $n++) {
+				$InsertDetail = array(
+					'no_surat_packing' 				=> $nomor_surat,
+					'kode_barang_surat_packing' 		=> $decode_kode[$n],
+					'nama_barang_surat_packing' 		=> $decode_nama[$n],
+					'jumlah_barang_surat_packing' 	=> $decode_qty[$n],
+					'satuan_barang_surat_packing' 	=> $decode_satuan[$n],
+					'keterangan_barang_surat_packing' => $decode_keterangan[$n],
+				);
 
-	        	$this->Surat_model->insert_detail_packing($InsertDetail);
-	        }			
-			
-			$pesan = "Berhasil diubah!";	
-        	$msg = array(	'sukses'	=> $pesan,
-        					'nomor'		=> base64_encode($nomor_surat),
-        			);
-        	echo json_encode($msg);
-		}else{
-			$UpdateSurat = array( 'no_surat_packing' 		=> $nomor_surat,
-	    						  'nama_surat_packing' 		=> $nama_surat,
-	    						  'tgl_surat_packing' 		=> $tgl_surat,
-	    						  'kepada_surat_packing' 	=> $kepada_surat,
-	    						  'keterangan_surat_packing'=> $keterangan,
-	    						  'id_penerima' 			=> $penerima,
-		   	);
+				$this->Surat_model->insert_detail_packing($InsertDetail);
+			}
+
+			$pesan = "Berhasil diubah!";
+			$msg = array(
+				'sukses'	=> $pesan,
+				'nomor'		=> base64_encode($nomor_surat),
+			);
+			echo json_encode($msg);
+		} else {
+			$UpdateSurat = array(
+				'no_surat_packing' 		=> $nomor_surat,
+				'nama_surat_packing' 		=> $nama_surat,
+				'tgl_surat_packing' 		=> $tgl_surat,
+				'kepada_surat_packing' 	=> $kepada_surat,
+				'keterangan_surat_packing' => $keterangan,
+				'id_penerima' 			=> $penerima,
+			);
 
 			$this->Surat_model->update_packing($nomor_surat, $UpdateSurat);
 
-			for ($n=0; $n < $len; $n++)
-	        {
-	        	$InsertDetail = array( 'no_surat_packing' 				=> $nomor_surat,
-	        						   'kode_barang_surat_packing' 		=> $decode_kode[$n],
-	        						   'nama_barang_surat_packing' 		=> $decode_nama[$n],
-	        						   'jumlah_barang_surat_packing' 	=> $decode_qty[$n],
-	        						   'satuan_barang_surat_packing' 	=> $decode_satuan[$n],
-	        						   'keterangan_barang_surat_packing'=> $decode_keterangan[$n],
-	        	);
+			for ($n = 0; $n < $len; $n++) {
+				$InsertDetail = array(
+					'no_surat_packing' 				=> $nomor_surat,
+					'kode_barang_surat_packing' 		=> $decode_kode[$n],
+					'nama_barang_surat_packing' 		=> $decode_nama[$n],
+					'jumlah_barang_surat_packing' 	=> $decode_qty[$n],
+					'satuan_barang_surat_packing' 	=> $decode_satuan[$n],
+					'keterangan_barang_surat_packing' => $decode_keterangan[$n],
+				);
 
-	        	$this->Surat_model->insert_detail_packing($InsertDetail);
-	        }			
-			
-			$pesan = "Berhasil diubah!";	
-        	$msg = array(	'sukses'	=> $pesan,
-        					'nomor'		=> base64_encode($nomor_surat),
-        			);
-        	echo json_encode($msg);
+				$this->Surat_model->insert_detail_packing($InsertDetail);
+			}
+
+			$pesan = "Berhasil diubah!";
+			$msg = array(
+				'sukses'	=> $pesan,
+				'nomor'		=> base64_encode($nomor_surat),
+			);
+			echo json_encode($msg);
 		}
+	}
 
-    }
-
-    function surat_packing_print($id)
+	function surat_packing_print($id)
 	{
 		$this->data['surat_packing']   		= $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($id));
-		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_packing']->id_penerima);	
+		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_packing']->id_penerima);
 		$this->data['detail_surat_packing']	= $this->Surat_model->get_detail_surat_packing_by_nomor_packing(base64_decode($id));
 		$this->data['total']				= count($this->data['detail_surat_packing']);
 
 		// echo print_r($this->data['request'])
 		$html = $this->load->view('back/report/template_surat_packing', $this->data, TRUE);
-		$filename = 'CETAK_'.$this->data['surat_packing']->nama_surat_packing.'_'.date('d_M_y');
+		$filename = 'CETAK_' . $this->data['surat_packing']->nama_surat_packing . '_' . date('d_M_y');
 		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
 	}
 
 	function surat_packing_print_alamat($id)
 	{
 		$this->data['surat_packing']   		= $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($id));
-		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_packing']->id_penerima);	
+		$this->data['penerima']				= $this->Penerima_model->get_by_id($this->data['surat_packing']->id_penerima);
 		$this->data['detail_surat_packing']	= $this->Surat_model->get_detail_surat_packing_by_nomor_packing(base64_decode($id));
 		$this->data['total']				= count($this->data['detail_surat_packing']);
 
 		// echo print_r($this->data['request'])
 		$html = $this->load->view('back/report/template_surat_packing_alamat', $this->data, TRUE);
-		$filename = 'CETAK_ALAMAT_'.$this->data['surat_packing']->nama_surat_packing.'_'.date('d_M_y');
+		$filename = 'CETAK_ALAMAT_' . $this->data['surat_packing']->nama_surat_packing . '_' . date('d_M_y');
 		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
 	}
 
@@ -1014,28 +1337,29 @@ class Surat extends CI_Controller {
 		$this->data['surat_packing']   = $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($id));
 		if ($this->data['surat_packing']) {
 			$this->Surat_model->delete_detail_by_nomor_packing($this->data['surat_packing']->no_surat_packing);
-			$this->Surat_model->delete_packing($this->data['surat_packing']->no_surat_packing);			
+			$this->Surat_model->delete_packing($this->data['surat_packing']->no_surat_packing);
 
-	    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
-		    redirect('admin/surat/surat_packing');
-		}else{
+			$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
+			redirect('admin/surat/surat_packing');
+		} else {
 			$this->session->set_flashdata('message', '<div class="alert alert-danger">Data not found</div>');
-	    	redirect('admin/surat_packing');
+			redirect('admin/surat_packing');
 		}
 	}
 
-    function surat_packing_detail_hapus_all($id)
-    {
-    	$this->Surat_model->delete_detail_by_nomor_packing(base64_decode($id));
+	function surat_packing_detail_hapus_all($id)
+	{
+		$this->Surat_model->delete_detail_by_nomor_packing(base64_decode($id));
 
-    	$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
-	    redirect('admin/surat/surat_packing_ubah/'.$id);
-    }
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Data deleted successfully</div>');
+		redirect('admin/surat/surat_packing_ubah/' . $id);
+	}
 
-    function get_by_id_jalan($id){
-    	$data['data'] = 0;
+	function get_by_id_jalan($id)
+	{
+		$data['data'] = 0;
 		$cek_detail = $this->Surat_model->get_detail_surat_jalan_by_id_row($id);
-		if($cek_detail){
+		if ($cek_detail) {
 			$data['data'] = 1;
 			$data['id'] = $cek_detail->id_detail_surat_jalan;
 			$data['kode'] = $cek_detail->kode_barang_surat_jalan;
@@ -1047,10 +1371,11 @@ class Surat extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	function get_by_id_packing($id){
-    	$data['data'] = 0;
+	function get_by_id_packing($id)
+	{
+		$data['data'] = 0;
 		$cek_detail = $this->Surat_model->get_detail_surat_packing_by_id_row($id);
-		if($cek_detail){
+		if ($cek_detail) {
 			$data['data'] = 1;
 			$data['id'] = $cek_detail->id_detail_surat_packing;
 			$data['kode'] = $cek_detail->kode_barang_surat_packing;
@@ -1077,33 +1402,36 @@ class Surat extends CI_Controller {
 		if ($pilihan == 'simpan') {
 			$cek_detail = $this->Surat_model->get_detail_surat_packing_by_id_row($id);
 			if ($cek_detail) {
-				$updateData = array( 'kode_barang_surat_packing'		=> $kode,
-									 'nama_barang_surat_packing'		=> $nama,	
-									 'jumlah_barang_surat_packing'	 	=> $jumlah,	
-									 'satuan_barang_surat_packing'	 	=> $satuan,	
-									 'keterangan_barang_surat_packing' 	=> $keterangan,	
-									 'nama_barang_surat_packing'		=> $nama,	
+				$updateData = array(
+					'kode_barang_surat_packing'		=> $kode,
+					'nama_barang_surat_packing'		=> $nama,
+					'jumlah_barang_surat_packing'	 	=> $jumlah,
+					'satuan_barang_surat_packing'	 	=> $satuan,
+					'keterangan_barang_surat_packing' 	=> $keterangan,
+					'nama_barang_surat_packing'		=> $nama,
 
-				);	
+				);
 
 				// echo print_r($updateData);
-				$this->Surat_model->update_detail_packing($id,$cek_detail->no_surat_packing,$updateData);
-				$pesan = "Berhasil diubah!";	
-	        	$msg = array(	'sukses'	=> $pesan,
-	        					'nomor'		=> base64_encode($cek_detail->no_surat_packing),
-	        			);
-	        	echo json_encode($msg);
-			}	
-		}elseif ($pilihan == 'hapus'){
+				$this->Surat_model->update_detail_packing($id, $cek_detail->no_surat_packing, $updateData);
+				$pesan = "Berhasil diubah!";
+				$msg = array(
+					'sukses'	=> $pesan,
+					'nomor'		=> base64_encode($cek_detail->no_surat_packing),
+				);
+				echo json_encode($msg);
+			}
+		} elseif ($pilihan == 'hapus') {
 			$cek_detail = $this->Surat_model->get_detail_surat_packing_by_id_row($id);
 			if ($cek_detail) {
 				// echo print_r($updateData);
 				$this->Surat_model->delete_detail_by_id_packing($id);
-				$pesan = "Berhasil dihapus!";	
-	        	$msg = array(	'sukses'	=> $pesan,
-	        					'nomor'		=> base64_encode($cek_detail->no_surat_packing),
-	        			);
-	        	echo json_encode($msg);
+				$pesan = "Berhasil dihapus!";
+				$msg = array(
+					'sukses'	=> $pesan,
+					'nomor'		=> base64_encode($cek_detail->no_surat_packing),
+				);
+				echo json_encode($msg);
 			}
 		}
 	}
@@ -1112,17 +1440,17 @@ class Surat extends CI_Controller {
 	{
 		$config['upload_path'] 		= './uploads/';
 		$config['allowed_types'] 	= 'xlsx|xls';
-		$config['file_name']			= 'doc'.time();	
+		$config['file_name']			= 'doc' . time();
 		// $config['max_size']  = '100';
 		// $config['max_width']  = '1024';
 		// $config['max_height']  = '768';
-		
+
 		$this->load->library('upload', $config);
 		if ($this->upload->do_upload('import_data')) {
 			$file 		= $this->upload->data();
 			$reader 	= ReaderEntityFactory::createXLSXReader();
 
-			$reader->open('uploads/'.$file['file_name']);
+			$reader->open('uploads/' . $file['file_name']);
 			$nomor 	   	= $this->input->post('nomor');
 			$numSheet 	= 0;
 			$jumlah 	= 0;
@@ -1133,52 +1461,55 @@ class Surat extends CI_Controller {
 						if ($numRow == 1) {
 							if ($row->getCellAtIndex(0) != 'kode_barang_surat_packing' || $row->getCellAtIndex(1) != 'nama_barang_surat_packing' || $row->getCellAtIndex(2) != 'jumlah_barang_surat_packing' || $row->getCellAtIndex(3) != 'satuan_barang_surat_packing' || $row->getCellAtIndex(4) != 'keterangan_barang_surat_packing') {
 								$reader->close();
-								unlink('uploads/'.$file['file_name']);
-								
-								$msg = array(	'validasi'		=> 'Data import tidak sesuai!',
-				    			);
-						    	echo json_encode($msg);
+								unlink('uploads/' . $file['file_name']);
+
+								$msg = array(
+									'validasi'		=> 'Data import tidak sesuai!',
+								);
+								echo json_encode($msg);
 							}
 						}
 
 						if ($numRow > 1) {
 							$cells 	   = $row->getCells();
-							
-							$dataDetailPL 	= array(	'no_surat_packing'					=> $nomor,
-														'kode_barang_surat_packing' 		=> $row->getCellAtIndex(0),
-														'nama_barang_surat_packing' 		=> $row->getCellAtIndex(1),
-														'jumlah_barang_surat_packing' 		=> $row->getCellAtIndex(2),
-														'satuan_barang_surat_packing' 		=> $row->getCellAtIndex(3),
-														'keterangan_barang_surat_packing' 	=> $row->getCellAtIndex(4),
-													);
+
+							$dataDetailPL 	= array(
+								'no_surat_packing'					=> $nomor,
+								'kode_barang_surat_packing' 		=> $row->getCellAtIndex(0),
+								'nama_barang_surat_packing' 		=> $row->getCellAtIndex(1),
+								'jumlah_barang_surat_packing' 		=> $row->getCellAtIndex(2),
+								'satuan_barang_surat_packing' 		=> $row->getCellAtIndex(3),
+								'keterangan_barang_surat_packing' 	=> $row->getCellAtIndex(4),
+							);
 
 							$this->Surat_model->insert_detail_packing($dataDetailPL);
 
 							write_log();
-
 						}
 						$numRow++;
 						$jumlah++;
 					}
 					$reader->close();
-					unlink('uploads/'.$file['file_name']);
+					unlink('uploads/' . $file['file_name']);
 
-					$msg = array(	'sukses'	=> $jumlah.' Data imported successfully',
-									'nomor'		=> base64_encode($nomor)
-			    			);
-			    	echo json_encode($msg);
+					$msg = array(
+						'sukses'	=> $jumlah . ' Data imported successfully',
+						'nomor'		=> base64_encode($nomor)
+					);
+					echo json_encode($msg);
 					// $this->session->set_flashdata('message', '<div class="alert alert-success">'.$jumlah.' Data imported successfully</div>');
 					// redirect('admin/surat/surat_packing_ubah/'.base64_encode($nomor));
 				}
 				$numSheet++;
 			}
-		}else{
+		} else {
 			// $error = array('error' => $this->upload->display_errors());
 			// $this->session->set_flashdata('message', '<div class="alert alert-danger">'.$this->upload->display_errors().'</div>')
-			
-			$msg = array(	'validasi'	=> 'Terjadi Kesalahan!',
-	    			);
-	    	echo json_encode($msg);
+
+			$msg = array(
+				'validasi'	=> 'Terjadi Kesalahan!',
+			);
+			echo json_encode($msg);
 			// $error = array('error' => $this->upload->display_errors());
 			// $this->session->set_flashdata('message', '<div class="alert alert-danger">'.$this->upload->display_errors().'</div>');
 			// redirect('admin/surat/surat_packing_ubah/'.base64_encode($nomor));
@@ -1190,7 +1521,7 @@ class Surat extends CI_Controller {
 	{
 		$surat_packing = $this->Surat_model->get_surat_packing_by_id_row_packing(base64_decode($nomor));
 		$detail_surat_packing = $this->Surat_model->get_detail_surat_packing_by_nomor_packing(base64_decode($nomor));
-		$title = "Export Data Surat Packing List_".date("H_i_s");
+		$title = "Export Data Surat Packing List_" . date("H_i_s");
 
 		// PHPOffice
 
@@ -1223,30 +1554,29 @@ class Surat extends CI_Controller {
 		$sheet->mergeCells('E4:K4');
 		$sheet->setCellValue('E4', 'Keterangan');
 		// set Row
-        $rowCount = 5;
-        foreach ($detail_surat_packing as $list) {
-            $sheet->SetCellValue('A' . $rowCount, $list->kode_barang_surat_packing);
-            $sheet->SetCellValue('B' . $rowCount, $list->nama_barang_surat_packing);
-            $sheet->SetCellValue('C' . $rowCount, $list->jumlah_barang_surat_packing);
-            $sheet->SetCellValue('D' . $rowCount, $list->satuan_barang_surat_packing);
-			$sheet->mergeCells('E' . $rowCount.':K'.$rowCount);
-            $sheet->SetCellValue('E' . $rowCount, $list->keterangan_barang_surat_packing);
-            $rowCount++;
-        }	
+		$rowCount = 5;
+		foreach ($detail_surat_packing as $list) {
+			$sheet->SetCellValue('A' . $rowCount, $list->kode_barang_surat_packing);
+			$sheet->SetCellValue('B' . $rowCount, $list->nama_barang_surat_packing);
+			$sheet->SetCellValue('C' . $rowCount, $list->jumlah_barang_surat_packing);
+			$sheet->SetCellValue('D' . $rowCount, $list->satuan_barang_surat_packing);
+			$sheet->mergeCells('E' . $rowCount . ':K' . $rowCount);
+			$sheet->SetCellValue('E' . $rowCount, $list->keterangan_barang_surat_packing);
+			$rowCount++;
+		}
 
 		$writer = new Xlsx($spreadsheet);
-			
+
 		header('Content-Type: application/vnd.ms-excel');
-		header("Content-Transfer-Encoding: Binary"); 
-		header('Content-Disposition: attachment;filename="'. $title .'.xlsx"');
+		header("Content-Transfer-Encoding: Binary");
+		header('Content-Disposition: attachment;filename="' . $title . '.xlsx"');
 		header("Pragma: no-cache");
 		header("Expires: 0");
 
 		$writer->save('php://output');
 
-		die();	
+		die();
 	}
-
 }
 
 /* End of file Surat.php */
