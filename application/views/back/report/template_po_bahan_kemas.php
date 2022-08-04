@@ -34,7 +34,7 @@
 
       <td valign="top" colspan="2">
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Nomor Dokumen: TE-001-01-0<?= 1 + $tip + $count_bahan_kemas + $count_log ?></p>
-        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top:5px;padding: 0;">Tanggal Berlaku: <?= date("d/m/Y") ?></p>
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top:5px;padding: 0;">Tanggal Berlaku: <?= date("d/m/Y", strtotime(date('Y-m-d') . ' + 5 days')) ?></p>
         <p align="right" style="font-size: 24px;color:#009eae;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;">PURCHASE ORDER</p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Hari, Tanggal: <?php echo $hariIndo . ", " . date('d F Y', strtotime($purchase->tgl_po)) ?></p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 5px;padding: 0;"><?php echo $purchase->no_po ?></p>
@@ -278,7 +278,7 @@
     </tr>
     <tr>
       <td valign="top" colspan="2" style="font-size: 12px;opacity: 0">
-        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>"><u>(Setia Wardhani)</u></p>
+        <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>"><u>(Setia Wardhana)</u></p>
         <p align="left" style="vertical-align: text-top;margin:0;padding: 0;<?= $purchase->fat_manager != null ||  $purchase->fat_manager != ''  ? '' : 'visibility: hidden' ?>">FAT Manager</p>
       </td>
       <td valign="top" colspan="2" style="font-size: 12px;">

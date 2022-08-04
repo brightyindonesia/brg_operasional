@@ -30,6 +30,8 @@
       </td>
 
       <td valign="top" colspan="2">
+      <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Nomor Dokumen: TE-001-01-<?= strlen($surat_jalan->id_surat_jalan) > 1 ? $surat_jalan->id_surat_jalan : "0".$surat_jalan->id_surat_jalan ?></p>
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top:5px;padding: 0;">Tanggal Berlaku: <?= date("d/m/Y") ?></p>
         <p align="right" style="font-size: 24px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;">SURAT JALAN</p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Hari, Tanggal: <?php echo $hariIndo.", ".date('d F Y', strtotime($surat_jalan->tgl_surat_jalan)) ?></p>
         <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 5px;padding: 0;"><?php echo $surat_jalan->no_surat_jalan ?></p>

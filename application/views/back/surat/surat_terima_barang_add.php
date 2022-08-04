@@ -98,8 +98,8 @@
             </div>
             <div class="col-sm-3">
               <div class="form-group">
-                <label>Koli/Karton</label>
-                <input type="number" name="koli_karton" id="in_koli_karton" value="" class="form-control">
+                <label>No Batch</label>
+                <input type="number" name="no_batch" id="no_batch" value="" class="form-control">
               </div>
             </div>
 
@@ -126,10 +126,21 @@
               </div>
             </div>
 
-            <div class="col-sm-5">
+            <div class="col-sm-2">
+              <div class="form-group">
+                <label>Tgl Exp</label>
+                <input type="text" name="tgl_exp" id="in_tgl_exp" value="" class="form-control">
+              </div>
+            </div>
+
+            <div class="col-sm-3">
               <div class="form-group">
                 <label>Keterangan</label>
-                <input type="text" name="keterangan_qc" id="in_keterangan_qc" value="" class="form-control">
+                <select name="keterangan_qc" id="in_keterangan_qc" class="form-control">
+                  <option selected disabled>- Pilih -</option>
+                  <option value="Baik">Baik</option>
+                  <option value="Tidak Baik">Tidak Baik</option>
+                </select>
               </div>
             </div>
 
@@ -246,7 +257,7 @@
         .map(function() {
           return $(this).val();
         }).get();
-      var dt_koli_karton = $("input[name='dt_koli_karton[]']")
+      var dt_no_batch = $("input[name='dt_no_batch[]']")
         .map(function() {
           return $(this).val();
         }).get();
@@ -258,6 +269,10 @@
         .map(function() {
           return $(this).val();
         }).get();
+      var dt_tgl_exp = $("input[name='dt_tgl_exp[]']")
+        .map(function() {
+          return $(this).val();
+        }).get();
       var dt_keterangan_qc = $("input[name='dt_keterangan_qc[]']")
         .map(function() {
           return $(this).val();
@@ -266,15 +281,16 @@
       var JS_nama_barang = JSON.stringify(dt_nama_barang);
       var JS_kode_barang = JSON.stringify(dt_kode_barang);
       var JS_qty = JSON.stringify(dt_qty);
-      var JS_koli_karton = JSON.stringify(dt_koli_karton);
+      var JS_no_batch = JSON.stringify(dt_no_batch);
       var JS_jumlah_barang_qc = JSON.stringify(dt_jumlah_barang_qc);
       var JS_tgl_selesai_qc = JSON.stringify(dt_tgl_selesai_qc);
+      var JS_tgl_exp = JSON.stringify(dt_tgl_exp);
       var JS_keterangan_qc = JSON.stringify(dt_keterangan_qc);
       var panjangArray = dt_nama_barang.length;
       var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>',
         csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
       // alert(panjangArray);
-      if (JS_pic_qc == '' && JS_nama_barang == '' && JS_kode_barang == '' && JS_jumlah == '' && JS_koli_karton == '' && JS_jumlah_barang_qc == '' && JS_tgl_selesai_qc == '' && JS_keterangan_qc == '') {
+      if (JS_pic_qc == '' && JS_nama_barang == '' && JS_kode_barang == '' && JS_jumlah == '' && JS_no_batch == '' && JS_jumlah_barang_qc == '' && JS_tgl_selesai_qc == '' && JS_tgl_exp == '' && JS_keterangan_qc == '') {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. Harap diisi!'
@@ -304,7 +320,7 @@
           icon: 'error',
           title: 'Terjadi Kesalahan!. PIC QC harap dipilih!'
         });
-      } else if (JS_nama_barang == '') {
+      } else if (nama_penerima == '') {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. Nama Penerima harap dipilih!'
@@ -319,7 +335,7 @@
           icon: 'error',
           title: 'Terjadi Kesalahan!. Nama Kategori harap dipilih!'
         });
-      } else if (JS_koli_karton == '') {
+      } else if (JS_no_batch == '') {
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan!. Nomor Pesanan harus diisi!'
@@ -327,7 +343,13 @@
       } else if (JS_tgl_selesai_qc == '') {
         Toast.fire({
           icon: 'error',
-          title: 'Terjadi Kesalahan!. TTD Finance harus diisi!'
+          title: 'Terjadi Kesalahan!. Tgl Selesai harus diisi!'
+        });
+
+      } else if (JS_tgl_exp == '') {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan!. Tgl Exp harus diisi!'
         });
 
       } else {
@@ -349,9 +371,10 @@
             dt_nama_barang: JS_nama_barang,
             dt_kode_barang: JS_kode_barang,
             dt_qty: JS_qty,
-            dt_koli_karton: JS_koli_karton,
+            dt_no_batch: JS_no_batch,
             dt_jumlah_barang_qc: JS_jumlah_barang_qc,
             dt_tgl_selesai_qc: JS_tgl_selesai_qc,
+            dt_tgl_exp: JS_tgl_exp,
             dt_keterangan_qc: JS_keterangan_qc,
             length: panjangArray,
             [csrfName]: csrfHash,
@@ -415,9 +438,10 @@
           var nama_barang = $('#in_nama_barang').val();
           var kode_barang = $('#in_kode_barang').val();
           var qty = $('#in_qty').val();
-          var koli_karton = $('#in_koli_karton').val();
+          var no_batch = $('#no_batch').val();
           var jumlah_barang_qc = $('#in_jumlah_barang_qc').val();
           var tgl_selesai_qc = $('#in_tgl_selesai_qc').val();
+          var tgl_exp = $('#in_tgl_exp').val();
           var keterangan_qc = $('#in_keterangan_qc').val();
           var pic_qc = $('#in_pic_qc').val();
           var pic_qc_teks = $('#in_pic_qc option:selected').text();
@@ -439,9 +463,10 @@
             html += '<td> <input type="hidden" id="dt_nama_barang[]" name="dt_nama_barang[]" value="' + nama_barang + '">' + nama_barang + '</td>';
             html += '<td> <input type="hidden" id="dt_kode_barang[]" name="dt_kode_barang[]" value="' + kode_barang + '">' + kode_barang + '</td>';
             html += '<td> <input type="hidden" id="dt_qty[]" name="dt_qty[]" value="' + qty + '">' + qty + '</td>';
-            html += '<td> <input type="hidden" id="dt_koli_karton[]" name="dt_koli_karton[]" value="' + koli_karton + '">' + koli_karton + '</td>';
+            html += '<td> <input type="hidden" id="dt_no_batch[]" name="dt_no_batch[]" value="' + no_batch + '">' + no_batch + '</td>';
             html += ' <td> <input type="hidden" id="dt_jumlah_barang_qc[]" name="dt_jumlah_barang_qc[]" value="' + jumlah_barang_qc + '">' + jumlah_barang_qc + '</td>';
             html += '<td> <input type="hidden" id="dt_tgl_selesai_qc[]" name="dt_tgl_selesai_qc[]" value="' + tgl_selesai_qc + '">' + tgl_selesai_qc + ' </td>';
+            html += '<td> <input type="hidden" id="dt_tgl_exp[]" name="dt_tgl_exp[]" value="' + tgl_exp + '">' + tgl_exp + ' </td>';
             html += '<td> <input type="hidden" id="dt_keterangan_qc[]" name="dt_keterangan_qc[]" value="' + keterangan_qc + '">' + keterangan_qc + ' </td>';
             html += '<td> <button type="hidden" class="btn btn-danger btn-sm" id="hps_row">Hapus</button> </td> </tr>';
 
@@ -451,9 +476,10 @@
             $('#in_nama_barang').val('');
             $('#in_kode_barang').val('');
             $('#in_qty').val('');
-            $('#in_koli_karton').val('');
+            $('#no_batch').val('');
             $('#in_jumlah_barang_qc').val('');
             $('#in_tgl_selesai_qc').val('');
+            $('#in_tgl_exp').val('');
             $('#in_keterangan_qc').val('');
             $("#in_pic_qc").val("").trigger("change.select2");
 
@@ -481,6 +507,9 @@
         format: "yyyy/mm/dd"
       }).datepicker("setDate", new Date());
       $("#in_tgl_selesai_qc").datepicker({
+        format: "yyyy/mm/dd"
+      }).datepicker("setDate", new Date());
+      $("#in_tgl_exp").datepicker({
         format: "yyyy/mm/dd"
       }).datepicker("setDate", new Date());
     });

@@ -690,20 +690,22 @@ class Surat extends CI_Controller
 		$dt_nama_barang   		= $this->input->post('dt_nama_barang');
 		$dt_kode_barang   		= $this->input->post('dt_kode_barang');
 		$dt_qty   		= $this->input->post('dt_qty');
-		$dt_koli_karton   		= $this->input->post('dt_koli_karton');
+		$dt_no_batch   		= $this->input->post('dt_no_batch');
 		$dt_jumlah_barang_qc   		= $this->input->post('dt_jumlah_barang_qc');
 		$dt_tgl_selesai_qc   		= $this->input->post('dt_tgl_selesai_qc');
 		$dt_keterangan_qc   		= $this->input->post('dt_keterangan_qc');
+		$dt_exp_date  		= $this->input->post('dt_tgl_exp');
 		$len   		= $this->input->post('length');
 
 		$decode_pic_qc = json_decode($dt_pic_qc, TRUE);
 		$decode_nama_barang = json_decode($dt_nama_barang, TRUE);
 		$decode_kode_barang = json_decode($dt_kode_barang, TRUE);
 		$decode_qty = json_decode($dt_qty, TRUE);
-		$decode_koli_karton = json_decode($dt_koli_karton, TRUE);
+		$decode_no_batch = json_decode($dt_no_batch, TRUE);
 		$decode_jumlah_barang_qc = json_decode($dt_jumlah_barang_qc, TRUE);
 		$decode_tgl_selesai_qc = json_decode($dt_tgl_selesai_qc, TRUE);
 		$decode_keterangan_qc = json_decode($dt_keterangan_qc, TRUE);
+		$decode_exp_date = json_decode($dt_exp_date, TRUE);
 
 		$dataSurat = array(
 			'nomor_surat_terima_barang ' 			=> $nomor_surat_terima,
@@ -736,14 +738,15 @@ class Surat extends CI_Controller
 			$dataDetail[$n] = array(
 				'no_surat_terima_barang '	=> $nomor_surat_terima,
 				'id_pic_surat_terima_barang' 	=> $decode_pic_qc[$n],
+				'no_batch_surat_terima_barang' 	=> $decode_no_batch[$n],
 				'nama_barang_surat_jalan'			=> $decode_nama_barang[$n],
 				'kode_barang_surat_terima_barang' 		=> $decode_kode_barang[$n],
 				'kategori_barang_surat_terima_barang' => $kategori,
 				'qty_barang_surat_terima_barang'	 		=> $decode_qty[$n],
-				'koli_karton_surat_terima_barang'	 		=> $decode_koli_karton[$n],
 				'jumlah_qc_surat_terima_barang'	 		=> $decode_jumlah_barang_qc[$n],
 				'tgl_selesai_qc_surat_terima_barang'	 		=> $decode_tgl_selesai_qc[$n],
 				'keterangan_barang_surat_terima_barang'	 		=> $decode_keterangan_qc[$n],
+				'exp_date_surat_terima_barang'	 		=> $decode_exp_date[$n],
 			);
 
 
@@ -765,6 +768,7 @@ class Surat extends CI_Controller
 		$this->data['surat_terima_barang']   		= $this->Surat_model->get_surat_terima_barang_by_nomor(base64_decode($id));
 		$this->data['detail_surat_terima_barang']	= $this->Surat_model->get_detail_surat_terima_barang_by_nomor(base64_decode($id));
 
+		// die(print_r($this->Usertype_model->get_user_by_id($this->data['surat_terima_barang']->id_warehouse_surat_terima_barang)));
 		$this->data['warehouse']				= $this->Usertype_model->get_user_by_id($this->data['surat_terima_barang']->id_warehouse_surat_terima_barang)->name;
 		$this->data['pic_qc']				= $this->Usertype_model->get_user_by_id($this->data['detail_surat_terima_barang'][0]->id_pic_surat_terima_barang)->name;
 

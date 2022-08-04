@@ -26,15 +26,15 @@
             <div class="row">
               <div class="col-sm-6">
                   <div class="form-group"><label>Nomor Request (*)</label>
-                    <?php echo form_input($nomor_request, $request->no_request) ?>
+                    <?php echo form_input($nomor_request, isset($request) && $request->no_request) ?>
                   </div>
 
                   <div class="form-group"><label>Nama SKU (*)</label>
-                    <?php echo form_dropdown('sku', $get_all_sku, $request->id_sku, $sku) ?>
+                    <?php echo form_dropdown('sku', $get_all_sku, isset($request) && $request->id_sku, $sku) ?>
                   </div>
 
                   <div class="form-group"><label>Nama Kategori (*)</label>
-                    <?php echo form_dropdown('kategori', $get_all_kategori, $request->id_kategori_po, $kategori) ?>
+                    <?php echo form_dropdown('kategori', $get_all_kategori, isset($request) && $request->id_kategori_po, $kategori) ?>
                   </div>
 
                   <div class="form-group"><label>Harga Ongkos Kirim</label>
@@ -44,15 +44,15 @@
 
               <div class="col-sm-6">
                   <div class="form-group"><label>Nama Vendor (*)</label>
-                    <?php echo form_dropdown('vendor', $get_all_vendor, $request->id_vendor, $vendor) ?>
+                    <?php echo form_dropdown('vendor', $get_all_vendor, isset($request) && $request->id_vendor, $vendor) ?>
                   </div>
 
                   <div class="form-group"><label>Nama Penerima (*)</label>
-                    <?php echo form_dropdown('penerima', $get_all_penerima, $request->id_penerima, $penerima) ?>
+                    <?php echo form_dropdown('penerima', $get_all_penerima, isset($request) && $request->id_penerima, $penerima) ?>
                   </div>
 
                   <div class="form-group"><label>Remarks</label>
-                    <?php echo form_textarea($remarks, $request->remarks); ?>
+                    <?php echo form_textarea($remarks, isset($request) && $request->remarks); ?>
                   </div>
               </div>
               <?php 
@@ -77,7 +77,7 @@
                   </div>
               </div>
             </div>
-            <?php echo form_input($id, $request->no_request) ?>
+            <?php echo form_input($id, isset($request) && $request->no_request) ?>
           </div>
           <!-- Input -->
           <div id="dataInput">
@@ -226,22 +226,22 @@
                     <label for="">TTD Finance (*)</label>
                     <select name="finance" id="finance" class="form-control" required>
                       <option disabled>-- Pilih -- </option>
-                      <option value="Leni Wahyuni" <?= $request->finance == "Leni Wahyuni" ? 'selected' : '' ?>>Leni Wahyuni</option>
-                      <option value="Melinda Nur Wijayanti" <?= $request->finance == "Melinda Nur Wijayanti" ? 'selected' : '' ?>>Melinda Nur Wijayanti</option>
+                      <option value="Leni Wahyuni" <?= isset($request->finance) && $request->finance == "Leni Wahyuni" ? 'selected' : '' ?>>Leni Wahyuni</option>
+                      <option value="Melinda Nur Wijayanti" <?= isset($request->finance) && $request->finance == "Melinda Nur Wijayanti" ? 'selected' : '' ?>>Melinda Nur Wijayanti</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label for="">TTD FAT Manager</label>
                     <select name="fat_manager" id="fat_manager" class="form-control">
                       <option value="">-- Pilih -- </option>
-                      <option value="Setia Wardhana" <?= $request->fat_manager == "Setia Wardhana" ? 'selected' : '' ?>>Setia Wardhana</option>
+                      <option value="Setia Wardhana" <?= isset($request->fat_manager) && $request->fat_manager == "Setia Wardhana" ? 'selected' : '' ?>>Setia Wardhana</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label for="">TTD CEO</label>
                     <select name="ceo" id="ceo" class="form-control">
                       <option value="">-- Pilih -- </option>
-                      <option value="M. Hadiyatullah" <?= $request->ceo == "M. Hadiyatullah" ? 'selected' : '' ?>>M. Hadiyatullah</option>
+                      <option value="M. Hadiyatullah" <?= isset($request->ceo) && $request->ceo == "M. Hadiyatullah" ? 'selected' : '' ?>>M. Hadiyatullah</option>
                     </select>
                   </div>
                 </div>

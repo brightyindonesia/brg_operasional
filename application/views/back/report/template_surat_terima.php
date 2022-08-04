@@ -21,6 +21,20 @@
   ?>
   <table cellspacing="0" cellpadding="0" border="0" width="100%">
     <tr>
+      <td valign="top" width="50%">
+        <img src="<?php echo $base64L; ?>" width="130px">
+        <p align="left" style="font-size: 14px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;"><?php echo $company_data->company_name ?></p>
+        <p align="left" style="font-size: 12px;vertical-align: text-top;margin:0;margin-top: 5px;padding: 0;"><?php echo $company_data->company_address ?></p>
+      </td>
+
+      <td valign="top" colspan="2">
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 40px;padding: 0;">Nomor Dokumen: TE-001-01-<?= strlen($surat_terima_barang->id_surat_terima_barang) > 1 ? $surat_terima_barang->id_surat_terima_barang : "0".$surat_terima_barang->id_surat_terima_barang ?></p>
+        <p align="right" style="font-size: 12px;font-weight: bold;vertical-align: text-top;margin:0;margin-top:5px;padding: 0;">Tanggal Berlaku: <?= date("d/m/Y", strtotime(date('Y-m-d') . ' + 5 days')) ?></p>
+      </td>
+    </tr>
+  </table>
+  <!-- <table cellspacing="0" cellpadding="0" border="0" width="100%">
+    <tr>
       <td valign="top" width="35%">
         <img src="<?php echo $base64L; ?>" width="130px">
         <p align="left" style="font-size: 14px;font-weight: bold;vertical-align: text-top;margin:0;margin-top: 8px;padding: 0;"><?php echo $company_data->company_name ?></p>
@@ -31,7 +45,7 @@
         &nbsp;
       </td>
     </tr>
-  </table>
+  </table> -->
   <table cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px">
     <tr>
       <td style="" valign="top" width="33%">
@@ -81,10 +95,9 @@
     <tr align="center" style="background-color: #f8f8f8;font-size: 12px;">
       <th width="2%">No</th>
       <th>Nama Barang</th>
-      <th>Kategori</th>
-      <th>Sub SKU</th>
+      <th>No Batch</th>
       <th width="8%">Jumlah</th>
-      <th width="8%">Koli / Karton</th>
+      <th>Exp Date</th>
       <th>Keterangan</th>
     </tr>
 
@@ -99,11 +112,7 @@
           ?>
         </td>
         <td align="center" style="font-size: 12px;">
-          <?php echo $row->kategori_barang_surat_terima_barang
-          ?>
-        </td>
-        <td align="center" style="font-size: 12px;">
-          <?php echo $row->kode_barang_surat_terima_barang
+          <?php echo $row->no_batch_surat_terima_barang
           ?>
         </td>
         <td align="center" style="font-size: 12px;">
@@ -111,7 +120,7 @@
           ?>
         </td>
         <td align="center" style="font-size: 12px;">
-          <?php echo $row->koli_karton_surat_terima_barang
+          <?php echo $row->exp_date_surat_terima_barang
           ?>
         </td>
         <td align="center" style="font-size: 12px;">
